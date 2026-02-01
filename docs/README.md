@@ -14,3 +14,16 @@ A lightweight educational toolkit for learning and experimenting with Digital Si
 make
 ./build/fft_demo
 ./build/filter_demo
+
+## Architecture
+Stage 1: Split input into even and odd samples
+Stage 2: Compute smaller FFTs
+Stage 3: Combine with twiddle factors
+
+Butterfly operation (N=8 example):
+
+x0 ----\                 /---- X0
+        \               /
+x4 -----(+)--- W8^k ----(+)---- X4
+        /               \
+x2 ----/                 \---- X2
