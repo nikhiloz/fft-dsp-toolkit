@@ -9,6 +9,9 @@ Stage 3: Combine with twiddle factors
 
 Butterfly operation (N=8 example):
 
+### Radix-2 FFT Butterfly (N=8)
+
+```text
 x0 ----\                 /---- X0
         \               /
 x4 -----(+)--- W8^k ----(+)---- X4
