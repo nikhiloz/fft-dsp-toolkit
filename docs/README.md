@@ -15,7 +15,8 @@ make
 ./build/fft_demo
 ./build/filter_demo
 
-## Architecture
+## Architectur
+'''bash
 Stage 1: Split input into even and odd samples
 Stage 2: Compute smaller FFTs
 Stage 3: Combine with twiddle factors
