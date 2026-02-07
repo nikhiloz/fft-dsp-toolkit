@@ -146,6 +146,8 @@ Results match to machine precision (~10⁻¹⁴).
 Generates DTMF tones for digits 1,5,9,0,*,#,A,D and attempts detection.
 All 8 digits should be correctly identified.
 
+![Goertzel DTMF Spectrum](../plots/ch19/goertzel_dtmf.png)
+
 ### Demo 3: Generalised Goertzel
 Detects a non-integer frequency (1234.5 Hz) with a coarse+fine scan.
 

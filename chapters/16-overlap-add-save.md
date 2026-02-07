@@ -110,6 +110,7 @@ Filters a 512-sample signal with a 31-tap lowpass using OLA.
 Compares to direct FIR — max error should be ~10⁻¹⁴ (machine epsilon).
 
 ![OLA vs Direct](../plots/ch16/ola_vs_direct.png)
+![OLA Reconstruction Error](../plots/ch16/ola_error.png)
 
 ### Demo 2: OLS Basic
 Same test using Overlap-Save.  After warm-up block, matches direct FIR.

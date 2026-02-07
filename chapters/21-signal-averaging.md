@@ -83,7 +83,13 @@ make chapters
 ./build/bin/ch21
 ```
 
-Plots are written to `plots/ch21/`.
+### Generated Plots
+
+![Coherent Averaging — SNR improvement with K trials](../plots/ch21/coherent_averaging.png)
+
+![EMA vs Moving Average comparison](../plots/ch21/ema_vs_ma.png)
+
+![Median Filter — impulse noise removal](../plots/ch21/median_filter.png)
 
 ## Cross-References
 

@@ -86,7 +86,11 @@ make chapters
 ./build/bin/ch22
 ```
 
-Plots are written to `plots/ch22/`.
+### Generated Plots
+
+![Remez Bandpass Filter Response](../plots/ch22/remez_bandpass.png)
+
+![Remez vs Window Method Comparison](../plots/ch22/remez_vs_window.png)
 
 ## Cross-References
 

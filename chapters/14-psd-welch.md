@@ -179,9 +179,11 @@ void psd_freq_axis(double *freq, int n_bins, double fs);
 
 ### Welch PSD
 ![Welch PSD — lower variance estimate](../plots/ch14/welch_psd.png)
+![Periodogram vs Welch comparison](../plots/ch14/periodogram_vs_welch.png)
 
 ### Resolution vs Variance Trade-off
 ![Effect of segment length on Welch resolution](../plots/ch14/welch_resolution.png)
+![Resolution Tradeoff](../plots/ch14/resolution_tradeoff.png)
 
 ### Cross-PSD
 ![Cross-PSD reveals common frequency content](../plots/ch14/cross_psd.png)

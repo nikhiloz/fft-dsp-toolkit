@@ -143,6 +143,8 @@ Applies the same 31-tap lowpass filter using both `fir_filter()` (double)
 and `fir_filter_q15()` (Q15), then computes the SQNR between outputs.
 
 ![Q15 Quantisation Error](../plots/ch18/quantisation_error.png)
+![Q15 Signal vs Recovered](../plots/ch18/q15_quantisation.png)
+![Q15 Error](../plots/ch18/q15_error.png)
 ![FIR Float vs Q15](../plots/ch18/fir_float_vs_q15.png)
 
 ### Demo 5: Saturation Visual

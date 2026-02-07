@@ -79,7 +79,11 @@ make chapters
 ./build/bin/ch20
 ```
 
-Plots are written to `plots/ch20/`.
+### Generated Plots
+
+![AM Envelope Detection](../plots/ch20/am_envelope.png)
+
+![Instantaneous Frequency](../plots/ch20/inst_frequency.png)
 
 ## Cross-References
 

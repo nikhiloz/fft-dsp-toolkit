@@ -87,7 +87,13 @@ make chapters
 ./build/bin/ch17
 ```
 
-Plots are written to `plots/ch17/`.
+### Generated Plots
+
+![Decimation](../plots/ch17/decimation.png)
+
+![Interpolation](../plots/ch17/interpolation.png)
+
+![Polyphase Spectrum](../plots/ch17/polyphase_spectrum.png)
 
 ## Cross-References
 
