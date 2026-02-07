@@ -1,0 +1,28 @@
+Open-Source DSP Tutorial — Written Entirely in C, Zero Dependencies
+
+I've been building a hands-on tutorial repository that teaches Digital Signal Processing from the ground up — using nothing but C99 and libm.
+
+Repository: https://github.com/nikhiloz/dsp-tutorial-suite
+
+What's inside:
+• 9 progressive tutorial chapters — from complex number arithmetic to Cooley-Tukey FFT, window functions, FIR filter design, and spectral analysis
+• Every chapter has a self-contained .c demo you can compile and run immediately
+• 10 PlantUML architecture diagrams embedded in the docs
+• 12 unit tests, all passing under -Wall -Wextra -Werror
+• GNU Make + CMake build — clone, make, done. No Python, no pip, no package managers
+
+The code is written to be read. Comments cross-reference the tutorial text and diagrams, so you can study the math, look at the butterfly diagram, then open fft.c and see exactly how it maps to code.
+
+Who is this for?
+• Embedded / systems engineers who work in C and want to understand DSP without wading through MATLAB or Python wrappers
+• CS / EE students looking for a practical, code-first introduction to FFT and filtering
+• Anyone curious about how audio processing, spectrum analysers, or software-defined radio actually work under the hood
+
+Contributing:
+The repo is open for contributions and experimentation. Chapters 06 (Real-Time Streaming) and 07 (Optimisation — SIMD, cache layout) are outlined but not yet implemented. If you want to add a new window function, try a different FFT radix, implement overlap-add streaming, or port it to an embedded target — fork it, experiment, and open a PR.
+
+Even if you just find a clearer way to explain something in the tutorials, that counts.
+
+https://github.com/nikhiloz/dsp-tutorial-suite
+
+#DSP #C #FFT #SignalProcessing #OpenSource #EmbeddedSystems #LearnInPublic

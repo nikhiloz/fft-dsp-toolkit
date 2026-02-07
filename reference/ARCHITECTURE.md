@@ -1,6 +1,6 @@
-# FFT-DSP Toolkit: Architecture & Design
+# DSP Tutorial Suite: Architecture & Design
 
-Complete architectural overview of the FFT-DSP Toolkit based on PlantUML diagrams.
+Complete architectural overview of the DSP Tutorial Suite based on PlantUML diagrams.
 
 ## System Architecture
 

@@ -1,4 +1,4 @@
-# FFT-DSP Toolkit: API Reference
+# DSP Tutorial Suite: API Reference
 
 Public API for the three implemented modules. All functions are C99,
 thread-safe (no global state), and have zero external dependencies
@@ -229,8 +229,8 @@ cc -Iinclude -o my_app my_app.c build/obj/fft.o build/obj/filter.o build/obj/dsp
 ### CMake
 
 ```cmake
-add_subdirectory(fft-dsp-toolkit)
-target_link_libraries(my_app PRIVATE fft_dsp_toolkit)
+add_subdirectory(dsp-tutorial-suite)
+target_link_libraries(my_app PRIVATE fft_dsp_static)
 ```
 
 ---

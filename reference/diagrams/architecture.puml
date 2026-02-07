@@ -29,7 +29,7 @@ skinparam component {
     BorderThickness 1.5
 }
 
-title <size:20><b>FFT-DSP Toolkit</b></size>\n<size:14><color:#546E7A>System Architecture Overview</color></size>\n<size:11><i>C99 | Zero External Dependencies | Real-Time Capable</i></size>
+title <size:20><b>DSP Tutorial Suite</b></size>\n<size:14><color:#546E7A>System Architecture Overview</color></size>\n<size:11><i>C99 | Zero External Dependencies | Real-Time Capable</i></size>
 
 package "  Application Layer  " <<app>> {
     [<b>Audio Processing</b>\n<size:10>EQ, Effects, Compression</size>] as AP

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(fft-dsp-toolkit 
+project(dsp-tutorial-suite 
     VERSION 1.0.0 
-    DESCRIPTION "Production-grade FFT and DSP toolkit"
+    DESCRIPTION "Hands-on C tutorial for Digital Signal Processing"
     LANGUAGES C)
 
 set(CMAKE_C_STANDARD 99)
@@ -112,7 +112,7 @@ if(ENABLE_COVERAGE)
 endif()
 
 # Print configuration
-message(STATUS "=== FFT-DSP Toolkit Configuration ===")
+message(STATUS "=== DSP Tutorial Suite Configuration ===")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
 message(STATUS "C Flags: ${CMAKE_C_FLAGS}")

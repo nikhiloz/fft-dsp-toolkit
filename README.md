@@ -1,4 +1,4 @@
-# FFT-DSP Toolkit
+# DSP Tutorial Suite
 
 **A hands-on C tutorial for Digital Signal Processing — from complex numbers to real-time FFT.**
 
@@ -28,8 +28,8 @@ becomes code.
 
 ```bash
 # Clone
-git clone git@github.com:nikhiloz/fft-dsp-toolkit.git
-cd fft-dsp-toolkit
+git clone git@github.com:nikhiloz/dsp-tutorial-suite.git
+cd dsp-tutorial-suite
 
 # Build everything (C99, no external deps)
 make
@@ -52,7 +52,7 @@ make test
 ## Project Layout
 
 ```
-fft-dsp-toolkit/
+dsp-tutorial-suite/
 ├── include/          ← Public headers (start reading here)
 │   ├── dsp_utils.h       Complex type, windows, helpers
 │   ├── fft.h             FFT / IFFT API

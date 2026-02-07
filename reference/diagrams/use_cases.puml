@@ -27,7 +27,7 @@ skinparam package {
     BorderThickness 2
 }
 
-title <size:20><b>Use Case Diagram</b></size>\n<size:14><color:#546E7A>Application scenarios for FFT-DSP Toolkit</color></size>
+title <size:20><b>Use Case Diagram</b></size>\n<size:14><color:#546E7A>Application scenarios for DSP Tutorial Suite</color></size>
 
 ' Actors
 :Audio Engineer: as AE #E3F2FD
@@ -35,7 +35,7 @@ title <size:20><b>Use Case Diagram</b></size>\n<size:14><color:#546E7A>Applicati
 :Researcher: as RES #FFF3E0
 :IoT Device: as IOT #F3E5F5
 
-rectangle "  <b>FFT-DSP Toolkit</b>  " as TOOLKIT {
+rectangle "  <b>DSP Tutorial Suite</b>  " as TOOLKIT {
 
     package "Audio Processing" #E3F2FD {
         usecase "<b>Real-Time Equalizer</b>\n<size:10>10-band parametric EQ</size>\n<size:10>with live preview</size>" as UC1 #BBDEFB

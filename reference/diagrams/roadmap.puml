@@ -10,7 +10,7 @@ skinparam rectangle {
     BorderThickness 2
 }
 
-title <size:20><b>FFT-DSP Toolkit — Development Roadmap</b></size>\n<size:14><color:#546E7A>6-Phase C-Only Development Plan</color></size>
+title <size:20><b>DSP Tutorial Suite — Development Roadmap</b></size>\n<size:14><color:#546E7A>6-Phase C-Only Development Plan</color></size>
 
 ' Timeline header
 rectangle "<size:16><b>◀ Timeline ▶</b></size>" as TIMELINE #37474F;text:white {

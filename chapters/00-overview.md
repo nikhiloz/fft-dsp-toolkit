@@ -1,6 +1,6 @@
 # Chapter 0 — Project Overview
 
-Welcome to the **FFT-DSP Toolkit** tutorial. This is a from-scratch
+Welcome to the **DSP Tutorial Suite**. This is a from-scratch
 Digital Signal Processing library written in C99 with no external
 dependencies. Every source file is designed to be *read* as a learning
 resource.
@@ -34,7 +34,7 @@ Each chapter follows a consistent pattern:
 ## Project Structure
 
 ```
-fft-dsp-toolkit/
+dsp-tutorial-suite/
 ├── include/            ← Start reading the PUBLIC API here
 │   ├── dsp_utils.h         Complex type + windows + helpers
 │   ├── fft.h               FFT/IFFT API

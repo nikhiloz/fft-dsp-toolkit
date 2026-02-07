@@ -1,11 +1,11 @@
-# FFT-DSP Toolkit: Visual Documentation
+# DSP Tutorial Suite: Visual Documentation
 
-Complete PlantUML diagrams for the FFT-DSP toolkit project. All diagrams are automatically rendered to PNG for easy viewing.
+Complete PlantUML diagrams for the DSP Tutorial Suite project. All diagrams are automatically rendered to PNG for easy viewing.
 
 ## Diagram Index
 
 ### 1. **architecture.puml** - System Architecture
-- Overview of the complete FFT-DSP toolkit
+- Overview of the complete DSP Tutorial Suite
 - Application layer, core library organization, and platform abstraction
 - Shows how components interact and their relationships
 - **Purpose**: Understanding the high-level system design

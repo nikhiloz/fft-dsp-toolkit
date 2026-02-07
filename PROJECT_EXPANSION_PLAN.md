@@ -1,10 +1,10 @@
-# FFT-DSP Toolkit: Comprehensive Expansion Plan
+# DSP Tutorial Suite: Comprehensive Expansion Plan
 
 ## Project Vision
 
 > **📊 System Architecture** — [View full-size diagram →](reference/diagrams/architecture.png)
 
-Transform fft-dsp-toolkit into a production-grade, high-performance DSP library with:
+Transform dsp-tutorial-suite into a production-grade, high-performance DSP library with:
 - Robust C core with advanced algorithms
 - Python bindings for rapid prototyping
 - Real-time streaming capabilities

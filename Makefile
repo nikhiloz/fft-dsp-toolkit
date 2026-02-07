@@ -1,4 +1,4 @@
-# Makefile - Simplified build for C-only FFT-DSP Toolkit
+# Makefile - Simplified build for C-only DSP Tutorial Suite
 # Requirements: gcc/clang, make
 
 CC ?= gcc
@@ -156,7 +156,7 @@ install: release
 
 # Help
 help:
-	@echo "FFT-DSP Toolkit Makefile"
+	@echo "DSP Tutorial Suite Makefile"
 	@echo ""
 	@echo "Targets:"
 	@echo "  make release     - Build release version (default)"
