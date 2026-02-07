@@ -54,6 +54,9 @@ target_link_libraries(ch02s fft_dsp_static m)
 add_executable(ch04s chapters/04-lti-systems.c)
 target_link_libraries(ch04s fft_dsp_static m)
 
+add_executable(ch05s chapters/05-z-transform.c)
+target_link_libraries(ch05s fft_dsp_static m)
+
 add_executable(ch01 chapters/01-complex-numbers.c)
 target_link_libraries(ch01 fft_dsp_static m)
 
@@ -85,7 +88,7 @@ add_test(NAME filter_tests COMMAND test_filter)
 
 # Build output directories
 set_target_properties(
-    ch01s ch02s ch04s ch01 ch02 ch03 ch04 ch05 ch08 test_fft test_filter
+    ch01s ch02s ch04s ch05s ch01 ch02 ch03 ch04 ch05 ch08 test_fft test_filter
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
