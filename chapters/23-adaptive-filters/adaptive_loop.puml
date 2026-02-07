@@ -1,0 +1,38 @@
+@startuml adaptive_loop
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Adaptive Filter: LMS / NLMS / RLS</b>
+
+rectangle "Input x[n]" as X #E3F2FD
+rectangle "Adaptive Filter\nw[n] (adjustable)" as AF #FFECB3
+rectangle "Output\nŷ[n] = wᵀx[n]" as Y #E8F5E9
+rectangle "Desired d[n]" as D #E3F2FD
+rectangle " e[n] = d[n]−ŷ[n] " as ERR #FCE4EC
+rectangle "Weight Update\nw[n+1] = w[n]+μ·e·x" as UPD #F3E5F5
+
+X -[#1565C0,bold]-> AF
+AF -[#1565C0,bold]-> Y
+D -[#455A64]-> ERR
+Y -[#455A64]-> ERR
+ERR -[#C62828,bold]-> UPD
+UPD -[#E65100,bold]-> AF : update weights
+
+note right of UPD #FFFDE7
+  <b>LMS</b>: μ·e[n]·x[n]  (simple)
+  <b>NLMS</b>: μ·e[n]·x[n]/‖x‖²  (normalised)
+  <b>RLS</b>: λ⁻¹·P·x·e  (fastest convergence)
+end note
+
+note bottom of ERR #FFF3E0
+  Goal: minimise E{e²[n]}
+  Filter converges to
+  Wiener optimal solution
+end note
+
+@enduml

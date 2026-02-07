@@ -1,6 +1,10 @@
-# Chapter 24: Linear Prediction & AR Modelling
+# Chapter 24: Linear Prediction
 
-Levinson-Durbin algorithm and AR spectral estimation.
+Autoregressive modelling, Levinson-Durbin, and LP analysis-synthesis.
+
+## Concept Diagram
+
+![Linear Prediction](lpc_model.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ Levinson-Durbin algorithm and AR spectral estimation.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`lpc.h`](../../include/lpc.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Ar Spectrum](plots/ar_spectrum.png)
-![Lpc Roundtrip](plots/lpc_roundtrip.png)
+- Estimate LP coefficients via autocorrelation + Levinson-Durbin
+- Check stability through reflection coefficients
+- Compute the prediction error (residual) signal
+- Synthesise a signal from LP coefficients and excitation
 
 ---
 

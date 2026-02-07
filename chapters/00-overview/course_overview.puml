@@ -1,0 +1,70 @@
+@startuml course_overview
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageBorderColor #455A64
+
+title <b>DSP Tutorial Suite — Learning Path</b>
+
+package "Part I: Foundations" as P1 #E3F2FD {
+  agent "Ch01 – Signals & Sequences" as C01
+  agent "Ch02 – Sampling & Aliasing" as C02
+  agent "Ch03 – Complex Numbers" as C03
+  agent "Ch04 – LTI Systems" as C04
+}
+
+package "Part II: Transform Domain" as P2 #E8F5E9 {
+  agent "Ch05 – Z-Transform" as C05
+  agent "Ch06 – Frequency Response" as C06
+  agent "Ch07 – DFT Theory" as C07
+  agent "Ch08 – FFT Algorithms" as C08
+  agent "Ch09 – Window Functions" as C09
+}
+
+package "Part III: Filter Design" as P3 #FFF3E0 {
+  agent "Ch10 – FIR Filters" as C10
+  agent "Ch11 – IIR Filters" as C11
+  agent "Ch12 – Filter Structures" as C12
+}
+
+package "Part IV: Analysis" as P4 #F3E5F5 {
+  agent "Ch13 – Spectral Analysis" as C13
+  agent "Ch14 – PSD & Welch" as C14
+  agent "Ch15 – Correlation" as C15
+}
+
+package "Part V: Advanced UG" as P5 #FCE4EC {
+  agent "Ch16 – Overlap-Add/Save" as C16
+  agent "Ch17 – Multirate DSP" as C17
+  agent "Ch18 – Fixed-Point" as C18
+  agent "Ch19 – Advanced FFT" as C19
+  agent "Ch20 – Hilbert Transform" as C20
+  agent "Ch21 – Signal Averaging" as C21
+  agent "Ch22 – Advanced FIR (Remez)" as C22
+}
+
+package "Part VI: Postgraduate" as P6 #FFECB3 {
+  agent "Ch23 – Adaptive Filters" as C23
+  agent "Ch24 – Linear Prediction" as C24
+  agent "Ch25 – Parametric Spectral" as C25
+  agent "Ch26 – Cepstrum & MFCC" as C26
+  agent "Ch27 – 2-D DSP" as C27
+}
+
+package "Part VII: Applied" as P7 #CFD8DC {
+  agent "Ch28 – Real-Time Streaming" as C28
+  agent "Ch29 – Optimisation" as C29
+  agent "Ch30 – Capstone" as C30
+}
+
+P1 -[#1565C0,bold]-> P2
+P2 -[#1565C0,bold]-> P3
+P3 -[#1565C0,bold]-> P4
+P4 -[#1565C0,bold]-> P5
+P5 -[#1565C0,bold]-> P6
+P6 -[#1565C0,bold]-> P7
+
+@enduml

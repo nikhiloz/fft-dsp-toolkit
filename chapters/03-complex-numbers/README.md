@@ -1,6 +1,10 @@
-# Chapter 3: Complex Numbers & Euler's Formula
+# Chapter 3: Complex Numbers in DSP
 
-Complex arithmetic, phasors, and the unit circle.
+Rectangular and polar forms, Euler's formula, phasors.
+
+## Concept Diagram
+
+![Complex Numbers in DSP](complex_plane.png)
 
 ## Contents
 
@@ -10,9 +14,12 @@ Complex arithmetic, phasors, and the unit circle.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`dsp_utils.h`](../../include/dsp_utils.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Twiddle Factors](plots/twiddle_factors.png)
+- Convert between rectangular and polar representations
+- Apply Euler's formula to DSP problems
+- Understand twiddle factors as complex exponentials
+- Compute magnitude and phase of complex signals
 
 ---
 

@@ -1,6 +1,10 @@
-# Chapter 15: Correlation & Autocorrelation
+# Chapter 15: Correlation
 
-Cross-correlation, autocorrelation, and pitch detection.
+Cross-correlation, autocorrelation, and FFT-based fast methods.
+
+## Concept Diagram
+
+![Correlation](correlation_uses.png)
 
 ## Contents
 
@@ -10,13 +14,12 @@ Cross-correlation, autocorrelation, and pitch detection.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`correlation.h`](../../include/correlation.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Autocorr Pitch](plots/autocorr_pitch.png)
-![Noise Autocorr](plots/noise_autocorr.png)
-![Normalized Xcorr](plots/normalized_xcorr.png)
-![Pulse Detection](plots/pulse_detection.png)
-![Time Delay](plots/time_delay.png)
+- Compute cross-correlation for time-delay estimation
+- Use autocorrelation to detect periodicity
+- Implement fast correlation via the FFT
+- Normalise correlation for amplitude-independent matching
 
 ---
 

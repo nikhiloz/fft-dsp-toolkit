@@ -1,6 +1,10 @@
 # Chapter 4: LTI Systems & Convolution
 
-Linear time-invariant systems, impulse response, and discrete convolution.
+Linear time-invariant systems, impulse response, and convolution sum.
+
+## Concept Diagram
+
+![LTI Systems & Convolution](lti_system.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ Linear time-invariant systems, impulse response, and discrete convolution.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`convolution.h`](../../include/convolution.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Convolution](plots/convolution.png)
-![Cross Correlation](plots/cross_correlation.png)
+- Test a system for linearity and time-invariance
+- Compute output via convolution sum y[n] = x[n] * h[n]
+- Verify BIBO stability from the impulse response
+- Relate energy, power, and cross-correlation
 
 ---
 

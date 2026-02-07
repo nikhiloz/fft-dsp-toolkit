@@ -1,6 +1,10 @@
-# Chapter 29: DSP Optimisation
+# Chapter 29: Optimisation
 
-Radix-4 FFT, twiddle tables, benchmarking, aligned memory.
+Radix-4 FFT, pre-computed twiddle tables, and aligned memory.
+
+## Concept Diagram
+
+![Optimisation](optimization_roadmap.png)
 
 ## Contents
 
@@ -9,17 +13,13 @@ Radix-4 FFT, twiddle tables, benchmarking, aligned memory.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`optimization.h`](../../include/optimization.h) | Library API |
-| [optimization_roadmap.puml](optimization_roadmap.puml) | PlantUML diagram source |
 
-## Diagram
+## What You'll Learn
 
-![Optimization Roadmap](optimization_roadmap.png)
-
-## Generated Plots
-
-![Radix Comparison](plots/radix_comparison.png)
-![Throughput](plots/throughput.png)
-![Twiddle Speedup](plots/twiddle_speedup.png)
+- Apply radix-4 butterfly to reduce FFT multiplications by 25%
+- Pre-compute and cache twiddle factors
+- Use aligned memory allocation for cache-friendly access
+- Benchmark optimised vs baseline implementations
 
 ---
 

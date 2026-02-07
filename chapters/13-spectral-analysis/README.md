@@ -1,6 +1,10 @@
 # Chapter 13: Spectral Analysis
 
-Windowed spectral analysis and frequency estimation.
+Periodogram, spectral estimation, and frequency-domain interpretation.
+
+## Concept Diagram
+
+![Spectral Analysis](signal_flow.png)
 
 ## Contents
 
@@ -9,15 +13,13 @@ Windowed spectral analysis and frequency estimation.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`spectrum.h`](../../include/spectrum.h) | Library API |
-| [signal_flow.puml](signal_flow.puml) | PlantUML diagram source |
 
-## Diagram
+## What You'll Learn
 
-![Signal Flow](signal_flow.png)
-
-## Generated Plots
-
-![Windowed Spectrum](plots/windowed_spectrum.png)
+- Compute and interpret the periodogram
+- Identify frequency components in noisy signals
+- Convert between linear and dB magnitude scales
+- Use the `spectrum` module for power spectral analysis
 
 ---
 

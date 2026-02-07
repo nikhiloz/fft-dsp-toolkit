@@ -1,6 +1,10 @@
-# Chapter 28: Real-Time System Design
+# Chapter 28: Real-Time Streaming
 
-Ring buffers, frame processing, and latency measurement.
+Ring buffers, block processing, and real-time DSP architecture.
+
+## Concept Diagram
+
+![Real-Time Streaming](realtime_architecture.png)
 
 ## Contents
 
@@ -9,17 +13,13 @@ Ring buffers, frame processing, and latency measurement.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`realtime.h`](../../include/realtime.h) | Library API |
-| [realtime_architecture.puml](realtime_architecture.puml) | PlantUML diagram source |
 
-## Diagram
+## What You'll Learn
 
-![Realtime Architecture](realtime_architecture.png)
-
-## Generated Plots
-
-![Ring Buffer Fill](plots/ring_buffer_fill.png)
-![Streaming Fft Peak](plots/streaming_fft_peak.png)
-![Streaming Spectrogram](plots/streaming_spectrogram.png)
+- Implement a lock-free ring buffer for streaming I/O
+- Process audio in fixed-size blocks with overlap
+- Measure and control real-time latency
+- Integrate DSP modules into a real-time pipeline
 
 ---
 

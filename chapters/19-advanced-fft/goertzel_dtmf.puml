@@ -1,0 +1,40 @@
+@startuml goertzel_dtmf
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Goertzel Algorithm & DTMF Detection</b>
+
+package "Goertzel Algorithm" #E3F2FD {
+  rectangle "Input x[n]\n(N samples)" as GIN
+  rectangle "2nd-order IIR\nrecursion for\ntarget bin k" as GIIR
+  rectangle "Single-bin\nmagnitude |X[k]|²" as GMAG
+  GIN -[#1565C0]-> GIIR
+  GIIR -[#1565C0]-> GMAG
+}
+
+package "DTMF Detector" #E8F5E9 {
+  rectangle "Phone signal\n(two tones)" as DTMIN
+  rectangle "8 Goertzel\nfilters\n(697,770,852,941\n+1209,1336,1477,1633)" as G8
+  rectangle "Find strongest\nrow + column" as PEAK
+  rectangle "Decoded\ndigit" as DIGIT
+  DTMIN -[#2E7D32]-> G8
+  G8 -[#2E7D32]-> PEAK
+  PEAK -[#2E7D32]-> DIGIT
+}
+
+package "Sliding DFT" #FFF3E0 {
+  agent "Update one bin\nper new sample\nO(1) per sample" as SDFT
+}
+
+note right of GIIR #FFFDE7
+  <b>O(N) per bin</b> vs O(N log N) for full FFT
+  Efficient when only a few
+  frequency bins are needed
+end note
+
+@enduml

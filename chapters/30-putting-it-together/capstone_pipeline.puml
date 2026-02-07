@@ -1,0 +1,40 @@
+@startuml capstone_pipeline
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Capstone: End-to-End DSP Pipeline</b>
+
+rectangle "Signal Generation\n(signal_gen)" as GEN #E3F2FD
+rectangle "Windowing\n(dsp_utils)" as WIN #BBDEFB
+rectangle "FFT Analysis\n(fft)" as FFT #FFECB3
+rectangle "Spectral Est.\n(spectrum, spectral_est)" as SPEC #E8F5E9
+rectangle "Filtering\n(filter, iir, adaptive)" as FILT #FFF3E0
+rectangle "Multirate\n(multirate)" as MR #F3E5F5
+rectangle "Feature Extract\n(cepstrum, hilbert, lpc)" as FEAT #FCE4EC
+rectangle "Real-Time Frame\n(realtime, streaming)" as RT #FFCCBC
+rectangle "Optimised FFT\n(optimization)" as OPT #CFD8DC
+rectangle "Visualisation\n(gnuplot)" as VIS #ECEFF1
+
+GEN -[#1565C0,bold]-> WIN
+WIN -[#1565C0,bold]-> FFT
+FFT -[#E65100,bold]-> SPEC
+FFT -[#E65100,bold]-> FILT
+FILT -[#6A1B9A,bold]-> MR
+SPEC -[#6A1B9A,bold]-> FEAT
+MR -[#C62828,bold]-> RT
+FEAT -[#C62828,bold]-> RT
+RT -[#2E7D32,bold]-> OPT
+OPT -[#455A64,bold]-> VIS
+
+note right of RT #FFFDE7
+  <b>13 library modules</b>
+  exercised across
+  9 pipeline sections
+end note
+
+@enduml

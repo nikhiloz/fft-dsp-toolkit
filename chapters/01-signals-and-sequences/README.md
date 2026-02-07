@@ -2,6 +2,10 @@
 
 Signal types, generation, and fundamental operations.
 
+## Concept Diagram
+
+![Discrete-Time Signals & Sequences](signal_classification.png)
+
 ## Contents
 
 | File | Description |
@@ -10,13 +14,12 @@ Signal types, generation, and fundamental operations.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`signal_gen.h`](../../include/signal_gen.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Chirp](plots/chirp.png)
-![Cosine](plots/cosine.png)
-![Exponentials](plots/exponentials.png)
-![Impulse](plots/impulse.png)
-![Multitone](plots/multitone.png)
+- Classify signals: impulse, step, exponential, sinusoidal, chirp
+- Generate standard test signals using the `signal_gen` module
+- Compute signal energy and power
+- Perform basic operations: shift, scale, add
 
 ---
 

@@ -1,0 +1,47 @@
+@startuml lti_system
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>LTI System & Convolution</b>
+
+rectangle "Input\nx[n]" as X #E3F2FD
+rectangle "LTI System\nh[n]" as H #FFECB3
+rectangle "Output\ny[n] = x[n] * h[n]" as Y #E8F5E9
+
+X -[#1565C0,bold]-> H : input
+H -[#1565C0,bold]-> Y : output
+
+note top of H #FFFDE7
+  <b>Properties</b>
+  ──────────
+  Linearity: T{ax₁+bx₂} = aT{x₁}+bT{x₂}
+  Time-invariance: x[n−k] → y[n−k]
+  Causality: h[n]=0 for n<0
+  Stability: Σ|h[n]| < ∞ (BIBO)
+end note
+
+package "Convolution Sum" #F3E5F5 {
+  agent "y[n] = Σ x[k]·h[n−k]" as CONV
+  agent "Commutative:\nx*h = h*x" as COMM
+  agent "Causal output:\nlength = N+M−1" as CAUSAL
+}
+
+package "Measures" #FCE4EC {
+  agent "Energy = Σ|x[n]|²" as ENERGY
+  agent "Power = lim E/N" as POWER
+  agent "Cross-correlation\nrxy[l] = Σ x[n]y[n+l]" as XCORR
+}
+
+H -[#6A1B9A]-> CONV
+CONV --> COMM
+CONV --> CAUSAL
+Y -[#C62828]-> ENERGY
+Y -[#C62828]-> POWER
+Y -[#C62828]-> XCORR
+
+@enduml

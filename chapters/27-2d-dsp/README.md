@@ -1,6 +1,10 @@
-# Chapter 27: 2-D DSP & Image Processing
+# Chapter 27: 2-D DSP
 
-2D convolution, Sobel edges, Gaussian blur, 2D FFT.
+Image convolution, Sobel edge detection, and 2-D FFT.
+
+## Concept Diagram
+
+![2-D DSP](image_processing.png)
 
 ## Contents
 
@@ -8,12 +12,13 @@
 |------|------------|
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
-| [`dsp2d.h`](../../include/dsp2d.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Gaussian Blur](plots/gaussian_blur.png)
-![Sobel Edges](plots/sobel_edges.png)
+- Apply 2-D convolution with Gaussian, Sobel, and sharpening kernels
+- Compute edge magnitude from horizontal and vertical gradients
+- Process images in the frequency domain using the 2-D FFT
+- Understand spatial vs frequency-domain filtering trade-offs
 
 ---
 

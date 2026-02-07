@@ -1,0 +1,47 @@
+@startuml z_transform
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Z-Transform Domain</b>
+
+package "Time Domain" #E3F2FD {
+  agent "x[n]" as XN
+  agent "h[n]" as HN
+  agent "y[n] = x[n] * h[n]" as YN
+}
+
+package "Z Domain" #E8F5E9 {
+  agent "X(z) = Σ x[n]z⁻ⁿ" as XZ
+  agent "H(z) = B(z)/A(z)" as HZ
+  agent "Y(z) = X(z)·H(z)" as YZ
+}
+
+XN -[#1565C0,bold]-> XZ : Z-transform
+HN -[#1565C0,bold]-> HZ : Z-transform
+YZ -[#C62828,bold]-> YN : Inverse Z
+
+XZ -[#2E7D32]-> YZ : multiply
+HZ -[#2E7D32]-> YZ : multiply
+
+note bottom of HZ #FFFDE7
+  <b>Pole-Zero Form</b>
+  H(z) = K · Π(z−zᵢ) / Π(z−pᵢ)
+  ─────────────────
+  Zeros: H(zᵢ)=0
+  Poles: H(pᵢ)→∞
+  Stable: all |pᵢ|<1
+end note
+
+note right of XZ #FFF3E0
+  <b>ROC</b>
+  Region of Convergence
+  determines if transform
+  exists and is unique
+end note
+
+@enduml

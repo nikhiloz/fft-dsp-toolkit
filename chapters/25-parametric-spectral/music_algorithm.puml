@@ -1,0 +1,43 @@
+@startuml music_algorithm
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>MUSIC Super-Resolution Algorithm</b>
+
+rectangle "Input signal\nx[n] (M samples)" as IN #E3F2FD
+
+rectangle "Estimate\ncorrelation\nmatrix Rxx" as CORR #BBDEFB
+
+rectangle "Eigendecompose\nRxx = UΛUᴴ" as EIGEN #FFECB3
+
+rectangle "Partition into\nSignal subspace (p)\nNoise subspace (M−p)" as PART #E8F5E9
+
+rectangle "MUSIC pseudo-spectrum\nP(ω) = 1 / ‖Eₙᴴa(ω)‖²" as PMUSIC #F3E5F5
+
+rectangle "Peak search →\nfrequency estimates" as PEAKS #E8F5E9
+
+IN -[#1565C0,bold]-> CORR
+CORR -[#1565C0,bold]-> EIGEN
+EIGEN -[#E65100,bold]-> PART
+PART -[#6A1B9A,bold]-> PMUSIC
+PMUSIC -[#2E7D32,bold]-> PEAKS
+
+note right of PART #FFFDE7
+  <b>Key insight</b>: signal and
+  noise eigenvectors are
+  orthogonal → sharper
+  peaks than FFT-based PSD
+end note
+
+note bottom of PEAKS #FFF3E0
+  <b>Capon (MVDR)</b> alternative:
+  P(ω) = 1/(aᴴR⁻¹a)
+  Data-adaptive beamformer
+end note
+
+@enduml

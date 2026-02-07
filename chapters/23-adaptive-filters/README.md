@@ -1,6 +1,10 @@
-# Chapter 23: Adaptive Filters (LMS/NLMS/RLS)
+# Chapter 23: Adaptive Filters
 
-Least-mean-squares and recursive least-squares adaptive filtering.
+LMS, NLMS, and RLS algorithms for real-time adaptation.
+
+## Concept Diagram
+
+![Adaptive Filters](adaptive_loop.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ Least-mean-squares and recursive least-squares adaptive filtering.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`adaptive.h`](../../include/adaptive.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Lms Learning](plots/lms_learning.png)
-![Lms Vs Nlms](plots/lms_vs_nlms.png)
+- Implement the LMS adaptive filter algorithm
+- Tune the step size μ for convergence vs stability
+- Compare NLMS (normalised) and RLS (recursive least squares)
+- Apply adaptive filtering to noise cancellation
 
 ---
 

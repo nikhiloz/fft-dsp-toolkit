@@ -1,6 +1,10 @@
-# Chapter 20: Hilbert Transform & Analytic Signal
+# Chapter 20: Hilbert Transform
 
-Quadrature signals, envelope detection, and instantaneous frequency.
+Analytic signal construction, envelope, and instantaneous frequency.
+
+## Concept Diagram
+
+![Hilbert Transform](analytic_signal.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ Quadrature signals, envelope detection, and instantaneous frequency.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`hilbert.h`](../../include/hilbert.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Am Envelope](plots/am_envelope.png)
-![Inst Frequency](plots/inst_frequency.png)
+- Construct the analytic signal via FIR or FFT methods
+- Extract the signal envelope (AM demodulation)
+- Compute instantaneous frequency from phase differences
+- Apply the Hilbert transform to vibration and speech analysis
 
 ---
 

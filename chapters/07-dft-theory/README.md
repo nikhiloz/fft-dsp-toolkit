@@ -1,6 +1,10 @@
-# Chapter 7: The DFT — Theory & Properties
+# Chapter 7: DFT Theory
 
-Discrete Fourier Transform definition, properties, and interpretation.
+The Discrete Fourier Transform: analysis, synthesis, and properties.
+
+## Concept Diagram
+
+![DFT Theory](dft_analysis_synthesis.png)
 
 ## Contents
 
@@ -9,11 +13,12 @@ Discrete Fourier Transform definition, properties, and interpretation.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 
-## Generated Plots
+## What You'll Learn
 
-![Dft Spectrum](plots/dft_spectrum.png)
-![Standard Signals Dft](plots/standard_signals_dft.png)
-![Zero Padding](plots/zero_padding.png)
+- Compute the DFT and IDFT from first principles
+- Apply key DFT properties: linearity, shift, Parseval's theorem
+- Understand circular convolution vs linear convolution
+- Choose appropriate DFT length and zero-padding
 
 ---
 

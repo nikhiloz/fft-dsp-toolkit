@@ -1,6 +1,10 @@
 # Chapter 11: IIR Filter Design
 
-Butterworth and Chebyshev IIR filter design.
+Butterworth and Chebyshev prototypes, bilinear transform.
+
+## Concept Diagram
+
+![IIR Filter Design](iir_design_flow.png)
 
 ## Contents
 
@@ -10,11 +14,12 @@ Butterworth and Chebyshev IIR filter design.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`iir.h`](../../include/iir.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Butterworth Orders](plots/butterworth_orders.png)
-![Chebyshev Ripple](plots/chebyshev_ripple.png)
-![Iir Filtering](plots/iir_filtering.png)
+- Design Butterworth and Chebyshev Type-I IIR filters
+- Apply the bilinear transform with frequency pre-warping
+- Convert to second-order sections for numerical stability
+- Compare IIR and FIR for a given specification
 
 ---
 

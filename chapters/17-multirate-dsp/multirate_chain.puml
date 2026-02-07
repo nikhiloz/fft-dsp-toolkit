@@ -1,0 +1,48 @@
+@startuml multirate_chain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Multirate Processing Chain</b>
+
+rectangle "x[n]\n(fs)" as IN #E3F2FD
+rectangle "Anti-Alias\nLPF" as AAF #FFECB3
+rectangle "↓ M\nDecimate" as DEC #BBDEFB
+rectangle "Process at\nfs/M" as PROC #E8F5E9
+rectangle "↑ L\nInterpolate" as INT #BBDEFB
+rectangle "Anti-Image\nLPF" as AIF #FFECB3
+rectangle "y[n]\n(fs·L/M)" as OUT #E8F5E9
+
+IN -[#1565C0,bold]-> AAF
+AAF -[#1565C0,bold]-> DEC
+DEC -[#1565C0,bold]-> PROC
+PROC -[#2E7D32,bold]-> INT
+INT -[#2E7D32,bold]-> AIF
+AIF -[#2E7D32,bold]-> OUT
+
+note bottom of DEC #FFFDE7
+  <b>Decimation by M</b>
+  Keep every M-th sample
+  Must filter first to
+  prevent aliasing
+end note
+
+note bottom of INT #FFF3E0
+  <b>Interpolation by L</b>
+  Insert L−1 zeros
+  Then lowpass filter
+  to remove images
+end note
+
+note right of PROC #F3E5F5
+  <b>Polyphase</b>
+  implementation combines
+  filter + rate change
+  for efficiency
+end note
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml welch_method
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Welch's Method for PSD Estimation</b>
+
+rectangle "Input Signal\nx[n], length N" as INPUT #E3F2FD
+
+rectangle "Divide into\nK overlapping\nsegments\n(50% overlap)" as SEG #BBDEFB
+
+rectangle "Apply Window\nw[n] to each\nsegment" as WIN #FFECB3
+
+rectangle "FFT each\nsegment" as FFT #E8F5E9
+
+rectangle "|Xₖ[m]|²\nPeriodogram\nof each segment" as PER #F3E5F5
+
+rectangle "Average K\nperiodograms" as AVG #FCE4EC
+
+rectangle "PSD Estimate\nŜ(f)" as PSD #E8F5E9
+
+INPUT -[#1565C0,bold]-> SEG
+SEG -[#1565C0,bold]-> WIN
+WIN -[#1565C0,bold]-> FFT
+FFT -[#E65100,bold]-> PER
+PER -[#6A1B9A,bold]-> AVG
+AVG -[#2E7D32,bold]-> PSD
+
+note right of SEG #FFFDE7
+  More segments (smaller L)
+  → lower variance
+  → worse frequency resolution
+  (bias-variance trade-off)
+end note
+
+@enduml

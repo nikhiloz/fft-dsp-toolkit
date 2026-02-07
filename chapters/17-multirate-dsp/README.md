@@ -2,6 +2,10 @@
 
 Decimation, interpolation, and polyphase filters.
 
+## Concept Diagram
+
+![Multirate DSP](multirate_chain.png)
+
 ## Contents
 
 | File | Description |
@@ -10,11 +14,12 @@ Decimation, interpolation, and polyphase filters.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`multirate.h`](../../include/multirate.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Decimation](plots/decimation.png)
-![Interpolation](plots/interpolation.png)
-![Polyphase Spectrum](plots/polyphase_spectrum.png)
+- Decimate a signal with an anti-alias prefilter
+- Interpolate a signal with an anti-image postfilter
+- Combine decimation and interpolation for rational rate conversion
+- Understand the polyphase decomposition for efficiency
 
 ---
 

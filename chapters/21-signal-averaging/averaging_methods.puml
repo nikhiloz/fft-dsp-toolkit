@@ -1,0 +1,41 @@
+@startuml averaging_methods
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Signal Averaging & Noise Reduction</b>
+
+rectangle "Noisy Signal\nx[n] = s[n] + w[n]" as IN #E3F2FD
+
+package "Coherent Averaging" #E8F5E9 {
+  agent "Average K aligned sweeps\nSNR improves by √K" as COH
+}
+
+package "Exponential Moving Avg" #FFF3E0 {
+  agent "y[n] = α·x[n] + (1−α)·y[n−1]\nTunable smoothing" as EMA
+}
+
+package "Moving Average" #BBDEFB {
+  agent "y[n] = (1/M)Σx[n−k]\nSimple FIR lowpass" as MA
+}
+
+package "Median Filter" #F3E5F5 {
+  agent "y[n] = median{x[n−k..n+k]}\nRemoves impulse noise" as MED
+}
+
+IN -[#1565C0]-> COH
+IN -[#E65100]-> EMA
+IN -[#2E7D32]-> MA
+IN -[#6A1B9A]-> MED
+
+note bottom of COH #FFFDE7
+  <b>Trade-off</b>: more averaging
+  → better SNR but slower
+  response to changes
+end note
+
+@enduml

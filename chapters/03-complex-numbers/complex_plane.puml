@@ -1,0 +1,52 @@
+@startuml complex_plane
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Complex Number Representations</b>
+
+package "Rectangular Form" #E3F2FD {
+  agent "z = a + jb" as RECT
+  agent "Real part: a = Re{z}" as RE
+  agent "Imag part: b = Im{z}" as IM
+}
+
+package "Polar Form" #E8F5E9 {
+  agent "z = r·e^(jθ)" as POLAR
+  agent "Magnitude: r = |z|" as MAG
+  agent "Phase: θ = ∠z" as PHASE
+}
+
+package "Euler's Formula" #FFF3E0 {
+  agent "e^(jθ) = cos θ + j sin θ" as EULER
+}
+
+package "Key Operations" #F3E5F5 {
+  agent "Add/Sub → rectangular" as ADDSUB
+  agent "Mul/Div → polar" as MULDIV
+  agent "Conjugate: z* = a − jb" as CONJ
+  agent "|z|² = z · z*" as MAGSQ
+}
+
+RECT <-[#1565C0]-> POLAR : conversion
+POLAR --> EULER : definition
+RECT --> RE
+RECT --> IM
+POLAR --> MAG
+POLAR --> PHASE
+RECT -[#6A1B9A]-> ADDSUB
+POLAR -[#6A1B9A]-> MULDIV
+RECT -[#6A1B9A]-> CONJ
+CONJ -[#6A1B9A]-> MAGSQ
+
+note bottom of EULER #FFFDE7
+  <b>Twiddle factor</b>
+  W_N^k = e^(−j2πk/N)
+  Foundation of FFT
+end note
+
+@enduml

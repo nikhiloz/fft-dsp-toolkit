@@ -1,0 +1,50 @@
+@startuml fir_structure
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>FIR Filter: Transversal Structure</b>
+
+rectangle "x[n]" as IN #E3F2FD
+rectangle "z⁻¹" as D0 #ECEFF1
+rectangle "z⁻¹" as D1 #ECEFF1
+rectangle "z⁻¹" as D2 #ECEFF1
+
+rectangle "h[0]" as H0 #FFECB3
+rectangle "h[1]" as H1 #FFECB3
+rectangle "h[2]" as H2 #FFECB3
+rectangle "h[M]" as HM #FFECB3
+
+rectangle "  Σ  " as SUM #E8F5E9
+rectangle "y[n]" as OUT #E8F5E9
+
+IN -[#455A64]-> D0
+D0 -[#455A64]-> D1
+D1 -[#455A64]-> D2
+D2 -[#455A64,dashed]-> HM : "..."
+
+IN -[#E65100]-> H0
+D0 -[#E65100]-> H1
+D1 -[#E65100]-> H2
+D2 -[#E65100,dashed]-> HM
+
+H0 -[#2E7D32]-> SUM
+H1 -[#2E7D32]-> SUM
+H2 -[#2E7D32]-> SUM
+HM -[#2E7D32]-> SUM
+SUM -[#1565C0,bold]-> OUT
+
+note bottom of SUM #FFFDE7
+  y[n] = Σ h[k]·x[n−k]
+  ──────────────
+  <b>Windowed-sinc design</b>
+  h[n] = w[n]·sinc(2fc·n)
+  Always stable (no poles)
+  Linear phase possible
+end note
+
+@enduml

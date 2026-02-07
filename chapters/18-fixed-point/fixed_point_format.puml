@@ -1,0 +1,48 @@
+@startuml fixed_point_format
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Fixed-Point Arithmetic: Q-Format</b>
+
+package "Q15 Format (16-bit)" #E3F2FD {
+  agent "S.FFFFFFFFFFFFFFF" as Q15
+  agent "Range: [−1.0, +0.99997]" as Q15R
+  agent "Resolution: 2⁻¹⁵ ≈ 3×10⁻⁵" as Q15P
+}
+
+package "Q31 Format (32-bit)" #E8F5E9 {
+  agent "S.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" as Q31
+  agent "Range: [−1.0, +1−2⁻³¹]" as Q31R
+  agent "Resolution: 2⁻³¹ ≈ 5×10⁻¹⁰" as Q31P
+}
+
+package "Operations" #FFF3E0 {
+  agent "<b>Add</b>: saturate on overflow" as ADD
+  agent "<b>Multiply</b>: Q15×Q15→Q30\nshift right 15 to get Q15" as MUL
+  agent "<b>Convert</b>: double × 32767 → Q15" as CONV
+}
+
+package "Quality Metric" #F3E5F5 {
+  agent "SQNR = 10·log₁₀(Psig/Pnoise)\n≈ 6.02·B dB for B bits" as SQNR
+}
+
+Q15 --> Q15R
+Q15 --> Q15P
+Q31 --> Q31R
+Q31 --> Q31P
+Q15 -[#E65100]-> ADD
+Q15 -[#E65100]-> MUL
+Q15 -[#E65100]-> CONV
+MUL -[#6A1B9A]-> SQNR
+
+note bottom of SQNR #FFFDE7
+  Q15 SQNR ≈ 90 dB (sine)
+  Q15 FIR SQNR > 50 dB vs float
+end note
+
+@enduml

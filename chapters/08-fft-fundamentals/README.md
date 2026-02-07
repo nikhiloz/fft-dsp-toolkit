@@ -1,6 +1,10 @@
-# Chapter 8: FFT Algorithms (Cooley-Tukey Radix-2)
+# Chapter 8: FFT Algorithms
 
-Radix-2 decimation-in-time FFT implementation.
+Cooley-Tukey radix-2 and radix-4 fast Fourier transforms.
+
+## Concept Diagram
+
+![FFT Algorithms](fft_sequence.png)
 
 ## Contents
 
@@ -9,15 +13,13 @@ Radix-2 decimation-in-time FFT implementation.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`fft.h`](../../include/fft.h) | Library API |
-| [fft_sequence.puml](fft_sequence.puml) | PlantUML diagram source |
 
-## Diagram
+## What You'll Learn
 
-![Fft Sequence](fft_sequence.png)
-
-## Generated Plots
-
-![Fft Two Tones](plots/fft_two_tones.png)
+- Trace the butterfly operations in radix-2 FFT
+- Understand how radix-4 achieves fewer multiplications
+- Verify FFT output against direct DFT computation
+- Use the `fft` module for forward and inverse transforms
 
 ---
 

@@ -1,6 +1,10 @@
-# Chapter 9: Window Functions & Spectral Leakage
+# Chapter 9: Window Functions
 
-Hann, Hamming, Blackman windows and their spectral effects.
+Spectral leakage, window types, and the resolution–leakage trade-off.
+
+## Concept Diagram
+
+![Window Functions](window_tradeoff.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ Hann, Hamming, Blackman windows and their spectral effects.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`dsp_utils.h`](../../include/dsp_utils.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Spectral Leakage](plots/spectral_leakage.png)
-![Window Shapes](plots/window_shapes.png)
+- Explain why truncation causes spectral leakage
+- Compare Hann, Hamming, and Blackman windows
+- Choose a window based on main-lobe width vs sidelobe level
+- Apply windows before FFT analysis
 
 ---
 

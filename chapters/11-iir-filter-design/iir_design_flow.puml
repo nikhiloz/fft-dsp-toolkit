@@ -1,0 +1,46 @@
+@startuml iir_design_flow
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>IIR Filter Design Flow</b>
+
+rectangle "Specification\n(fc, order, type)" as SPEC #E3F2FD
+
+package "Analog Prototype" #FFF3E0 {
+  agent "<b>Butterworth</b>\nMaximally flat\nGentle roll-off" as BUTT
+  agent "<b>Chebyshev I</b>\nEquiripple passband\nSteeper roll-off" as CHEB
+}
+
+rectangle "Bilinear\nTransform\ns → z" as BILIN #BBDEFB
+
+rectangle "Digital IIR\nH(z) = B(z)/A(z)" as DIGITAL #E8F5E9
+
+rectangle "Biquad Cascade\n(SOS form)" as SOS #F3E5F5
+
+SPEC -[#1565C0,bold]-> BUTT
+SPEC -[#1565C0,bold]-> CHEB
+BUTT -[#E65100,bold]-> BILIN
+CHEB -[#E65100,bold]-> BILIN
+BILIN -[#2E7D32,bold]-> DIGITAL
+DIGITAL -[#6A1B9A,bold]-> SOS
+
+note right of BILIN #FFFDE7
+  <b>Frequency warping</b>
+  Ω = (2/T)tan(ω/2)
+  Pre-warp cutoff to
+  compensate
+end note
+
+note bottom of SOS #FFFDE7
+  Second-Order Sections
+  H(z) = Π Hₖ(z)
+  Better numerical stability
+  than direct form
+end note
+
+@enduml

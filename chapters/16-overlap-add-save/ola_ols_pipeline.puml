@@ -1,0 +1,39 @@
+@startuml ola_ols_pipeline
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Block Convolution: OLA vs OLS</b>
+
+package "Overlap-Add (OLA)" #E3F2FD {
+  rectangle "Split x[n] into\nnon-overlapping blocks" as OLA1
+  rectangle "Zero-pad each\nblock to L+M−1" as OLA2
+  rectangle "FFT multiply\nIFFT each block" as OLA3
+  rectangle "Overlap-add\nadjacent outputs" as OLA4
+  OLA1 -[#1565C0]-> OLA2
+  OLA2 -[#1565C0]-> OLA3
+  OLA3 -[#1565C0]-> OLA4
+}
+
+package "Overlap-Save (OLS)" #E8F5E9 {
+  rectangle "Take overlapping\nblocks (M−1 overlap)" as OLS1
+  rectangle "FFT multiply\nIFFT each block" as OLS2
+  rectangle "Discard first\nM−1 samples" as OLS3
+  rectangle "Concatenate\nkept samples" as OLS4
+  OLS1 -[#2E7D32]-> OLS2
+  OLS2 -[#2E7D32]-> OLS3
+  OLS3 -[#2E7D32]-> OLS4
+}
+
+note bottom of OLA4 #FFFDE7
+  Both produce <b>identical</b> output
+  to direct convolution.
+  Cost: O(N log N) per block
+  vs O(NM) for direct FIR.
+end note
+
+@enduml

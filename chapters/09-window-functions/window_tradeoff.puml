@@ -1,0 +1,42 @@
+@startuml window_tradeoff
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Window Functions & Spectral Leakage</b>
+
+rectangle "Finite signal\nx[n], n=0..N−1" as SIG #E3F2FD
+
+rectangle "Apply Window\nw[n]·x[n]" as WIN #FFECB3
+
+rectangle "FFT" as FFT #BBDEFB
+
+rectangle "Spectrum\n(reduced leakage)" as SPEC #E8F5E9
+
+SIG -[#1565C0,bold]-> WIN
+WIN -[#1565C0,bold]-> FFT
+FFT -[#1565C0,bold]-> SPEC
+
+package "Window Zoo" #F3E5F5 {
+  agent "<b>Rectangular</b>\nBest resolution\nWorst leakage (−13 dB)" as RECT
+  agent "<b>Hann</b>\nGood trade-off\n−31 dB sidelobes" as HANN
+  agent "<b>Hamming</b>\n−43 dB sidelobes\nDiscontinuous edges" as HAMM
+  agent "<b>Blackman</b>\nBest leakage (−58 dB)\nWidest main lobe" as BLK
+}
+
+WIN --> RECT
+WIN --> HANN
+WIN --> HAMM
+WIN --> BLK
+
+note bottom of SPEC #FFFDE7
+  <b>Trade-off</b>
+  Narrow main lobe ↔ Low sidelobes
+  (resolution vs leakage)
+end note
+
+@enduml

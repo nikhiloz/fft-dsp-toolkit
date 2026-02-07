@@ -1,0 +1,41 @@
+@startuml dft_analysis_synthesis
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>DFT: Analysis & Synthesis</b>
+
+rectangle "Time Domain\nx[n], n=0..N−1" as TD #E3F2FD
+
+rectangle "DFT (Analysis)\nX[k] = Σ x[n]·W_N^(nk)" as DFT #FFECB3
+
+rectangle "Frequency Domain\nX[k], k=0..N−1" as FD #E8F5E9
+
+rectangle "IDFT (Synthesis)\nx[n] = (1/N)Σ X[k]·W_N^(−nk)" as IDFT #FFECB3
+
+TD -[#1565C0,bold]-> DFT
+DFT -[#1565C0,bold]-> FD
+FD -[#C62828,bold]-> IDFT
+IDFT -[#C62828,bold]-> TD
+
+note bottom of DFT #FFFDE7
+  <b>Properties</b>
+  ──────────
+  Linearity: DFT{ax+by} = aX+bY
+  Shift: x[n−m] ↔ W^(mk)·X[k]
+  Parseval: Σ|x|² = (1/N)Σ|X|²
+  Circular convolution ↔ multiply
+end note
+
+note right of FD #FFF3E0
+  <b>Frequency resolution</b>
+  Δf = fs / N
+  Zero-pad to interpolate
+  (doesn't add information)
+end note
+
+@enduml

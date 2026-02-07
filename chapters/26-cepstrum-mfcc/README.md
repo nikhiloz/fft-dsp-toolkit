@@ -1,6 +1,10 @@
-# Chapter 26: Cepstrum Analysis & MFCCs
+# Chapter 26: Cepstrum & MFCC
 
-Cepstrum, Mel filterbank, and MFCC pipeline.
+Real cepstrum, Mel-frequency cepstral coefficients, and speech features.
+
+## Concept Diagram
+
+![Cepstrum & MFCC](mfcc_pipeline.png)
 
 ## Contents
 
@@ -10,11 +14,12 @@ Cepstrum, Mel filterbank, and MFCC pipeline.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`cepstrum.h`](../../include/cepstrum.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Cepstrum Lifter](plots/cepstrum_lifter.png)
-![Cepstrum Real](plots/cepstrum_real.png)
-![Mel Filterbank](plots/mel_filterbank.png)
+- Compute the real cepstrum via log-magnitude FFT
+- Build a Mel filterbank with perceptually-spaced triangular filters
+- Extract MFCC features for speech / audio analysis
+- Understand liftering and delta coefficients
 
 ---
 

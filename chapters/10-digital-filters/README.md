@@ -1,6 +1,10 @@
-# Chapter 10: FIR Filter Design
+# Chapter 10: FIR Digital Filters
 
-Windowed-sinc FIR filter design and application.
+Windowed-sinc design, linear phase, and transversal structure.
+
+## Concept Diagram
+
+![FIR Digital Filters](fir_structure.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ Windowed-sinc FIR filter design and application.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`filter.h`](../../include/filter.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Lowpass Kernel](plots/lowpass_kernel.png)
-![Noise Reduction](plots/noise_reduction.png)
+- Design lowpass/highpass FIR filters using sinc + window
+- Understand linear-phase conditions (symmetric coefficients)
+- Implement the transversal (direct-form) FIR structure
+- Trade off filter order vs transition bandwidth
 
 ---
 

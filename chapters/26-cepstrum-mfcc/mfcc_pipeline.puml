@@ -1,0 +1,39 @@
+@startuml mfcc_pipeline
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>MFCC Feature Extraction Pipeline</b>
+
+rectangle "Speech frame\nx[n]" as IN #E3F2FD
+rectangle "Pre-emphasis\n+ Hann window" as PRE #BBDEFB
+rectangle "FFT →\n|X[k]|²" as FFT #FFECB3
+rectangle "Mel Filterbank\n(triangular filters\non Mel scale)" as MEL #E8F5E9
+rectangle "log( · )" as LOG #F3E5F5
+rectangle "DCT-II →\nMFCC coefficients\nc[0..12]" as DCT #FCE4EC
+
+IN -[#1565C0,bold]-> PRE
+PRE -[#1565C0,bold]-> FFT
+FFT -[#E65100,bold]-> MEL
+MEL -[#6A1B9A,bold]-> LOG
+LOG -[#C62828,bold]-> DCT
+
+note right of MEL #FFFDE7
+  <b>Mel scale</b>
+  m = 2595·log₁₀(1 + f/700)
+  Perceptually-spaced filters
+  mimicking human hearing
+end note
+
+note bottom of DCT #FFF3E0
+  <b>Real cepstrum</b> (alternative):
+  c[n] = IFFT{ log|X[k]| }
+  Separates excitation
+  from vocal tract shape
+end note
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml filter_structures
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>IIR Filter Implementation Structures</b>
+
+package "Direct Form I" #E3F2FD {
+  agent "Separate FIR + IIR\n2(M+N) delay elements\nSafe from overflow" as DF1
+}
+
+package "Direct Form II\nTransposed" #E8F5E9 {
+  agent "Canonical form\nM+N delay elements\nMinimal memory" as DF2T
+}
+
+package "Biquad Cascade\n(SOS)" #FFF3E0 {
+  agent "Chain of 2nd-order\nsections Hₖ(z)\nBest numerical stability" as SOS
+}
+
+DF1 -[#455A64,dashed]-> DF2T : "transpose\n(half memory)"
+DF2T -[#455A64,dashed]-> SOS : "factor into\n2nd-order sections"
+
+note bottom of DF1 #FCE4EC
+  <b>Problem</b>: high-order
+  coefficients are sensitive
+  to quantisation errors
+end note
+
+note bottom of SOS #FFFDE7
+  <b>Recommended</b> for
+  order > 2. Each biquad
+  has its own {b0,b1,b2,a1,a2}
+end note
+
+@enduml

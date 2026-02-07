@@ -1,0 +1,43 @@
+@startuml correlation_uses
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Correlation & Its Applications</b>
+
+package "Cross-Correlation" #E3F2FD {
+  agent "rxy[l] = Σ x[n]·y[n+l]" as XCORR
+  agent "Detect similarity\nbetween two signals" as XUSE
+  agent "<b>Time delay estimation</b>\npeak at lag = delay" as TDE
+}
+
+package "Autocorrelation" #E8F5E9 {
+  agent "rxx[l] = Σ x[n]·x[n+l]" as ACORR
+  agent "Detect periodicity\nwithin a signal" as AUSE
+  agent "<b>Pitch detection</b>\npeak at lag = period" as PITCH
+}
+
+package "FFT-Based (Fast)" #FFF3E0 {
+  agent "rxy = IFFT{ X*·Y }" as FFTCORR
+  agent "O(N log N) vs O(N²)" as COMPLEX
+}
+
+XCORR --> XUSE
+XUSE --> TDE
+ACORR --> AUSE
+AUSE --> PITCH
+XCORR -[#6A1B9A]-> FFTCORR : compute via
+ACORR -[#6A1B9A]-> FFTCORR : compute via
+FFTCORR --> COMPLEX
+
+note bottom of PITCH #FFFDE7
+  <b>Normalised</b> correlation
+  ρ ∈ [−1, +1]
+  eliminates amplitude bias
+end note
+
+@enduml

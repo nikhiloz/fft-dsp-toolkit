@@ -1,6 +1,10 @@
-# Chapter 21: Signal Averaging & Noise Reduction
+# Chapter 21: Signal Averaging
 
-Coherent averaging, EMA, moving average, and median filter.
+Coherent averaging, moving average, exponential smoothing, and median filtering.
+
+## Concept Diagram
+
+![Signal Averaging](averaging_methods.png)
 
 ## Contents
 
@@ -10,11 +14,12 @@ Coherent averaging, EMA, moving average, and median filter.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`averaging.h`](../../include/averaging.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Coherent Averaging](plots/coherent_averaging.png)
-![Ema Vs Ma](plots/ema_vs_ma.png)
-![Median Filter](plots/median_filter.png)
+- Improve SNR by √K using coherent averaging
+- Implement moving average and exponential smoothing filters
+- Remove impulse noise with a median filter
+- Choose an averaging method for your noise characteristics
 
 ---
 

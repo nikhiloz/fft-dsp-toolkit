@@ -1,6 +1,10 @@
-# Chapter 6: Frequency Response, Poles & Zeros
+# Chapter 6: Frequency Response
 
-Magnitude/phase response from pole-zero placement.
+Evaluating H(z) on the unit circle: magnitude, phase, group delay.
+
+## Concept Diagram
+
+![Frequency Response](freq_response_flow.png)
 
 ## Contents
 
@@ -10,12 +14,12 @@ Magnitude/phase response from pole-zero placement.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`iir.h`](../../include/iir.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Fir Vs Iir Magnitude](plots/fir_vs_iir_magnitude.png)
-![Fir Vs Iir Phase](plots/fir_vs_iir_phase.png)
-![Group Delay](plots/group_delay.png)
-![Pole Radius Q](plots/pole_radius_q.png)
+- Evaluate H(e^jω) from poles and zeros
+- Plot magnitude and phase response curves
+- Compute group delay and detect dispersion
+- Interpret the geometric pole-zero relationship
 
 ---
 

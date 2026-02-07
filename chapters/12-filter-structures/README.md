@@ -1,6 +1,10 @@
 # Chapter 12: Filter Structures
 
-Direct-Form I/II, biquad cascades, and SOS structures.
+Direct Form I, Direct Form II Transposed, and biquad cascades.
+
+## Concept Diagram
+
+![Filter Structures](filter_structures.png)
 
 ## Contents
 
@@ -9,10 +13,12 @@ Direct-Form I/II, biquad cascades, and SOS structures.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 
-## Generated Plots
+## What You'll Learn
 
-![Coefficient Sensitivity](plots/coefficient_sensitivity.png)
-![Df1 Vs Df2T](plots/df1_vs_df2t.png)
+- Draw signal-flow graphs for DF1 and DF2T
+- Explain why biquad cascades resist coefficient quantisation
+- Implement a biquad cascade (SOS) in C
+- Choose the right structure for a given precision requirement
 
 ---
 

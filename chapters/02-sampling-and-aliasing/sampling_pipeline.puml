@@ -1,0 +1,44 @@
+@startuml sampling_pipeline
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Sampling, Quantisation & Reconstruction</b>
+
+rectangle "Continuous\nSignal x(t)" as INPUT #E3F2FD
+rectangle "Sampler\n(T = 1/fs)" as SAMPLER #BBDEFB
+rectangle "x[n] = x(nT)" as DISCRETE #E8F5E9
+rectangle "Quantiser\n(B bits)" as QUANT #FFF3E0
+rectangle "xq[n]\n(finite precision)" as QUANTIZED #FFECB3
+rectangle "DAC +\nReconstruction\nFilter" as RECON #F3E5F5
+rectangle "Reconstructed\nx̂(t)" as OUTPUT #E1BEE7
+
+INPUT -[#1565C0,bold]-> SAMPLER
+SAMPLER -[#1565C0,bold]-> DISCRETE
+DISCRETE -[#E65100,bold]-> QUANT
+QUANT -[#E65100,bold]-> QUANTIZED
+QUANTIZED -[#6A1B9A,bold]-> RECON
+RECON -[#6A1B9A,bold]-> OUTPUT
+
+note right of SAMPLER #FFFDE7
+  <b>Nyquist criterion</b>
+  fs > 2·fmax
+  otherwise: aliasing
+end note
+
+note right of QUANT #FFFDE7
+  <b>Quantisation noise</b>
+  SQNR ≈ 6.02B + 1.76 dB
+end note
+
+note right of RECON #FFFDE7
+  <b>Ideal reconstruction</b>
+  sinc interpolation
+  (requires brick-wall LPF)
+end note
+
+@enduml

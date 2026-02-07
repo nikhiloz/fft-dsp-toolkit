@@ -1,0 +1,38 @@
+@startuml freq_response_flow
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Frequency Response from Poles & Zeros</b>
+
+rectangle "Transfer Function\nH(z) = B(z)/A(z)" as TF #E3F2FD
+
+rectangle "Evaluate on\nUnit Circle\nz = e^(jω)" as UC #BBDEFB
+
+rectangle "H(e^jω) =\n|H(e^jω)|·e^(j∠H)" as FRESP #E8F5E9
+
+rectangle "Magnitude\nResponse\n|H(e^jω)|" as MAG #FFF3E0
+
+rectangle "Phase\nResponse\n∠H(e^jω)" as PH #F3E5F5
+
+rectangle "Group Delay\nτ = −dφ/dω" as GD #FCE4EC
+
+TF -[#1565C0,bold]-> UC
+UC -[#1565C0,bold]-> FRESP
+FRESP -[#E65100,bold]-> MAG
+FRESP -[#6A1B9A,bold]-> PH
+PH -[#C62828]-> GD
+
+note right of UC #FFFDE7
+  <b>Geometric interpretation</b>
+  |H| = Π distances to zeros
+       ÷ Π distances to poles
+  Near a pole → gain peak
+  Near a zero → gain dip
+end note
+
+@enduml

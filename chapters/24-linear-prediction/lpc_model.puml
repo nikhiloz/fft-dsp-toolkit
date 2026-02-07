@@ -1,0 +1,44 @@
+@startuml lpc_model
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Linear Prediction & AR Modelling</b>
+
+package "Analysis" #E3F2FD {
+  rectangle "Speech/signal\nx[n]" as SIG
+  rectangle "Autocorrelation\nrxx[0..p]" as AC
+  rectangle "Levinson-Durbin\nrecursion" as LD
+  rectangle "LP coefficients\na₁..aₚ" as COEFF
+  SIG -[#1565C0]-> AC
+  AC -[#1565C0]-> LD
+  LD -[#1565C0]-> COEFF
+}
+
+package "Residual" #FFF3E0 {
+  rectangle "e[n] = x[n] − Σ aₖ·x[n−k]" as RES
+  agent "Prediction error\n(≈ white noise for\ngood model)" as RESN
+  RES --> RESN
+}
+
+package "Synthesis" #E8F5E9 {
+  rectangle "1/A(z) filter\ndriven by e[n]" as SYNTH
+  rectangle "Reconstructed\nx̂[n]" as RECON
+  SYNTH --> RECON
+}
+
+COEFF -[#E65100]-> RES
+COEFF -[#2E7D32]-> SYNTH
+RES -[#6A1B9A,dashed]-> SYNTH : excite
+
+note bottom of LD #FFFDE7
+  O(p²) — efficient recursion
+  Reflection coefficients |kᵢ|<1
+  guarantees stability
+end note
+
+@enduml

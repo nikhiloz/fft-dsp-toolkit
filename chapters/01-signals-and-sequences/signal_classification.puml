@@ -1,0 +1,50 @@
+@startuml signal_classification
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Discrete-Time Signal Taxonomy</b>
+
+agent "Discrete-Time\nSignals" as ROOT #E3F2FD
+
+package "Deterministic" #E8F5E9 {
+  agent "Periodic\n(x[n] = x[n+N])" as PER
+  agent "Aperiodic" as APER
+  agent "Impulse δ[n]" as IMP
+  agent "Step u[n]" as STEP
+  agent "Exponential aⁿ" as EXP
+  agent "Sinusoidal\ncos(ωn + φ)" as SIN
+  agent "Chirp\n(swept freq)" as CHIRP
+}
+
+package "Stochastic" #FFF3E0 {
+  agent "White Noise\n(flat PSD)" as WN
+  agent "Gaussian\nNoise" as GN
+}
+
+package "Operations" #F3E5F5 {
+  agent "Shift: x[n-k]" as SHIFT
+  agent "Scale: a·x[n]" as SCALE
+  agent "Add: x[n]+y[n]" as ADD
+  agent "Energy / Power" as EP
+}
+
+ROOT --> PER
+ROOT --> APER
+ROOT --> WN
+APER --> IMP
+APER --> STEP
+APER --> EXP
+PER --> SIN
+PER --> CHIRP
+WN --> GN
+ROOT -[#6A1B9A]-> SHIFT
+ROOT -[#6A1B9A]-> SCALE
+ROOT -[#6A1B9A]-> ADD
+ROOT -[#6A1B9A]-> EP
+
+@enduml

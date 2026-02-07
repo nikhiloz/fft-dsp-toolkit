@@ -1,0 +1,41 @@
+@startuml remez_design
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Parks-McClellan Equiripple FIR Design</b>
+
+rectangle "Filter Spec\n(passband, stopband,\ntransition width)" as SPEC #E3F2FD
+
+rectangle "Initial guess:\nextremal frequencies" as INIT #BBDEFB
+
+rectangle "Solve for optimal\nfilter on current\nextremal set" as SOLVE #FFECB3
+
+rectangle "Evaluate error\nacross all ω" as EVAL #E8F5E9
+
+rectangle "Update extremal\nfrequencies\n(exchange step)" as EXCH #F3E5F5
+
+rectangle "Converged?\n(equiripple error)" as CHECK #FCE4EC
+
+rectangle "Optimal FIR\ncoefficients h[n]" as OUT #E8F5E9
+
+SPEC -[#1565C0,bold]-> INIT
+INIT -[#1565C0,bold]-> SOLVE
+SOLVE -[#E65100,bold]-> EVAL
+EVAL -[#6A1B9A,bold]-> CHECK
+CHECK -[#C62828,bold]-> EXCH : no
+EXCH -[#C62828,bold]-> SOLVE
+CHECK -[#2E7D32,bold]-> OUT : yes
+
+note right of OUT #FFFDE7
+  <b>Optimal</b>: minimises
+  the maximum error
+  (minimax / Chebyshev)
+  across all frequencies
+end note
+
+@enduml

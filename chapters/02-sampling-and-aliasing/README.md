@@ -1,6 +1,10 @@
-# Chapter 2: Sampling, Aliasing & Nyquist
+# Chapter 2: Sampling & Aliasing
 
-Sampling theorem, aliasing effects, and reconstruction.
+Nyquist criterion, quantisation, and reconstruction.
+
+## Concept Diagram
+
+![Sampling & Aliasing](sampling_pipeline.png)
 
 ## Contents
 
@@ -9,11 +13,12 @@ Sampling theorem, aliasing effects, and reconstruction.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 
-## Generated Plots
+## What You'll Learn
 
-![Aliasing](plots/aliasing.png)
-![Quantization](plots/quantization.png)
-![Reconstruction](plots/reconstruction.png)
+- Apply the Nyquist–Shannon sampling theorem
+- Detect and prevent aliasing in sampled signals
+- Understand quantisation noise and SQNR
+- Reconstruct continuous signals via sinc interpolation
 
 ---
 

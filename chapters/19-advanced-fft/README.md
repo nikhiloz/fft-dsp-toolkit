@@ -1,6 +1,10 @@
-# Chapter 19: Advanced FFT Techniques
+# Chapter 19: Advanced FFT Applications
 
 Goertzel algorithm, DTMF detection, and sliding DFT.
+
+## Concept Diagram
+
+![Advanced FFT Applications](goertzel_dtmf.png)
 
 ## Contents
 
@@ -10,11 +14,12 @@ Goertzel algorithm, DTMF detection, and sliding DFT.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`advanced_fft.h`](../../include/advanced_fft.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Goertzel Dtmf](plots/goertzel_dtmf.png)
-![Goertzel Spectrum](plots/goertzel_spectrum.png)
-![Sliding Dft](plots/sliding_dft.png)
+- Detect a single frequency bin efficiently with Goertzel
+- Build a DTMF tone detector using 8 Goertzel filters
+- Implement the sliding DFT for continuous monitoring
+- Choose Goertzel vs FFT based on the number of bins needed
 
 ---
 

@@ -1,6 +1,10 @@
-# Chapter 16: Overlap-Add/Save Streaming
+# Chapter 16: Overlap-Add & Overlap-Save
 
-Block-based FFT convolution for streaming.
+Efficient block convolution for long FIR filtering.
+
+## Concept Diagram
+
+![Overlap-Add & Overlap-Save](ola_ols_pipeline.png)
 
 ## Contents
 
@@ -10,11 +14,12 @@ Block-based FFT convolution for streaming.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`streaming.h`](../../include/streaming.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Ola Error](plots/ola_error.png)
-![Ola Vs Direct](plots/ola_vs_direct.png)
-![Streaming Ola](plots/streaming_ola.png)
+- Implement overlap-add block convolution
+- Implement overlap-save block convolution
+- Choose block size for optimal FFT performance
+- Apply block filtering to streaming audio data
 
 ---
 

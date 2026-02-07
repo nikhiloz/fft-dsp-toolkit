@@ -1,6 +1,10 @@
 # Chapter 14: PSD & Welch's Method
 
-Power spectral density estimation using Welch's method.
+Consistent power spectral density estimation via segment averaging.
+
+## Concept Diagram
+
+![PSD & Welch's Method](welch_method.png)
 
 ## Contents
 
@@ -10,15 +14,12 @@ Power spectral density estimation using Welch's method.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`spectrum.h`](../../include/spectrum.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Cross Psd](plots/cross_psd.png)
-![Periodogram Clean](plots/periodogram_clean.png)
-![Periodogram Noisy](plots/periodogram_noisy.png)
-![Periodogram Vs Welch](plots/periodogram_vs_welch.png)
-![Resolution Tradeoff](plots/resolution_tradeoff.png)
-![Welch Psd](plots/welch_psd.png)
-![Welch Resolution](plots/welch_resolution.png)
+- Understand the bias-variance trade-off in PSD estimation
+- Apply Welch's method: segment, window, FFT, average
+- Choose segment length and overlap for your application
+- Compare periodogram, Bartlett, and Welch estimators
 
 ---
 

@@ -1,0 +1,44 @@
+@startuml analytic_signal
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>Hilbert Transform & Analytic Signal</b>
+
+rectangle "Real signal\nx[n]" as IN #E3F2FD
+
+package "Method 1: FIR" #FFF3E0 {
+  rectangle "Hilbert FIR\nh[n] = 2sin²(πn/2)/(πn)" as FIR
+  rectangle "x̂[n] = x[n] * h[n]" as FCONV
+  FIR --> FCONV
+}
+
+package "Method 2: FFT" #E8F5E9 {
+  rectangle "FFT → zero negative\nfrequencies → IFFT" as FFTM
+}
+
+rectangle "Analytic Signal\nxa[n] = x[n] + jx̂[n]" as AS #BBDEFB
+
+rectangle "Envelope\nA[n] = |xa[n]|" as ENV #F3E5F5
+
+rectangle "Instantaneous Freq\nf[n] = Δφ/(2πT)" as IF #FCE4EC
+
+IN -[#E65100]-> FIR
+IN -[#2E7D32]-> FFTM
+FCONV -[#1565C0,bold]-> AS
+FFTM -[#1565C0,bold]-> AS
+AS -[#6A1B9A,bold]-> ENV
+AS -[#6A1B9A,bold]-> IF
+
+note bottom of ENV #FFFDE7
+  <b>Applications</b>
+  AM demodulation
+  Vibration analysis
+  Speech processing
+end note
+
+@enduml

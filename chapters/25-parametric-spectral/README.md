@@ -1,6 +1,10 @@
 # Chapter 25: Parametric Spectral Estimation
 
-MUSIC and Capon super-resolution methods.
+MUSIC and Capon (MVDR) super-resolution algorithms.
+
+## Concept Diagram
+
+![Parametric Spectral Estimation](music_algorithm.png)
 
 ## Contents
 
@@ -10,10 +14,12 @@ MUSIC and Capon super-resolution methods.
 | [demo.c](demo.c) | Self-contained runnable demo |
 | [`spectral_est.h`](../../include/spectral_est.h) | Library API |
 
-## Generated Plots
+## What You'll Learn
 
-![Capon Vs Fft](plots/capon_vs_fft.png)
-![Music Spectrum](plots/music_spectrum.png)
+- Decompose the correlation matrix into signal and noise subspaces
+- Compute the MUSIC pseudo-spectrum for super-resolution
+- Implement the Capon (MVDR) data-adaptive estimator
+- Compare subspace methods with FFT-based approaches
 
 ---
 

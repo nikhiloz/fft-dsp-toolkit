@@ -1,0 +1,46 @@
+@startuml image_processing
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #455A64
+
+title <b>2-D DSP: Image Processing Pipeline</b>
+
+rectangle "Input Image\nI[x,y]" as IN #E3F2FD
+
+package "Spatial Domain" #E8F5E9 {
+  rectangle "2-D Convolution\nI * K" as CONV2D
+  agent "<b>Gaussian</b> (blur)" as GAUSS
+  agent "<b>Sobel</b> (edges)" as SOBEL
+  agent "<b>Sharpen</b> (enhance)" as SHARP
+  CONV2D --> GAUSS
+  CONV2D --> SOBEL
+  CONV2D --> SHARP
+}
+
+package "Frequency Domain" #FFF3E0 {
+  rectangle "2-D FFT" as FFT2D
+  rectangle "Filter in freq\ndomain H[u,v]" as FILT
+  rectangle "2-D IFFT" as IFFT2D
+  FFT2D -[#E65100]-> FILT
+  FILT -[#E65100]-> IFFT2D
+}
+
+rectangle "Output Image" as OUT #E3F2FD
+
+IN -[#1565C0,bold]-> CONV2D
+IN -[#E65100,bold]-> FFT2D
+CONV2D -[#2E7D32,bold]-> OUT
+IFFT2D -[#2E7D32,bold]-> OUT
+
+note bottom of SOBEL #FFFDE7
+  Edge magnitude =
+  √(Gx² + Gy²)
+  using horizontal and
+  vertical Sobel kernels
+end note
+
+@enduml

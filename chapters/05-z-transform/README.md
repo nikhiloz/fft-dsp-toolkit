@@ -1,6 +1,10 @@
 # Chapter 5: The Z-Transform
 
-Z-transform definition, properties, ROC, and pole-zero analysis.
+Transfer functions, poles, zeros, and the region of convergence.
+
+## Concept Diagram
+
+![The Z-Transform](z_transform.png)
 
 ## Contents
 
@@ -9,10 +13,12 @@ Z-transform definition, properties, ROC, and pole-zero analysis.
 | [tutorial.md](tutorial.md) | Full theory tutorial with equations and exercises |
 | [demo.c](demo.c) | Self-contained runnable demo |
 
-## Generated Plots
+## What You'll Learn
 
-![Lowpass Response](plots/lowpass_response.png)
-![Resonance](plots/resonance.png)
+- Compute the Z-transform of common sequences
+- Determine system stability from pole locations
+- Relate time-domain convolution to Z-domain multiplication
+- Identify the region of convergence (ROC)
 
 ---
 
