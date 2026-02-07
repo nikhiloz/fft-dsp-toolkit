@@ -1,78 +1,160 @@
-@startuml Module Dependencies
-!theme plain
-title FFT-DSP Toolkit: Module Dependency Graph
+@startuml modules
 
-package "DSP_UTILS" {
-    [dsp_utils.h]
-    [dsp_utils.c]
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam linetype ortho
+
+skinparam package {
+    BackgroundColor #FFFFFF
+    BorderColor #455A64
+    FontColor #263238
+    BorderThickness 2
 }
 
-package "WINDOW_FUNCTIONS" {
-    [window.h]
-    [window.c]
+skinparam class {
+    BorderColor #37474F
+    FontColor #263238
+    HeaderBackgroundColor #E0E0E0
+    BorderThickness 1.5
 }
 
-package "FFT_CORE" {
-    [fft.h]
-    [fft.c]
+title <size:20><b>Module Dependency Graph</b></size>\n<size:14><color:#546E7A>Source file dependencies and public interfaces</color></size>
+
+package "include/" #ECEFF1 {
+    class "<b>fft.h</b>" as fft_h #E3F2FD {
+        Complex (typedef)
+        --
+        fft(Complex* x, int n)
+        ifft(Complex* x, int n)
+        fft_real(double* in, Complex* out, int n)
+        fft_magnitude(Complex* x, double* mag, int n)
+        fft_phase(Complex* x, double* ph, int n)
+    }
+
+    class "<b>filter.h</b>" as filter_h #FFF3E0 {
+        FIRFilter (struct)
+        IIRFilter (struct)
+        --
+        fir_filter(double* in, double* out, ...)
+        fir_create(double* coeffs, int order)
+        iir_create(double* b, double* a, int order)
+        filter_process(Filter* f, double sample)
+    }
+
+    class "<b>dsp_utils.h</b>" as utils_h #E8F5E9 {
+        WindowType (enum)
+        --
+        hann_window(int n, int i)
+        hamming_window(int n, int i)
+        blackman_window(int n, int i)
+        apply_window(double* sig, int n, WindowType)
+        next_power_of_2(int n)
+    }
+
+    class "<b>spectrum.h</b>" as spec_h #E1BEE7 {
+        SpectrumConfig (struct)
+        --
+        power_spectrum(double* x, ...)
+        welch_psd(double* x, ...)
+        peak_detect(double* psd, ...)
+    }
+
+    class "<b>convolution.h</b>" as conv_h #FFCDD2 {
+        ..
+        convolve(double* x, double* h, ...)
+        correlate(double* x, double* y, ...)
+        fft_convolve(double* x, double* h, ...)
+    }
+
+    class "<b>ring_buffer.h</b>" as rbuf_h #B2DFDB {
+        RingBuffer (struct)
+        --
+        ringbuf_create(size_t capacity)
+        ringbuf_write(RingBuffer*, ...)
+        ringbuf_read(RingBuffer*, ...)
+        ringbuf_destroy(RingBuffer*)
+    }
 }
 
-package "FILTERS" {
-    [filter.h]
-    [filter.c]
+package "src/" #F5F5F5 {
+    class "<b>fft.c</b>" as fft_c #BBDEFB {
+        __butterfly_radix2()__
+        __bit_reverse_copy()__
+        --
+        Cooley-Tukey implementation
+        In-place computation
+        Twiddle factor caching
+    }
+
+    class "<b>filter.c</b>" as filter_c #FFE0B2 {
+        __direct_form_I()__
+        __direct_form_II()__
+        --
+        FIR: Direct convolution
+        IIR: Cascade biquad
+    }
+
+    class "<b>dsp_utils.c</b>" as utils_c #C8E6C9 {
+        __compute_window_coeff()__
+        --
+        Window generation
+        Utility functions
+        _GNU_SOURCE for M_PI
+    }
+
+    class "<b>spectrum.c</b>" as spec_c #CE93D8 {
+        __segment_and_overlap()__
+        --
+        Calls FFT internally
+        Welch's averaging
+    }
+
+    class "<b>convolution.c</b>" as conv_c #EF9A9A {
+        __overlap_add_kernel()__
+        --
+        Linear + circular conv
+        FFT-based fast path
+    }
+
+    class "<b>ring_buffer.c</b>" as rbuf_c #80CBC4 {
+        __atomic_fence()__
+        --
+        Lock-free SPSC
+        Memory barriers
+    }
 }
 
-package "CONVOLUTION" {
-    [convolution.h]
-    [convolution.c]
-}
+' Header to source
+fft_h -[#1565C0,bold]--> fft_c : implements
+filter_h -[#E65100,bold]--> filter_c : implements
+utils_h -[#2E7D32,bold]--> utils_c : implements
+spec_h -[#6A1B9A,bold]--> spec_c : implements
+conv_h -[#C62828,bold]--> conv_c : implements
+rbuf_h -[#00695C,bold]--> rbuf_c : implements
 
-package "SPECTRAL_ANALYSIS" {
-    [spectrum.h]
-    [spectrum.c]
-}
+' Cross-module dependencies
+fft_c .[#546E7A,dashed].> utils_c : window funcs
+spec_c .[#546E7A,dashed].> fft_c : FFT calls
+conv_c .[#546E7A,dashed].> fft_c : FFT convolution
+filter_c .[#546E7A,dashed].> utils_c : utility funcs
+spec_c .[#546E7A,dashed].> utils_c : windowing
 
-package "REAL_TIME" {
-    [ring_buffer.h]
-    [ring_buffer.c]
-    [streaming.h]
-    [streaming.c]
-}
-
-package "SIGNAL_GENERATION" {
-    [signal_gen.h]
-    [signal_gen.c]
-}
-
-' Dependencies
-[FFT_CORE] --> [DSP_UTILS]
-[WINDOW_FUNCTIONS] --> [DSP_UTILS]
-[FILTERS] --> [DSP_UTILS]
-[CONVOLUTION] --> [FFT_CORE]
-[SPECTRAL_ANALYSIS] --> [FFT_CORE]
-[REAL_TIME] --> [RING_BUFFER]
-[REAL_TIME] --> [FFT_CORE]
-[REAL_TIME] --> [FILTERS]
-
-note right of [DSP_UTILS]
-  Core utilities & math
-  • Complex arithmetic
-  • Vector operations
-  • Memory helpers
+note bottom of fft_c #FFFDE7
+  <b>Core dependency</b>: Most analysis
+  modules depend on FFT routines
 end note
 
-note right of [FFT_CORE]
-  Fast Fourier Transform
-  • Radix-2 & Radix-4
-  • In-place transform
-  • Real/Complex support
-end note
-
-note right of [REAL_TIME]
-  Real-time streaming
-  • Lock-free buffers
-  • Overlap-add/save
-  • Low latency
-end note
+legend right
+  |= Color |= Module |
+  | <#E3F2FD> | FFT / Transforms |
+  | <#FFF3E0> | Digital Filters  |
+  | <#E8F5E9> | DSP Utilities    |
+  | <#E1BEE7> | Spectral Analysis|
+  | <#FFCDD2> | Convolution      |
+  | <#B2DFDB> | Ring Buffer      |
+endlegend
 
 @enduml

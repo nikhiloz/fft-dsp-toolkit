@@ -6,6 +6,10 @@ Complete public API reference for the FFT-DSP Toolkit library.
 
 The FFT-DSP Toolkit provides a modular C99 API organized into 8 core modules:
 
+![Public API Reference](diagrams/api_reference.png)
+
+![Module Dependencies](diagrams/modules.png)
+
 - **fft.h** - Fast Fourier Transform operations
 - **filter.h** - Digital filtering (FIR/IIR)
 - **window.h** - Window functions for spectral analysis

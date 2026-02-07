@@ -1,6 +1,9 @@
 # FFT-DSP Toolkit: Comprehensive Expansion Plan
 
 ## Project Vision
+
+![System Architecture](docs/diagrams/architecture.png)
+
 Transform fft-dsp-toolkit into a production-grade, high-performance DSP library with:
 - Robust C core with advanced algorithms
 - Python bindings for rapid prototyping
@@ -68,6 +71,8 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 **Duration:** 2-3 hours
 **Goal:** Support modern streaming DSP applications
 
+![Real-Time Architecture](docs/diagrams/realtime_architecture.png)
+
 ### Deliverables:
 - [ ] Ring buffer implementation (`ring_buffer.c/.h`)
 - [ ] Overlap-add/overlap-save for streaming (`streaming.c/.h`)
@@ -87,6 +92,10 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 ## Phase 4: Performance Tuning & Optimization
 **Duration:** 3-4 hours
 **Goal:** Industry-grade performance
+
+![Optimization Roadmap](docs/diagrams/optimization_roadmap.png)
+
+![Performance Benchmarks](docs/diagrams/benchmarks.png)
 
 ### Deliverables:
 - [ ] SIMD optimizations (SSE, AVX for x86; NEON for ARM)
@@ -133,6 +142,8 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 
 ## Technology Stack
 
+![Module Dependencies](docs/diagrams/modules.png)
+
 | Layer | Technology | Reason |
 |-------|-----------|--------|
 | **Core** | C99 + POSIX | Performance, portability, minimal deps |
@@ -157,6 +168,9 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 ---
 
 ## Timeline
+
+![Development Roadmap](docs/diagrams/roadmap.png)
+
 - **Week 1**: Phases 1-2 (infrastructure + core algorithms)
 - **Week 2**: Phase 3 (real-time streaming) + Phase 4 (optimization)
 - **Week 3**: Phase 5 (docs) + stretch goals
@@ -164,6 +178,8 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 ---
 
 ## Open Questions / Decisions
+
+![Use Cases](docs/diagrams/use_cases.png)
 
 1. **Target Platforms**: x86-64, ARM (Raspberry Pi?), RISC-V?
 2. **Real-Time Priority**: Hard RT (PREEMPT_RT) or soft RT?

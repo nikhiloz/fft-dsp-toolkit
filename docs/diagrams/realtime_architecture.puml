@@ -1,61 +1,119 @@
-@startuml Real-Time Streaming Architecture
-!theme plain
-title Real-Time DSP: Streaming Pipeline
+@startuml realtime_architecture
 
-package "Audio Hardware" {
-    [Microphone]
-    [Speaker]
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
+
+skinparam rectangle {
+    BorderThickness 2
 }
 
-package "Ring Buffer Layer" {
-    [Input Buffer\n(FIFO)]
-    [Output Buffer\n(FIFO)]
+skinparam queue {
+    BackgroundColor #E0F7FA
+    BorderColor #00838F
 }
 
-package "Processing Thread" {
-    [Windowing]
-    [FFT/IFFT]
-    [Filtering]
+title <size:20><b>Real-Time Streaming Architecture</b></size>\n<size:14><color:#546E7A>Lock-free pipeline for continuous DSP processing</color></size>
+
+rectangle "<b>Audio Input</b>\n<size:10>ALSA / File / Socket</size>" as SRC #E3F2FD {
 }
 
-package "Synchronization" {
-    [Lock-Free Queue]
-    [Condition Variable]
+rectangle "<b>Input Stage</b>" as IN #E8F5E9 {
+    rectangle "  <b>DMA Buffer</b>\n  <size:10>Hardware ring buffer</size>\n  <size:10>Interrupt-driven</size>  " as DMA #C8E6C9
+    rectangle "  <b>Sample Converter</b>\n  <size:10>int16 → float64</size>\n  <size:10>Interleave/Deinterleave</size>  " as CONV #C8E6C9
 }
 
-package "Real-Time Policy" {
-    [Priority Scheduling]
-    [Memory Lock]
+queue "  <b>Input Ring Buffer</b>\n  <size:10>SPSC Lock-Free</size>\n  <size:10>Capacity: 4 × frame_size</size>  " as IRB #B2EBF2
+
+rectangle "<b>Processing Core</b>" as CORE #FFF3E0 {
+    rectangle "  <b>Frame Assembler</b>\n  <size:10>Collects N samples</size>\n  <size:10>Overlap management</size>  " as FRAME #FFECB3
+
+    rectangle "  <b>Pre-Process</b>  " as PRE #FFE0B2 {
+        rectangle "DC Remove" as DC #FFF9C4
+        rectangle "Window" as WIND #FFF9C4
+        rectangle "Normalize" as NORM #FFF9C4
+    }
+
+    rectangle "  <b>DSP Engine</b>  " as DSP #FFE0B2 {
+        rectangle "<b>FFT</b>\n<size:10>Forward</size>" as F_FFT #FFCC80
+        rectangle "<b>Filter</b>\n<size:10>FIR/IIR</size>" as F_FILT #FFCC80
+        rectangle "<b>Analysis</b>\n<size:10>PSD, Peaks</size>" as F_ANA #FFCC80
+    }
+
+    rectangle "  <b>Post-Process</b>  " as POST #FFE0B2 {
+        rectangle "IFFT" as IFFT #FFF9C4
+        rectangle "Overlap-Add" as OLA #FFF9C4
+        rectangle "Denormalize" as DENORM #FFF9C4
+    }
 }
 
-[Microphone] --> [Input Buffer\n(FIFO)]: DMA
-[Input Buffer\n(FIFO)] --> [Windowing]: ready_signal
-[Windowing] --> [FFT/IFFT]
-[FFT/IFFT] --> [Filtering]
-[Filtering] --> [Output Buffer\n(FIFO)]
-[Output Buffer\n(FIFO)] --> [Speaker]: DMA
+queue "  <b>Output Ring Buffer</b>\n  <size:10>SPSC Lock-Free</size>\n  <size:10>Capacity: 4 × frame_size</size>  " as ORB #B2EBF2
 
-[Lock-Free Queue] -.-> [Input Buffer\n(FIFO)]
-[Condition Variable] -.-> [Processing Thread]
-[Priority Scheduling] -.-> [Processing Thread]
-[Memory Lock] -.-> [Ring Buffer Layer]
+rectangle "<b>Output Stage</b>" as OUT #F3E5F5 {
+    rectangle "  <b>DAC Feeder</b>\n  <size:10>float64 → int16</size>\n  <size:10>Dither & Clip</size>  " as DAC #E1BEE7
+    rectangle "  <b>File Writer</b>\n  <size:10>WAV / CSV</size>\n  <size:10>Async flush</size>  " as FW #E1BEE7
+}
 
-note right of [Ring Buffer Layer]
-  Circular buffers
-  Overlap-add: 50% new samples
-  Zero-copy transfers
+rectangle "<b>Audio Output</b>\n<size:10>ALSA / File / Socket</size>" as SINK #E3F2FD {
+}
+
+' Control plane
+rectangle "<b>Control Plane</b>" as CTRL #ECEFF1 {
+    rectangle "  <b>Pipeline Control</b>\n  <size:10>Start/Stop/Pause</size>  " as PCTRL #CFD8DC
+    rectangle "  <b>Latency Monitor</b>\n  <size:10>Buffer fill tracking</size>  " as LAT #CFD8DC
+    rectangle "  <b>Error Handler</b>\n  <size:10>Overflow/Underflow</size>  " as ERR #CFD8DC
+}
+
+' Data flow
+SRC -[#1565C0,bold,thickness=3]-> DMA
+DMA -[#1565C0,bold]-> CONV
+CONV -[#1565C0,bold]-> IRB
+
+IRB -[#E65100,bold,thickness=3]-> FRAME
+
+FRAME -[#E65100,bold]-> DC
+DC -[#E65100]-> WIND
+WIND -[#E65100]-> NORM
+NORM -[#E65100,bold]-> F_FFT
+F_FFT -[#E65100]-> F_FILT
+F_FILT -[#E65100]-> F_ANA
+F_ANA -[#E65100,bold]-> IFFT
+IFFT -[#E65100]-> OLA
+OLA -[#E65100]-> DENORM
+
+DENORM -[#6A1B9A,bold,thickness=3]-> ORB
+ORB -[#6A1B9A,bold]-> DAC
+ORB -[#6A1B9A,bold]-> FW
+DAC -[#6A1B9A,bold,thickness=3]-> SINK
+
+' Control connections
+CTRL .[#90A4AE,dashed].> FRAME
+CTRL .[#90A4AE,dashed].> IRB
+CTRL .[#90A4AE,dashed].> ORB
+
+note right of IRB #E0F7FA
+  <b>Lock-free SPSC Queue</b>
+  • Producer: Audio capture thread
+  • Consumer: DSP processing thread
+  • Memory barriers (atomic fence)
+  • No mutex contention
 end note
 
-note right of [Processing Thread]
-  Fixed latency
-  1-2ms per frame
-  100% realtime
+note bottom of CORE #FFFDE7
+  <b>Latency Budget</b>
+  Frame: 1024 samples @ 44100 Hz = 23.2 ms
+  Processing target: < 10 ms per frame
+  Total pipeline: < 50 ms end-to-end
 end note
 
-note right of [Real-Time Policy]
-  PREEMPT_RT compatible
-  CPU affinity support
-  Jitter < 100µs
-end note
+legend right
+  |= Color |= Stage |= Thread |
+  | <#E8F5E9> | Input Capture | Audio Thread |
+  | <#FFF3E0> | DSP Processing | DSP Thread |
+  | <#F3E5F5> | Output Playback | Audio Thread |
+  | <#ECEFF1> | Control Plane | Main Thread |
+endlegend
 
 @enduml

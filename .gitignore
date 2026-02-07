@@ -18,8 +18,9 @@ Makefile.user
 ######################################
 # Generated Files - CAN REGENERATE
 ######################################
-# Generated PNG diagrams (regenerate from .puml with plantuml)
-docs/diagrams/*.png
+# Generated PNG diagrams - TRACKED for GitHub documentation
+# (regenerate from .puml with: java -jar ~/tools/plantuml.jar -tpng docs/diagrams/*.puml)
+# docs/diagrams/*.png
 
 # Test/Coverage outputs
 coverage/

@@ -1,40 +1,138 @@
-@startuml FFT Processing Sequence
-!theme plain
-title FFT Processing: Call Sequence
+@startuml fft_sequence
 
-participant App as "Application"
-participant Buf as "Ring Buffer"
-participant FFT as "FFT Core"
-participant Win as "Window Func"
-participant SIMD as "SIMD Kernel"
-participant Out as "Output Buffer"
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
 
-App ->> Buf: read_samples(N)
-Buf -->> App: samples[]
+skinparam sequence {
+    ArrowColor #37474F
+    ArrowThickness 2
+    LifeLineBorderColor #455A64
+    LifeLineBackgroundColor #ECEFF1
+    ParticipantBorderColor #1565C0
+    ParticipantBackgroundColor #E3F2FD
+    ParticipantFontColor #0D47A1
+    ParticipantPadding 15
+    BoxBorderColor #90A4AE
+    BoxBackgroundColor #F5F5F5
+    DividerBackgroundColor #ECEFF1
+    DividerBorderColor #90A4AE
+    GroupBackgroundColor #FFF8E1
+    GroupBorderColor #F9A825
+}
 
-App ->> Win: apply_window(samples, N)
-Win ->> Win: hann_window(i)
-Win -->> App: windowed[]
+skinparam note {
+    BackgroundColor #FFFDE7
+    BorderColor #F9A825
+    FontColor #37474F
+}
 
-App ->> FFT: fft_transform(windowed)
-FFT ->> SIMD: fft_radix2(data, N)
-SIMD ->> SIMD: butterfly ops (AVX/NEON)
-SIMD -->> FFT: freq_domain[]
-FFT -->> App: magnitude, phase
+title <size:20><b>FFT Processing Sequence</b></size>\n<size:14><color:#546E7A>Detailed call sequence for spectrum analysis</color></size>
 
-App ->> Out: write_results(magnitude)
-Out -->> App: ✓ Success
+box "Application" #E3F2FD
+    participant "<b>User Code</b>" as APP
+end box
 
-note over FFT
-  Streaming mode uses overlap-add
-  N/2 new samples per frame
-  Latency: log(N) frames
+box "DSP Core Library" #FFF3E0
+    participant "<b>dsp_utils</b>" as UTILS
+    participant "<b>fft</b>" as FFT
+    participant "<b>spectrum</b>" as SPEC
+end box
+
+box "System" #E8F5E9
+    participant "<b>Memory</b>" as MEM
+end box
+
+== Initialization ==
+
+APP -> MEM ++ #C8E6C9 : malloc(N * sizeof(Complex))
+return complex_buffer
+
+APP -> MEM ++ #C8E6C9 : malloc(N * sizeof(double))
+return magnitude_buffer
+
+note over APP #E3F2FD
+  <b>Prepare input</b>
+  Fill signal[] with N samples
+  (N must be power of 2)
 end note
 
-note over SIMD
-  Parallel processing
-  4-8x speedup vs scalar
-  Memory cache aware
+== Pre-Processing ==
+
+APP -> UTILS ++ #FFECB3 : apply_window(signal, N, HANN)
+    UTILS -> UTILS : hann_window(N, i)\nfor i = 0..N-1
+    note right #FFFDE7
+      w[i] = 0.5 * (1 - cos(2π·i / (N-1)))
+      signal[i] *= w[i]
+    end note
+return windowed signal
+
+APP -> UTILS ++ #FFECB3 : next_power_of_2(N)
+    note right #FFFDE7
+      Validates N is already
+      power-of-2, or pads
+    end note
+return padded_N
+
+== FFT Computation ==
+
+APP -> FFT ++ #BBDEFB : fft_real(signal, complex_buf, N)
+
+    FFT -> FFT : bit_reverse_copy()\n<size:10>Reorder indices by bit-reversal permutation</size>
+
+    note right of FFT #E3F2FD
+      <b>Cooley-Tukey Radix-2 DIT</b>
+      log₂(N) stages, each with
+      N/2 butterfly operations
+    end note
+
+    group <b>Stage Loop</b>  [s = 1 to log₂(N)]
+        FFT -> FFT : Compute twiddle factors\nW = exp(-j·2π/2ˢ)
+        group <b>Butterfly Loop</b>  [k = 0 to N-1, step 2ˢ]
+            FFT -> FFT : butterfly(X[k], X[k+half])\n<size:10>X[k]     = even + W·odd</size>\n<size:10>X[k+h] = even - W·odd</size>
+        end
+    end
+
+return complex_buf (frequency domain)
+
+== Post-Processing ==
+
+APP -> FFT ++ #BBDEFB : fft_magnitude(complex_buf, mag_buf, N)
+    FFT -> FFT : mag[k] = sqrt(re² + im²)\nfor k = 0..N/2
+    note right #FFFDE7
+      Only N/2+1 bins are unique
+      (Nyquist symmetry for real input)
+    end note
+return magnitude_buf
+
+APP -> FFT ++ #BBDEFB : fft_phase(complex_buf, phase_buf, N)
+    FFT -> FFT : phase[k] = atan2(im, re)
+return phase_buf
+
+== Spectral Analysis ==
+
+APP -> SPEC ++ #E1BEE7 : power_spectrum(signal, psd, N, config)
+    SPEC -> FFT ++ #BBDEFB : fft(complex_buf, N)
+    return
+    SPEC -> SPEC : PSD[k] = |X[k]|² / N\n<size:10>Apply window correction factor</size>
+return psd_result
+
+APP -> SPEC ++ #E1BEE7 : peak_detect(psd, N, peaks, threshold)
+    SPEC -> SPEC : Local maxima search\n<size:10>Parabolic interpolation</size>\n<size:10>for sub-bin accuracy</size>
+return detected_peaks[]
+
+== Cleanup ==
+
+APP -> MEM ++ #C8E6C9 : free(complex_buffer)
+return
+APP -> MEM ++ #C8E6C9 : free(magnitude_buffer)
+return
+
+note over APP #E3F2FD
+  Processing complete.
+  Results in mag_buf[], psd[], peaks[]
 end note
 
 @enduml

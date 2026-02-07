@@ -1,26 +1,137 @@
-@startuml Performance Benchmarks
-!theme plain
-title FFT-DSP vs Competitors: Latency Comparison
+@startuml benchmarks
 
-scale max 1200 width
-[FFT-DSP\n(C99 baseline)     |████              ] 12ms
-[FFT-DSP\n(SIMD optimized)   |██                ] 2ms
-[FFT-DSP\n(Real-time kernel) |█                 ] 0.8ms
-[FFTW3\n(libfftw3)           |███               ] 3.5ms
-[GSL\n(GNU Sci Lib)          |████████          ] 8ms
-[MATLAB\n(with JIT)          |██████████████████] 18ms
-[NumPy\n(Python numpy.fft)   |██████████        ] 10ms
-[Eigen\n(C++ template lib)   |███               ] 3.2ms
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
 
-note bottom
-  Benchmark: 1024-point FFT on Intel i7-9700K
-  Results averaged over 10,000 iterations
-  Including all overhead (window, transformation, output)
-  
-  FFT-DSP Goals:
-  • Baseline: Competitive with GSL
-  • SIMD: Comparable to FFTW3
-  • Real-time: Best-in-class latency
-end note
+skinparam object {
+    BorderColor #455A64
+    FontColor #263238
+    BorderThickness 1.5
+}
+
+title <size:20><b>Performance Benchmarks & Comparison</b></size>\n<size:14><color:#546E7A>FFT execution time targets across optimization levels</color></size>
+
+' ── 256-point FFT ──────────────────────
+
+rectangle "<size:16><b>256-point FFT</b></size>" as B256 #E3F2FD {
+    object "<b>Naive DFT (O(N²))</b>" as N256 #FFCDD2 {
+        Time = "320 µs"
+        Ops = "65,536 complex muls"
+        Bar = "████████████████████████████████ 100%"
+    }
+    object "<b>Radix-2 FFT</b>" as R256 #FFECB3 {
+        Time = "28 µs"
+        Ops = "1,024 complex muls"
+        Bar = "███ 8.7%"
+    }
+    object "<b>FFT + Compiler -O3</b>" as C256 #C8E6C9 {
+        Time = "9 µs"
+        Ops = "optimized pipeline"
+        Bar = "█ 2.8%"
+    }
+    object "<b>FFT + SIMD (AVX2)</b>" as S256 #BBDEFB {
+        Time = "2.1 µs"
+        Ops = "8-wide butterfly"
+        Bar = "▌ 0.6%"
+    }
+}
+
+' ── 1024-point FFT ─────────────────────
+
+rectangle "<size:16><b>1024-point FFT</b></size>" as B1K #FFF3E0 {
+    object "<b>Naive DFT (O(N²))</b>" as N1K #FFCDD2 {
+        Time = "5.2 ms"
+        Ops = "1,048,576 complex muls"
+        Bar = "████████████████████████████████ 100%"
+    }
+    object "<b>Radix-2 FFT</b>" as R1K #FFECB3 {
+        Time = "180 µs"
+        Ops = "5,120 complex muls"
+        Bar = "██ 3.4%"
+    }
+    object "<b>FFT + Compiler -O3</b>" as C1K #C8E6C9 {
+        Time = "52 µs"
+        Ops = "optimized pipeline"
+        Bar = "█ 1.0%"
+    }
+    object "<b>FFT + SIMD (AVX2)</b>" as S1K #BBDEFB {
+        Time = "11 µs"
+        Ops = "8-wide butterfly"
+        Bar = "▌ 0.2%"
+    }
+}
+
+' ── 4096-point FFT ─────────────────────
+
+rectangle "<size:16><b>4096-point FFT</b></size>" as B4K #E8F5E9 {
+    object "<b>Naive DFT (O(N²))</b>" as N4K #FFCDD2 {
+        Time = "84 ms"
+        Ops = "16,777,216 complex muls"
+        Bar = "████████████████████████████████ 100%"
+    }
+    object "<b>Radix-2 FFT</b>" as R4K #FFECB3 {
+        Time = "820 µs"
+        Ops = "24,576 complex muls"
+        Bar = "█ 0.97%"
+    }
+    object "<b>FFT + Compiler -O3</b>" as C4K #C8E6C9 {
+        Time = "230 µs"
+        Ops = "optimized pipeline"
+        Bar = "▌ 0.27%"
+    }
+    object "<b>FFT + SIMD (AVX2)</b>" as S4K #BBDEFB {
+        Time = "48 µs"
+        Ops = "8-wide butterfly"
+        Bar = "▏ 0.057%"
+    }
+}
+
+' ── Memory Usage ───────────────────────
+
+rectangle "<size:16><b>Memory Footprint</b></size>" as MEM #F3E5F5 {
+    object "<b>FFT Working Memory</b>" as MFFT #E1BEE7 {
+        Formula = "2 × N × sizeof(double)"
+        256_pt = "4 KB"
+        1024_pt = "16 KB (fits L1)"
+        4096_pt = "64 KB (fits L2)"
+    }
+    object "<b>Twiddle Factor Cache</b>" as MTWIDDLE #E1BEE7 {
+        Formula = "N × sizeof(Complex)"
+        256_pt = "4 KB"
+        1024_pt = "16 KB"
+        4096_pt = "64 KB"
+    }
+    object "<b>Ring Buffer (stream)</b>" as MRING #E1BEE7 {
+        Formula = "4 × frame_size × sizeof(double)"
+        Default = "32 KB @ 1024 frames"
+        Total = "< 200 KB for full pipeline"
+    }
+}
+
+' Layout
+N256 -[hidden]-> R256
+R256 -[hidden]-> C256
+C256 -[hidden]-> S256
+
+N1K -[hidden]-> R1K
+R1K -[hidden]-> C1K
+C1K -[hidden]-> S1K
+
+N4K -[hidden]-> R4K
+R4K -[hidden]-> C4K
+C4K -[hidden]-> S4K
+
+legend bottom
+  |= Optimization |= Color |= Technique |
+  | Naive DFT | <#FFCDD2> | Direct computation, O(N²) |
+  | Radix-2 FFT | <#FFECB3> | Cooley-Tukey, O(N log N) |
+  | + Compiler -O3 | <#C8E6C9> | Auto-vectorize, inline, unroll |
+  | + SIMD AVX2 | <#BBDEFB> | Hand-tuned 8-wide intrinsics |
+  <b>Note:</b> All measurements are target estimates
+  for Intel Core i5-11400 @ 2.6 GHz, GCC 12
+endlegend
 
 @enduml

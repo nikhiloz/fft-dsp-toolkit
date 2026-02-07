@@ -1,66 +1,108 @@
-@startuml Use Cases
-!theme plain
-title FFT-DSP Toolkit: Primary Use Cases
+@startuml use_cases
 
-actor AudioEngineer as "Audio Engineer"
-actor EmbeddedDev as "Embedded Developer"
-actor Researcher as "DSP Researcher"
-actor RealTimeApp as "Real-Time App"
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
 
-usecase UC1 as "Audio Signal Analysis\n(spectrum, frequency content)"
-usecase UC2 as "Real-Time Audio Processing\n(effects, EQ, compression)"
-usecase UC3 as "Sensor Signal Fusion\n(accelerometer, gyro)"
-usecase UC4 as "Radar/Sonar Processing\n(frequency estimation, detection)"
-usecase UC5 as "Communication Modulation\n(OFDM, PSK, QAM)"
-usecase UC6 as "Biomedical Signal Analysis\n(ECG, EEG filtering)"
-usecase UC7 as "Music Information Retrieval\n(beat tracking, genre classification)"
-usecase UC8 as "Software Defined Radio\n(SDR, signal demodulation)"
-
-AudioEngineer --> UC1
-AudioEngineer --> UC2
-AudioEngineer --> UC7
-
-EmbeddedDev --> UC3
-EmbeddedDev --> UC4
-EmbeddedDev --> UC5
-
-Researcher --> UC1
-Researcher --> UC6
-Researcher --> UC8
-
-RealTimeApp --> UC2
-RealTimeApp --> UC4
-RealTimeApp --> UC5
-
-rectangle "FFT-DSP Toolkit" {
-    UC1
-    UC2
-    UC3
-    UC4
-    UC5
-    UC6
-    UC7
-    UC8
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #455A64
+    FontColor #263238
+    BorderThickness 1.5
 }
 
-note right of UC1
-  Key: Low latency, 
-  high accuracy
+skinparam actor {
+    BackgroundColor #E3F2FD
+    BorderColor #1565C0
+    FontColor #0D47A1
+}
+
+skinparam rectangle {
+    BorderThickness 2
+}
+
+skinparam package {
+    BorderThickness 2
+}
+
+title <size:20><b>Use Case Diagram</b></size>\n<size:14><color:#546E7A>Application scenarios for FFT-DSP Toolkit</color></size>
+
+' Actors
+:Audio Engineer: as AE #E3F2FD
+:Embedded Developer: as ED #E8F5E9
+:Researcher: as RES #FFF3E0
+:IoT Device: as IOT #F3E5F5
+
+rectangle "  <b>FFT-DSP Toolkit</b>  " as TOOLKIT {
+
+    package "Audio Processing" #E3F2FD {
+        usecase "<b>Real-Time Equalizer</b>\n<size:10>10-band parametric EQ</size>\n<size:10>with live preview</size>" as UC1 #BBDEFB
+        usecase "<b>Noise Reduction</b>\n<size:10>Spectral subtraction</size>\n<size:10>Wiener filtering</size>" as UC2 #BBDEFB
+        usecase "<b>Audio Effects</b>\n<size:10>Chorus, Reverb, Delay</size>\n<size:10>via FFT convolution</size>" as UC3 #BBDEFB
+    }
+
+    package "Signal Analysis" #FFF3E0 {
+        usecase "<b>Spectrum Analyzer</b>\n<size:10>Real-time PSD display</size>\n<size:10>Peak detection</size>" as UC4 #FFECB3
+        usecase "<b>Signal Generator</b>\n<size:10>Sine, Square, Chirp</size>\n<size:10>White/Pink noise</size>" as UC5 #FFECB3
+        usecase "<b>Filter Design</b>\n<size:10>FIR/IIR coefficient calc</size>\n<size:10>Frequency response</size>" as UC6 #FFECB3
+    }
+
+    package "Embedded / IoT" #E8F5E9 {
+        usecase "<b>Vibration Monitoring</b>\n<size:10>Accelerometer FFT</size>\n<size:10>Anomaly detection</size>" as UC7 #C8E6C9
+        usecase "<b>Voice Activity Detection</b>\n<size:10>Energy-based VAD</size>\n<size:10>Spectral features</size>" as UC8 #C8E6C9
+        usecase "<b>Sensor Fusion</b>\n<size:10>IMU data filtering</size>\n<size:10>Kalman preprocessing</size>" as UC9 #C8E6C9
+    }
+
+    package "Research & Education" #F3E5F5 {
+        usecase "<b>Algorithm Benchmarking</b>\n<size:10>Compare FFT variants</size>\n<size:10>Performance profiling</size>" as UC10 #E1BEE7
+        usecase "<b>DSP Prototyping</b>\n<size:10>Rapid algorithm test</size>\n<size:10>Parameter tuning</size>" as UC11 #E1BEE7
+        usecase "<b>Teaching Tool</b>\n<size:10>Visualize transforms</size>\n<size:10>Step-by-step FFT</size>" as UC12 #E1BEE7
+    }
+}
+
+' Connections
+AE -[#1565C0,bold]-> UC1
+AE -[#1565C0,bold]-> UC2
+AE -[#1565C0]-> UC3
+AE -[#1565C0]-> UC4
+
+ED -[#2E7D32,bold]-> UC7
+ED -[#2E7D32,bold]-> UC8
+ED -[#2E7D32]-> UC9
+
+RES -[#E65100,bold]-> UC10
+RES -[#E65100,bold]-> UC11
+RES -[#E65100]-> UC12
+RES -[#E65100]-> UC5
+RES -[#E65100]-> UC6
+
+IOT -[#6A1B9A,bold]-> UC7
+IOT -[#6A1B9A]-> UC8
+IOT -[#6A1B9A]-> UC9
+
+' Internal dependencies
+UC1 ..> UC6 : uses filters
+UC2 ..> UC4 : needs spectrum
+UC3 ..> UC1 : reuses EQ
+UC4 ..> UC5 : test signals
+UC10 ..> UC5 : benchmark input
+UC11 ..> UC4 : visualize
+
+note right of TOOLKIT #FFFDE7
+  <b>All use cases are C-only</b>
+  Zero external dependencies
+  POSIX-compliant
+  Embedded-friendly (<200 KB RAM)
 end note
 
-note right of UC2
-  Key: Sub-ms
-  latency guarantee
-end note
-
-note right of UC4
-  Key: Fast processing,
-  batch support
-end note
-
-note right of UC5
-  Key: Complex numbers,
-  high throughput
-end note
+legend bottom
+  |= Actor |= Domain |= Primary Use Cases |
+  | <#E3F2FD> Audio Engineer | Music / Broadcast | EQ, Noise Reduction, Effects |
+  | <#E8F5E9> Embedded Dev | IoT / Hardware | Vibration, VAD, Sensor Fusion |
+  | <#FFF3E0> Researcher | Academic / R&D | Benchmarking, Prototyping |
+  | <#F3E5F5> IoT Device | Autonomous | Monitoring, Detection |
+endlegend
 
 @enduml

@@ -1,78 +1,101 @@
-@startuml Performance Optimization Strategy
-!theme plain
-title DSP Optimization: Multi-Stage Approach
+@startuml optimization_roadmap
 
-package "Baseline (C99)" {
-    [Scalar FFT]
-    [Naive Convolution]
-    [Basic Filtering]
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
+
+skinparam state {
+    BackgroundColor #FFFFFF
+    BorderColor #455A64
+    FontColor #263238
+    BorderThickness 2
+    ArrowColor #37474F
 }
 
-package "Stage 1: Compiler" {
-    [O3 Optimization]
-    [LTO]
-    [PGO]
+title <size:20><b>Performance Optimization Roadmap</b></size>\n<size:14><color:#546E7A>Progressive optimization stages with measurable targets</color></size>
+
+state "  <b>Stage 0: Baseline</b>  " as S0 #E3F2FD {
+    state "<b>Naive Implementation</b>\nDirect DFT: O(N²)\nScalar C99 code\nNo compiler hints" as S0A #BBDEFB
+    state "<b>Metrics</b>\n1024-pt FFT: ~5 ms\nMemory: N/A (malloc each call)\nBaseline = 1.0x" as S0B #BBDEFB
 }
 
-package "Stage 2: Algorithm" {
-    [FFT: Radix-2 → Radix-4]
-    [In-place Transform]
-    [Cache-aware Layout]
+state "  <b>Stage 1: Algorithmic</b>  " as S1 #E8F5E9 {
+    state "<b>Cooley-Tukey Radix-2</b>\nFFT: O(N log N)\nIn-place butterfly\nBit-reversal permutation" as S1A #C8E6C9
+    state "<b>Split-Radix</b>\nMixed radix-2/4\nFewer multiplications\nTwiddle factor reuse" as S1B #C8E6C9
+    state "<b>Target</b>\n1024-pt FFT: ~0.5 ms\n<b>~10x improvement</b>" as S1M #A5D6A7
 }
 
-package "Stage 3: SIMD" {
-    [SSE4.2/AVX2 (x86)]
-    [NEON (ARM)]
-    [Auto-vectorization]
+state "  <b>Stage 2: Compiler</b>  " as S2 #FFF3E0 {
+    state "<b>Optimization Flags</b>\n-O2 / -O3 / -Ofast\n-march=native\n-ffast-math" as S2A #FFECB3
+    state "<b>Code Patterns</b>\nrestrict pointers\nLoop unrolling hints\nBranch prediction" as S2B #FFECB3
+    state "<b>Target</b>\n1024-pt FFT: ~0.2 ms\n<b>~25x improvement</b>" as S2M #FFE082
 }
 
-package "Stage 4: Multithreading" {
-    [OpenMP Parallelization]
-    [Cache Blocking]
-    [NUMA-aware]
+state "  <b>Stage 3: Memory</b>  " as S3 #F3E5F5 {
+    state "<b>Cache Optimization</b>\n64-byte aligned alloc\nCache-oblivious layout\nPrefetch hints" as S3A #E1BEE7
+    state "<b>Memory Pool</b>\nPre-allocated buffers\nZero runtime malloc\nReusable scratch space" as S3B #E1BEE7
+    state "<b>Target</b>\n1024-pt FFT: ~0.12 ms\n<b>~40x improvement</b>" as S3M #CE93D8
 }
 
-package "Stage 5: Platform" {
-    [Real-time Kernel]
-    [CPU Affinity]
-    [Memory Pinning]
+state "  <b>Stage 4: SIMD</b>  " as S4 #FFEBEE {
+    state "<b>x86 SSE4.2</b>\n4-wide float ops\n_mm_mul_ps, _mm_add_ps\nVector butterfly" as S4A #FFCDD2
+    state "<b>x86 AVX2</b>\n8-wide float ops\n_mm256_mul_ps\nFMA instructions" as S4B #FFCDD2
+    state "<b>ARM NEON</b>\n4-wide float ops\nvmulq_f32, vaddq_f32\nMobile/embedded" as S4C #FFCDD2
+    state "<b>Target</b>\n1024-pt FFT: ~0.03 ms\n<b>~150x improvement</b>" as S4M #EF9A9A
 }
 
-[Baseline (C99)] --> [Stage 1: Compiler]
-[Stage 1: Compiler] --> [Stage 2: Algorithm]
-[Stage 2: Algorithm] --> [Stage 3: SIMD]
-[Stage 3: SIMD] --> [Stage 4: Multithreading]
-[Stage 4: Multithreading] --> [Stage 5: Platform]
+state "  <b>Stage 5: Parallelism</b>  " as S5 #E0F7FA {
+    state "<b>OpenMP</b>\n#pragma omp parallel\nParallel butterfly stages\nThread pool reuse" as S5A #B2EBF2
+    state "<b>Batch Processing</b>\nMultiple FFTs in parallel\nData-level parallelism\nPipeline overlap" as S5B #B2EBF2
+    state "<b>Target</b>\n4× throughput on 4 cores\n<b>~600x total improvement</b>" as S5M #80DEEA
+}
 
-note right of [Stage 1: Compiler]
-  1.5-2x speedup
-  Zero code changes
+' Flow
+S0 -[#1565C0,bold,thickness=2]-> S1
+S1 -[#2E7D32,bold,thickness=2]-> S2
+S2 -[#E65100,bold,thickness=2]-> S3
+S3 -[#6A1B9A,bold,thickness=2]-> S4
+S4 -[#C62828,bold,thickness=2]-> S5
+
+' Internal flows
+S1A --> S1B
+S1B --> S1M
+S2A --> S2B
+S2B --> S2M
+S3A --> S3B
+S3B --> S3M
+S4A --> S4B
+S4B --> S4C
+S4C --> S4M
+S5A --> S5B
+S5B --> S5M
+
+note right of S0 #FFFDE7
+  <b>Benchmarking Setup</b>
+  • CPU: Intel / AMD x86_64
+  • Compiler: GCC 11+
+  • Measure: clock_gettime()
+  • Warmup: 100 iterations
+  • Average: 10000 runs
 end note
 
-note right of [Stage 2: Algorithm]
-  2-3x speedup
-  Cache efficiency
+note right of S4 #FFEBEE
+  <b>Platform Detection</b>
+  Compile-time: __SSE4_2__, __AVX2__, __ARM_NEON
+  Runtime: cpuid-based dispatch
+  Fallback: scalar C99 (always available)
 end note
 
-note right of [Stage 3: SIMD]
-  4-8x speedup
-  Data parallelism
-end note
-
-note right of [Stage 4: Multithreading]
-  Nx speedup (N cores)
-  Task parallelism
-end note
-
-note right of [Stage 5: Platform]
-  Predictable latency
-  < 100µs jitter
-end note
-
-note bottom
-  Total potential: 16-128x improvement
-  Measured on Intel i7 + ARM Cortex-A72
-  Target: < 1ms for 1M-point FFT
-end note
+legend bottom
+  |= Stage |= Technique |= Speedup |= Effort |
+  | <#E3F2FD> Stage 0 | Baseline (DFT) | 1× | — |
+  | <#E8F5E9> Stage 1 | Algorithm (FFT) | 10× | Low |
+  | <#FFF3E0> Stage 2 | Compiler flags | 25× | Low |
+  | <#F3E5F5> Stage 3 | Memory layout | 40× | Medium |
+  | <#FFEBEE> Stage 4 | SIMD intrinsics | 150× | High |
+  | <#E0F7FA> Stage 5 | Multi-threading | 600× | High |
+endlegend
 
 @enduml

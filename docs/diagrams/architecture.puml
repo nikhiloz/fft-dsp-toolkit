@@ -1,78 +1,108 @@
-@startuml FFT-DSP Toolkit Architecture
-!theme plain
-title FFT-DSP Toolkit: System Architecture
+@startuml architecture
 
-package "Application Layer" {
-    [Audio Processing]
-    [Signal Analysis]
-    [Sensor Fusion]
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam packageBorderThickness 2
+
+skinparam package {
+    BackgroundColor<<app>> #E3F2FD
+    BorderColor<<app>> #1565C0
+    FontColor<<app>> #0D47A1
+    BackgroundColor<<core>> #FFF3E0
+    BorderColor<<core>> #E65100
+    FontColor<<core>> #BF360C
+    BackgroundColor<<sys>> #E8F5E9
+    BorderColor<<sys>> #2E7D32
+    FontColor<<sys>> #1B5E20
+    BackgroundColor<<plat>> #F3E5F5
+    BorderColor<<plat>> #6A1B9A
+    FontColor<<plat>> #4A148C
 }
 
-package "FFT-DSP Core Library" {
-    package "Signal Processing" {
-        [FFT/IFFT]
-        [Filters]
-        [Windows]
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #455A64
+    FontColor #263238
+    BorderThickness 1.5
+}
+
+title <size:20><b>FFT-DSP Toolkit</b></size>\n<size:14><color:#546E7A>System Architecture Overview</color></size>\n<size:11><i>C99 | Zero External Dependencies | Real-Time Capable</i></size>
+
+package "  Application Layer  " <<app>> {
+    [<b>Audio Processing</b>\n<size:10>EQ, Effects, Compression</size>] as AP
+    [<b>Signal Analysis</b>\n<size:10>Spectrum, Features, Classification</size>] as SA
+    [<b>Sensor Fusion</b>\n<size:10>IMU, Accelerometer, Gyroscope</size>] as SF
+}
+
+package "  FFT-DSP Core Library  (libfft_dsp)  " <<core>> {
+    package "Signal Processing" #FFECB3 {
+        [<b>FFT / IFFT</b>\n<size:10>Radix-2, Radix-4</size>\n<size:10>Real & Complex modes</size>] as FFT
+        [<b>Digital Filters</b>\n<size:10>FIR & IIR</size>\n<size:10>Configurable order</size>] as FILT
+        [<b>Window Functions</b>\n<size:10>Hann, Hamming</size>\n<size:10>Blackman, Kaiser</size>] as WIN
     }
-    
-    package "Analysis" {
-        [Spectral Analysis]
-        [Correlation]
-        [Statistics]
+
+    package "Analysis" #FFECB3 {
+        [<b>Spectral Analysis</b>\n<size:10>PSD, Welch's Method</size>\n<size:10>Peak Detection</size>] as SPEC
+        [<b>Correlation</b>\n<size:10>Auto & Cross</size>\n<size:10>Lag Estimation</size>] as CORR
+        [<b>Statistics</b>\n<size:10>RMS, THD, SNR</size>\n<size:10>Histogram, Percentile</size>] as STAT
     }
-    
-    package "Real-Time" {
-        [Ring Buffer]
-        [Overlap-Add]
-        [Streaming]
+
+    package "Real-Time Engine" #FFECB3 {
+        [<b>Ring Buffer</b>\n<size:10>Lock-free FIFO</size>\n<size:10>Zero-copy Transfers</size>] as RBUF
+        [<b>Overlap-Add / Save</b>\n<size:10>Streaming FFT</size>\n<size:10>50% Overlap</size>] as OLA
+        [<b>Stream Manager</b>\n<size:10>Pipeline Control</size>\n<size:10>Latency Monitoring</size>] as STR
     }
-    
-    package "Optimization" {
-        [SIMD Kernels]
-        [Multithreading]
-        [Memory Mgmt]
+
+    package "Optimization Layer" #FFECB3 {
+        [<b>SIMD Kernels</b>\n<size:10>SSE4.2/AVX2 (x86)</size>\n<size:10>NEON (ARM)</size>] as SIMD
+        [<b>Multithreading</b>\n<size:10>OpenMP Parallel</size>\n<size:10>Task Scheduling</size>] as MT
+        [<b>Memory Manager</b>\n<size:10>Pool Allocator</size>\n<size:10>Cache-Aligned Buffers</size>] as MEM
     }
 }
 
-package "System Interface" {
-    [ALSA Audio]
-    [File I/O]
-    [Network]
+package "  System Interface  " <<sys>> {
+    [<b>ALSA Audio</b>\n<size:10>Capture & Playback</size>\n<size:10>Low-Latency</size>] as ALSA
+    [<b>File I/O</b>\n<size:10>WAV, RAW, CSV</size>\n<size:10>Batch Processing</size>] as FIO
+    [<b>Network</b>\n<size:10>Socket Streaming</size>\n<size:10>Remote DSP</size>] as NET
 }
 
-package "Platform Abstraction" {
-    [POSIX API]
-    [Threading]
-    [Memory]
+package "  Platform Abstraction (POSIX)  " <<plat>> {
+    [<b>POSIX API</b>\n<size:10>pthread, mmap</size>\n<size:10>clock, timer</size>] as POSIX
+    [<b>Thread Pool</b>\n<size:10>Work Stealing</size>\n<size:10>CPU Affinity</size>] as TPOOL
+    [<b>Memory</b>\n<size:10>mmap, mlock</size>\n<size:10>Huge Pages</size>] as PMEM
 }
 
-[Audio Processing] --> [FFT/IFFT]
-[Audio Processing] --> [Filters]
-[Signal Analysis] --> [Spectral Analysis]
-[Sensor Fusion] --> [Correlation]
+AP -[#1565C0,bold]-> FFT
+AP -[#1565C0,bold]-> FILT
+SA -[#1565C0,bold]-> SPEC
+SF -[#1565C0,bold]-> CORR
 
-[FFT/IFFT] -.-> [SIMD Kernels]
-[Filters] -.-> [SIMD Kernels]
+WIN -[#E65100]-> FFT
+STAT -[#E65100]-> SPEC
+FFT -[#E65100,dashed]-> SIMD
+FILT -[#E65100,dashed]-> SIMD
+RBUF -[#E65100]-> FFT
+OLA -[#E65100]-> FILT
+STR -[#E65100]-> RBUF
 
-[Ring Buffer] --> [FFT/IFFT]
-[Overlap-Add] --> [Filters]
-[Streaming] --> [Ring Buffer]
+ALSA -[#2E7D32]-> STR
+FIO -[#2E7D32]-> FFT
+NET -[#2E7D32]-> STR
 
-[ALSA Audio] --> [Real-Time]
-[File I/O] --> [Signal Processing]
+SIMD -[#6A1B9A]-> MT
+MT -[#6A1B9A]-> MEM
+MEM -[#6A1B9A]-> POSIX
+MT -[#6A1B9A]-> TPOOL
 
-[Windows] --> [FFT/IFFT]
-[Statistics] --> [Spectral Analysis]
-
-[SIMD Kernels] --> [Multithreading]
-[Multithreading] --> [Memory Mgmt]
-[Memory Mgmt] --> [POSIX API]
-
-note right of [FFT-DSP Core Library]
-  C99 Core
-  Zero Python deps
-  < 1ms FFT latency
-  Thread-safe
-end note
+legend right
+  |= Color |= Layer |= Description |
+  | <#E3F2FD> | Application | User-facing programs |
+  | <#FFF3E0> | Core Library | DSP algorithms |
+  | <#E8F5E9> | System I/O | Hardware & network |
+  | <#F3E5F5> | Platform | OS abstraction |
+endlegend
 
 @enduml

@@ -1,85 +1,193 @@
-@startuml API Reference Structure
-!theme plain
-title FFT-DSP Toolkit: Public API Structure
+@startuml api_reference
 
-package "fft.h" {
-    [fft_init(N)]
-    [fft_transform(input, output, N)]
-    [ifft_transform(input, output, N)]
-    [fft_real(input, output, N)]
-    [fft_free()]
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing true
+skinparam roundcorner 10
+
+skinparam class {
+    BorderThickness 2
+    FontColor #263238
+    AttributeFontSize 11
 }
 
-package "filter.h" {
-    [filter_init(coeffs, order)]
-    [fir_filter(input, output, N)]
-    [iir_filter(input, output, N)]
-    [filter_free()]
+title <size:20><b>Public API Reference</b></size>\n<size:14><color:#546E7A>Complete C API — all public types and functions</color></size>
+
+package "fft.h — Transform Module" #E3F2FD {
+    class "<size:14><b>Complex</b></size>" as Complex #BBDEFB {
+        <b>Fields</b>
+        --
+        double real
+        double imag
+    }
+
+    class "<size:14><b>FFT Functions</b></size>" as FFTFuncs #BBDEFB {
+        <b>Core Transforms</b>
+        --
+        + void fft(Complex* x, int n)
+        + void ifft(Complex* x, int n)
+        + void fft_real(double* in, Complex* out, int n)
+        ..
+        <b>Feature Extraction</b>
+        --
+        + void fft_magnitude(Complex* x, double* mag, int n)
+        + void fft_phase(Complex* x, double* phase, int n)
+        + void fft_power(Complex* x, double* power, int n)
+        ..
+        <b>Utilities</b>
+        --
+        + int fft_next_pow2(int n)
+        + void fft_shift(Complex* x, int n)
+    }
 }
 
-package "window.h" {
-    [window_hann(N)]
-    [window_hamming(N)]
-    [window_blackman(N)]
-    [window_kaiser(N, beta)]
+package "filter.h — Filter Module" #FFF3E0 {
+    class "<size:14><b>FIRFilter</b></size>" as FIR #FFECB3 {
+        <b>Fields</b>
+        --
+        double* coefficients
+        double* delay_line
+        int order
+        int write_idx
+    }
+
+    class "<size:14><b>IIRFilter</b></size>" as IIR #FFECB3 {
+        <b>Fields</b>
+        --
+        double* b_coeffs  // numerator
+        double* a_coeffs  // denominator
+        double* state
+        int order
+    }
+
+    class "<size:14><b>Filter Functions</b></size>" as FilterFuncs #FFECB3 {
+        <b>FIR Operations</b>
+        --
+        + void fir_filter(double* in, double* out, int n, double* h, int order)
+        + FIRFilter* fir_create(double* coeffs, int order)
+        + double fir_process_sample(FIRFilter* f, double x)
+        + void fir_destroy(FIRFilter* f)
+        ..
+        <b>IIR Operations</b>
+        --
+        + IIRFilter* iir_create(double* b, double* a, int order)
+        + double iir_process_sample(IIRFilter* f, double x)
+        + void iir_destroy(IIRFilter* f)
+        ..
+        <b>Filter Design</b>
+        --
+        + void lowpass_coeffs(double* h, int order, double fc, double fs)
+        + void highpass_coeffs(double* h, int order, double fc, double fs)
+        + void bandpass_coeffs(double* h, int order, double f1, double f2, double fs)
+    }
 }
 
-package "spectrum.h" {
-    [spectrum_psd(input, N)]
-    [spectrum_welch(input, N, segments)]
-    [spectrum_peaks(magnitude, N)]
-    [spectrum_freqs(sample_rate, N)]
+package "dsp_utils.h — Utilities" #E8F5E9 {
+    enum "<size:14><b>WindowType</b></size>" as WinType #C8E6C9 {
+        WINDOW_HANN
+        WINDOW_HAMMING
+        WINDOW_BLACKMAN
+        WINDOW_KAISER
+        WINDOW_RECTANGULAR
+    }
+
+    class "<size:14><b>Window Functions</b></size>" as WinFuncs #C8E6C9 {
+        <b>Individual Windows</b>
+        --
+        + double hann_window(int n, int i)
+        + double hamming_window(int n, int i)
+        + double blackman_window(int n, int i)
+        + double kaiser_window(int n, int i, double beta)
+        ..
+        <b>Batch Apply</b>
+        --
+        + void apply_window(double* signal, int n, WindowType type)
+        + void generate_window(double* w, int n, WindowType type)
+        ..
+        <b>Utilities</b>
+        --
+        + int next_power_of_2(int n)
+        + double db_to_linear(double db)
+        + double linear_to_db(double linear)
+        + double rms(double* signal, int n)
+    }
 }
 
-package "convolution.h" {
-    [convolve(x, h, N, M)]
-    [correlate_auto(x, N)]
-    [correlate_cross(x, y, N)]
+package "spectrum.h — Analysis" #F3E5F5 {
+    class "<size:14><b>SpectrumConfig</b></size>" as SpecCfg #E1BEE7 {
+        <b>Fields</b>
+        --
+        int fft_size
+        int overlap
+        WindowType window
+        double sample_rate
+    }
+
+    class "<size:14><b>SpectralPeak</b></size>" as Peak #E1BEE7 {
+        <b>Fields</b>
+        --
+        double frequency
+        double magnitude_db
+        int bin_index
+    }
+
+    class "<size:14><b>Spectrum Functions</b></size>" as SpecFuncs #E1BEE7 {
+        <b>Spectral Analysis</b>
+        --
+        + void power_spectrum(double* x, double* psd, int n, SpectrumConfig* cfg)
+        + void welch_psd(double* x, int total_n, double* psd, SpectrumConfig* cfg)
+        + int peak_detect(double* psd, int n, SpectralPeak* peaks, int max_peaks, double threshold_db)
+        ..
+        <b>Frequency Utilities</b>
+        --
+        + double bin_to_freq(int bin, int fft_size, double fs)
+        + int freq_to_bin(double freq, int fft_size, double fs)
+        + double spectral_centroid(double* psd, int n, double fs)
+    }
 }
 
-package "ring_buffer.h" {
-    [rbuf_create(capacity)]
-    [rbuf_write(buf, data, N)]
-    [rbuf_read(buf, data, N)]
-    [rbuf_destroy(buf)]
+package "ring_buffer.h — Streaming" #E0F7FA {
+    class "<size:14><b>RingBuffer</b></size>" as RBuf #B2EBF2 {
+        <b>Fields (opaque)</b>
+        --
+        double* buffer
+        size_t capacity
+        _Atomic size_t read_pos
+        _Atomic size_t write_pos
+    }
+
+    class "<size:14><b>RingBuffer Functions</b></size>" as RBFuncs #B2EBF2 {
+        <b>Lifecycle</b>
+        --
+        + RingBuffer* ringbuf_create(size_t capacity)
+        + void ringbuf_destroy(RingBuffer* rb)
+        + void ringbuf_reset(RingBuffer* rb)
+        ..
+        <b>Operations</b>
+        --
+        + size_t ringbuf_write(RingBuffer* rb, double* data, size_t n)
+        + size_t ringbuf_read(RingBuffer* rb, double* data, size_t n)
+        + size_t ringbuf_peek(RingBuffer* rb, double* data, size_t n)
+        ..
+        <b>Status</b>
+        --
+        + size_t ringbuf_available(RingBuffer* rb)
+        + size_t ringbuf_free_space(RingBuffer* rb)
+        + bool ringbuf_is_full(RingBuffer* rb)
+        + bool ringbuf_is_empty(RingBuffer* rb)
+    }
 }
 
-package "signal_gen.h" {
-    [gen_sine(freq, duration, sr)]
-    [gen_chirp(f0, f1, duration, sr)]
-    [gen_noise_white(N)]
-    [gen_noise_pink(N)]
-}
-
-package "dsp_utils.h" {
-    [complex_add(a, b)]
-    [complex_mult(a, b)]
-    [magnitude(complex)]
-    [phase(complex)]
-}
-
-note right of [fft.h]
-  Core FFT operations
-  Radix-2 implementation
-  Real & complex support
-end note
-
-note right of [filter.h]
-  Time-domain filtering
-  FIR & IIR filters
-  Configurable order
-end note
-
-note right of [spectrum.h]
-  Frequency analysis
-  PSD estimation
-  Peak detection
-end note
-
-note right of [ring_buffer.h]
-  Circular FIFO buffers
-  Lock-free access
-  Real-time safe
-end note
+' Relationships
+FFTFuncs --> Complex : uses
+FilterFuncs --> FIR : creates
+FilterFuncs --> IIR : creates
+WinFuncs --> WinType : uses
+SpecFuncs --> SpecCfg : configured by
+SpecFuncs --> Peak : produces
+SpecFuncs ..> FFTFuncs : calls internally
+SpecFuncs ..> WinFuncs : applies windows
+RBFuncs --> RBuf : manages
 
 @enduml

@@ -1,38 +1,120 @@
-@startuml DSP Signal Processing Pipeline
-!theme plain
-title FFT-DSP Toolkit: Signal Processing Data Flow
+@startuml signal_flow
 
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
+
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #455A64
+    FontColor #263238
+    BarColor #1565C0
+    DiamondBackgroundColor #FFF9C4
+    DiamondBorderColor #F9A825
+    ArrowColor #37474F
+}
+
+skinparam partition {
+    BorderThickness 2
+    RoundCorner 10
+}
+
+title <size:20><b>DSP Signal Processing Pipeline</b></size>\n<size:14><color:#546E7A>From Acquisition to Output — Complete Data Flow</color></size>
+
+|#E3F2FD|  Input Acquisition  |
 start
-:Input Signal\n(RAW samples);
-:Apply Window\n(Hann/Hamming);
-:FFT Transform\n(frequency domain);
-:Spectral Analysis\n(magnitude/phase);
-:Optional Filtering\n(frequency or time);
-:IFFT Transform\n(time domain);
-:Post-processing\n(normalization);
-:Output Signal\n(processed);
+:<b>Audio Source</b>
+ALSA capture / WAV file / Socket;
+note right #E8EAF6
+  Supported formats:
+  • 8/16/32-bit PCM
+  • 32/64-bit Float
+  • Mono / Stereo
+  • 8–192 kHz
+end note
+:Buffer raw samples into
+<b>Ring Buffer</b> (lock-free);
+
+|#FFF3E0|  Pre-Processing  |
+:<b>Normalization</b>
+Scale to [-1.0, +1.0];
+:<b>DC Offset Removal</b>
+Subtract running mean;
+if (<b>Windowing</b>\nrequired?) then (yes)
+    :<b>Apply Window</b>
+    Hann | Hamming | Blackman | Kaiser;
+    note right #FFF9C4
+      Window reduces spectral leakage
+      by tapering frame edges to zero
+    end note
+else (no)
+endif
+
+|#E8F5E9|  Transform & Analysis  |
+fork
+    :<b>FFT (Radix-2)</b>
+    Time → Frequency domain;
+    note right #C8E6C9
+      Cooley-Tukey algorithm
+      O(N log N) complexity
+      Power-of-2 zero-padding
+    end note
+    :<b>Magnitude & Phase</b>
+    |X[k]| and ∠X[k];
+    :<b>Power Spectral Density</b>
+    PSD = |X[k]|² / N;
+fork again
+    :<b>Digital Filtering</b>
+    FIR / IIR direct form;
+    note left #C8E6C9
+      FIR: Linear phase
+      IIR: Recursive, lower order
+      Cascade biquad sections
+    end note
+    :<b>Convolution</b>
+    y[n] = Σ h[k]·x[n-k];
+end fork
+
+|#F3E5F5|  Post-Processing  |
+:<b>Feature Extraction</b>
+Peak detection, RMS, THD, SNR;
+if (<b>Inverse FFT</b>\nneeded?) then (yes)
+    :<b>IFFT + Overlap-Add</b>
+    Frequency → Time domain;
+    note right #E1BEE7
+      Overlap-Add / Overlap-Save
+      for continuous stream
+      reconstruction
+    end note
+else (no)
+endif
+
+|#ECEFF1|  Output Stage  |
+:<b>Output Results</b>;
+fork
+    :<b>Audio Playback</b>
+    ALSA / DAC output;
+fork again
+    :<b>File Export</b>
+    WAV / CSV / Binary;
+fork again
+    :<b>Visualization</b>
+    Spectrum / Waveform data;
+fork again
+    :<b>Network Stream</b>
+    Socket / Pipe;
+end fork
 stop
 
-note right
-  All operations support:
-  - Streaming mode (overlap-add)
-  - Batch processing
-  - Multi-threaded SIMD
-  - Real-time guarantees
-end note
-
-partition "Time Domain" {
-  :Input Signal\n(RAW samples);
-  :Apply Window\n(Hann/Hamming);
-  :Optional Filtering\n(frequency or time);
-  :Post-processing\n(normalization);
-  :Output Signal\n(processed);
-}
-
-partition "Frequency Domain" {
-  :FFT Transform\n(frequency domain);
-  :Spectral Analysis\n(magnitude/phase);
-  :IFFT Transform\n(time domain);
-}
+legend right
+  |= Stage |= Description |
+  | <#E3F2FD> | Input: Data acquisition & buffering |
+  | <#FFF3E0> | Pre-process: Normalize & window |
+  | <#E8F5E9> | Transform: FFT, Filters, Analysis |
+  | <#F3E5F5> | Post-process: Features & IFFT |
+  | <#ECEFF1> | Output: Playback, files, network |
+endlegend
 
 @enduml

@@ -4,7 +4,9 @@ Complete architectural overview of the FFT-DSP Toolkit based on PlantUML diagram
 
 ## System Architecture
 
-**Diagram**: [architecture.puml](diagrams/architecture.puml)
+![System Architecture](diagrams/architecture.png)
+
+*Source: [architecture.puml](diagrams/architecture.puml)*
 
 The toolkit is organized in four layers:
 
@@ -48,7 +50,9 @@ Four integrated subsystems:
 
 ## Signal Processing Pipeline
 
-**Diagram**: [signal_flow.puml](diagrams/signal_flow.puml)
+![Signal Processing Pipeline](diagrams/signal_flow.png)
+
+*Source: [signal_flow.puml](diagrams/signal_flow.puml)*
 
 Typical DSP workflow flows through two domains:
 
@@ -72,26 +76,9 @@ All operations support:
 
 ## Module Dependencies
 
-**Diagram**: [modules.puml](diagrams/modules.puml)
+![Module Dependencies](diagrams/modules.png)
 
-### Core Dependency Hierarchy
-
-```
-dsp_utils (Foundation)
-├── fft.c (FFT implementation)
-│   ├── convolution.c (FFT-based convolution)
-│   └── spectrum.c (Spectral analysis)
-├── filter.c (Time-domain filtering)
-└── window.c (Window functions)
-
-Real-Time Streaming
-├── ring_buffer.c (Circular buffers)
-├── streaming.c (Overlap-add/save)
-└── Depends on: fft, filter, window
-
-Signal Generation
-└── Depends on: dsp_utils, window
-```
+*Source: [modules.puml](diagrams/modules.puml)*
 
 ### Module Responsibilities
 
@@ -109,27 +96,9 @@ Signal Generation
 
 ## FFT Processing Sequence
 
-**Diagram**: [fft_sequence.puml](diagrams/fft_sequence.puml)
+![FFT Processing Sequence](diagrams/fft_sequence.png)
 
-### Call Flow for FFT Operation
-
-```
-Application
-    ↓
-  read_samples() → Ring Buffer
-    ↓
-apply_window() → Window Functions
-    ↓
-fft_transform() → FFT Core
-    ↓
-fft_radix2() → SIMD Kernels (AVX/NEON)
-    ↓
-butterfly operations (parallel)
-    ↓
-Output: magnitude, phase, frequency
-    ↓
-write_results() → Output Buffer
-```
+*Source: [fft_sequence.puml](diagrams/fft_sequence.puml)*
 
 ### Key Features
 
@@ -141,24 +110,9 @@ write_results() → Output Buffer
 
 ## Real-Time Streaming Architecture
 
-**Diagram**: [realtime_architecture.puml](diagrams/realtime_architecture.puml)
+![Real-Time Streaming Architecture](diagrams/realtime_architecture.png)
 
-### Real-Time Audio Pipeline
-
-```
-Microphone
-    ↓ (DMA from hardware)
-Ring Buffer (Input FIFO)
-    ↓ (ready_signal when full)
-Processing Thread
-    ├── Windowing
-    ├── FFT/IFFT
-    └── Filtering
-    ↓
-Ring Buffer (Output FIFO)
-    ↓ (DMA to hardware)
-Speaker
-```
+*Source: [realtime_architecture.puml](diagrams/realtime_architecture.puml)*
 
 ### Real-Time Guarantees
 
@@ -177,7 +131,9 @@ Speaker
 
 ## Performance Optimization Strategy
 
-**Diagram**: [optimization_roadmap.puml](diagrams/optimization_roadmap.puml)
+![Performance Optimization Roadmap](diagrams/optimization_roadmap.png)
+
+*Source: [optimization_roadmap.puml](diagrams/optimization_roadmap.puml)*
 
 ### Five-Stage Optimization Approach
 
@@ -200,63 +156,15 @@ Speaker
 
 ## API Reference Structure
 
-**Diagram**: [api_reference.puml](diagrams/api_reference.puml)
+![Public API Reference](diagrams/api_reference.png)
 
-### Public API Modules
-
-```
-fft.h
-├── fft_init(N)
-├── fft_transform(input, output, N)
-├── ifft_transform(input, output, N)
-├── fft_real(input, output, N)
-└── fft_free()
-
-filter.h
-├── filter_init(coeffs, order)
-├── fir_filter(input, output, N)
-├── iir_filter(input, output, N)
-└── filter_free()
-
-window.h
-├── window_hann(N)
-├── window_hamming(N)
-├── window_blackman(N)
-└── window_kaiser(N, beta)
-
-spectrum.h
-├── spectrum_psd(input, N)
-├── spectrum_welch(input, N, segments)
-├── spectrum_peaks(magnitude, N)
-└── spectrum_freqs(sample_rate, N)
-
-convolution.h
-├── convolve(x, h, N, M)
-├── correlate_auto(x, N)
-└── correlate_cross(x, y, N)
-
-ring_buffer.h
-├── rbuf_create(capacity)
-├── rbuf_write(buf, data, N)
-├── rbuf_read(buf, data, N)
-└── rbuf_destroy(buf)
-
-signal_gen.h
-├── gen_sine(freq, duration, sr)
-├── gen_chirp(f0, f1, duration, sr)
-├── gen_noise_white(N)
-└── gen_noise_pink(N)
-
-dsp_utils.h
-├── complex_add(a, b)
-├── complex_mult(a, b)
-├── magnitude(complex)
-└── phase(complex)
-```
+*Source: [api_reference.puml](diagrams/api_reference.puml)*
 
 ## Project Development Roadmap
 
-**Diagram**: [roadmap.puml](diagrams/roadmap.puml)
+![Development Roadmap](diagrams/roadmap.png)
+
+*Source: [roadmap.puml](diagrams/roadmap.puml)*
 
 ### 6-Phase Development Plan
 
@@ -297,7 +205,9 @@ dsp_utils.h
 
 ## Use Cases
 
-**Diagram**: [use_cases.puml](diagrams/use_cases.puml)
+![Use Cases](diagrams/use_cases.png)
+
+*Source: [use_cases.puml](diagrams/use_cases.puml)*
 
 ### Primary Applications
 
@@ -323,7 +233,9 @@ dsp_utils.h
 
 ## Performance Benchmarks
 
-**Diagram**: [benchmarks.puml](diagrams/benchmarks.puml)
+![Performance Benchmarks](diagrams/benchmarks.png)
+
+*Source: [benchmarks.puml](diagrams/benchmarks.puml)*
 
 ### Latency Comparison (1024-point FFT)
 
@@ -354,18 +266,9 @@ dsp_utils.h
 
 ---
 
-**Note**: All architectural diagrams are available as PlantUML source files in `docs/diagrams/`. 
-To render them as PNG:
+**Note**: All architectural diagrams are rendered as PNG from PlantUML sources in `docs/diagrams/`. 
+To regenerate PNGs after editing `.puml` files:
 
 ```bash
-# Option 1: Online (VS Code)
-code --install-extension jebbs.plantuml
-# Then Alt+D to preview
-
-# Option 2: Local (Linux)
-sudo apt-get install plantuml graphviz
-cd docs/diagrams && for f in *.puml; do plantuml "$f"; done
-
-# Option 3: Docker
-docker run --rm -v $(pwd):/diagrams plantuml/plantuml /diagrams/*.puml
+java -jar ~/tools/plantuml.jar -tpng docs/diagrams/*.puml
 ```

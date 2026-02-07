@@ -1,113 +1,112 @@
-@startuml Project Roadmap
-!theme plain
-title FFT-DSP Toolkit: 6-Phase Development Roadmap
+@startuml roadmap
 
-card Phase1 [
-  **Phase 1: Build Infrastructure**
-  - CMake build system
-  - Makefile templates
-  - Test framework
-  - CI/CD pipelines
-  ----
-  Status: ✓ COMPLETE
-]
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundcorner 10
 
-card Phase2 [
-  **Phase 2: Core DSP**
-  - Window functions
-  - Convolution
-  - Spectral analysis
-  - Signal generation
-  ----
-  Status: In Progress
-  Duration: 2-3 hours
-]
+skinparam rectangle {
+    BorderThickness 2
+}
 
-card Phase3 [
-  **Phase 3: Real-Time**
-  - Ring buffers
-  - Overlap-add/save
-  - ALSA integration
-  - Low-latency design
-  ----
-  Status: Planned
-  Duration: 2-3 hours
-]
+title <size:20><b>FFT-DSP Toolkit — Development Roadmap</b></size>\n<size:14><color:#546E7A>6-Phase C-Only Development Plan</color></size>
 
-card Phase4 [
-  **Phase 4: Optimization**
-  - SIMD kernels
-  - Multithreading
-  - Memory management
-  - Benchmarking
-  ----
-  Status: Planned
-  Duration: 3-4 hours
-]
+' Timeline header
+rectangle "<size:16><b>◀ Timeline ▶</b></size>" as TIMELINE #37474F;text:white {
+}
 
-card Phase5 [
-  **Phase 5: Documentation**
-  - API reference
-  - User guide
-  - Code examples
-  - Performance charts
-  ----
-  Status: Planned
-  Duration: 2-3 hours
-]
+rectangle "<size:16><b>Phase 1: Foundation</b></size>\n<size:11><i>Build Infrastructure & Testing</i></size>" as P1 #E3F2FD {
+    rectangle "✅ CMake + Makefile\n   cross-platform build" as P1A #BBDEFB
+    rectangle "✅ Test framework\n   (test_framework.h)" as P1B #BBDEFB
+    rectangle "✅ CI/CD pipeline\n   GitHub Actions" as P1C #BBDEFB
+    rectangle "✅ Code quality\n   format, lint, memcheck" as P1D #BBDEFB
+}
 
-card Phase6 [
-  **Phase 6: Advanced**
-  - GPU acceleration
-  - Adaptive algorithms
-  - Wavelets
-  - ML integration
-  ----
-  Status: Stretch Goals
-  Duration: 4+ hours
-]
+rectangle "<size:16><b>Phase 2: Core DSP</b></size>\n<size:11><i>Essential Algorithms</i></size>" as P2 #FFF3E0 {
+    rectangle "⬜ Window functions\n   Hann|Hamming|Blackman|Kaiser" as P2A #FFECB3
+    rectangle "⬜ Convolution engine\n   Linear + Circular + FFT-based" as P2B #FFECB3
+    rectangle "⬜ Spectral analysis\n   PSD, Welch, Peak detection" as P2C #FFECB3
+    rectangle "⬜ Correlation\n   Auto & Cross-correlation" as P2D #FFECB3
+}
 
-Phase1 --> Phase2
-Phase2 --> Phase3
-Phase3 --> Phase4
-Phase4 --> Phase5
-Phase5 --> Phase6
+rectangle "<size:16><b>Phase 3: Real-Time</b></size>\n<size:11><i>Streaming Pipeline</i></size>" as P3 #E8F5E9 {
+    rectangle "⬜ Ring buffer\n   Lock-free SPSC" as P3A #C8E6C9
+    rectangle "⬜ Overlap-Add/Save\n   Streaming FFT" as P3B #C8E6C9
+    rectangle "⬜ ALSA integration\n   Audio capture/playback" as P3C #C8E6C9
+    rectangle "⬜ Latency monitor\n   Buffer tracking" as P3D #C8E6C9
+}
 
-note bottom of Phase1
-  Foundation locked
-  Ready for expansion
+rectangle "<size:16><b>Phase 4: Optimization</b></size>\n<size:11><i>SIMD & Parallelism</i></size>" as P4 #F3E5F5 {
+    rectangle "⬜ SSE4.2 kernels\n   4-wide butterfly" as P4A #E1BEE7
+    rectangle "⬜ AVX2 kernels\n   8-wide butterfly + FMA" as P4B #E1BEE7
+    rectangle "⬜ ARM NEON\n   Mobile/embedded path" as P4C #E1BEE7
+    rectangle "⬜ OpenMP parallel\n   Multi-core FFT" as P4D #E1BEE7
+}
+
+rectangle "<size:16><b>Phase 5: Applications</b></size>\n<size:11><i>Examples & Demos</i></size>" as P5 #FFEBEE {
+    rectangle "⬜ Audio equalizer\n   10-band parametric" as P5A #FFCDD2
+    rectangle "⬜ Spectrum analyzer\n   Real-time terminal UI" as P5B #FFCDD2
+    rectangle "⬜ Noise reduction\n   Spectral subtraction" as P5C #FFCDD2
+    rectangle "⬜ Pitch detector\n   Autocorrelation-based" as P5D #FFCDD2
+}
+
+rectangle "<size:16><b>Phase 6: Polish</b></size>\n<size:11><i>Documentation & Release</i></size>" as P6 #E0F7FA {
+    rectangle "⬜ Complete API docs\n   Doxygen + examples" as P6A #B2EBF2
+    rectangle "⬜ Benchmark suite\n   Automated perf tracking" as P6B #B2EBF2
+    rectangle "⬜ Package release\n   .deb, .rpm, pkg-config" as P6C #B2EBF2
+    rectangle "⬜ Tutorial guide\n   Step-by-step walkthrough" as P6D #B2EBF2
+}
+
+' Phase connections
+P1 -[#1565C0,bold,thickness=3]-> P2
+P2 -[#E65100,bold,thickness=3]-> P3
+P3 -[#2E7D32,bold,thickness=3]-> P4
+P4 -[#6A1B9A,bold,thickness=3]-> P5
+P5 -[#C62828,bold,thickness=3]-> P6
+
+' Internal connections
+P1A -[hidden]-> P1B
+P1B -[hidden]-> P1C
+P1C -[hidden]-> P1D
+
+P2A -[hidden]-> P2B
+P2B -[hidden]-> P2C
+P2C -[hidden]-> P2D
+
+P3A -[hidden]-> P3B
+P3B -[hidden]-> P3C
+P3C -[hidden]-> P3D
+
+P4A -[hidden]-> P4B
+P4B -[hidden]-> P4C
+P4C -[hidden]-> P4D
+
+P5A -[hidden]-> P5B
+P5B -[hidden]-> P5C
+P5C -[hidden]-> P5D
+
+P6A -[hidden]-> P6B
+P6B -[hidden]-> P6C
+P6C -[hidden]-> P6D
+
+note bottom of P1 #E8EAF6
+  <b>Status: COMPLETE</b>
+  Build system operational
+  Tests running (some need fix)
 end note
 
-note bottom of Phase2
-  Rich algorithm library
-  Core DSP capabilities
-end note
-
-note bottom of Phase3
-  Production-ready
-  Real-time applications
-end note
-
-note bottom of Phase4
-  Industry performance
-  < 1ms latency target
-end note
-
-note bottom of Phase5
-  Complete reference
-  Developer friendly
-end note
-
-note bottom of Phase6
-  Cutting-edge features
-  Research quality
+note bottom of P2 #FFFDE7
+  <b>Status: UP NEXT</b>
+  Expand core algorithm library
+  Full test coverage target: 90%+
 end note
 
 legend right
-  |= Completed |
-  |= In Progress |
-  |= Planned |
-  |= Stretch |
-end legend
+  |= Symbol |= Status |
+  | ✅ | Completed |
+  | 🔧 | In Progress |
+  | ⬜ | Planned |
+endlegend
 
 @enduml
