@@ -100,6 +100,11 @@ All operations support:
 | **hilbert** | Hilbert transform, analytic signal, envelope | fft, dsp_utils |
 | **averaging** | Coherent averaging, EMA, MA, median filter | dsp_utils |
 | **remez** | IRLS-based equiripple FIR design | dsp_utils |
+| **adaptive** | LMS, NLMS, RLS adaptive filtering | dsp_utils |
+| **lpc** | Linear prediction, Levinson-Durbin, AR spectrum | dsp_utils |
+| **spectral_est** | MUSIC, Capon parametric spectral estimation | fft, dsp_utils |
+| **cepstrum** | Cepstrum, Mel filterbank, MFCC pipeline | fft, dsp_utils |
+| **dsp2d** | 2-D convolution, FFT, image kernels (Sobel, Gaussian) | fft, dsp_utils |
 
 ## FFT Processing Sequence
 
@@ -198,9 +203,17 @@ All operations support:
    - Ch21 Signal Averaging & Noise Reduction
    - Ch22 Advanced FIR Design (Parks-McClellan / IRLS)
 
-6. **Phase 6: Optimisation & Capstone** (Planned)
-   - SIMD kernels, multithreading, benchmarking
-   - Ch30 Capstone project
+6. **Phase 6: Postgraduate Topics** ✓ COMPLETE
+   - Ch23 Adaptive Filters (LMS, NLMS, RLS)
+   - Ch24 Linear Prediction & AR Modelling
+   - Ch25 Parametric Spectral Estimation (MUSIC, Capon)
+   - Ch26 Cepstrum Analysis & MFCCs
+   - Ch27 2-D DSP & Image Processing
+
+7. **Phase 7: Systems & Capstone** (Planned)
+   - Ch28 Real-time system design
+   - Ch29 SIMD & hardware optimisation
+   - Ch30 Capstone project (✓ COMPLETE)
 
 ## Use Cases
 
@@ -257,10 +270,7 @@ All operations support:
 
 ## Related Documentation
 
-- [PROJECT_EXPANSION_PLAN.md](PROJECT_EXPANSION_PLAN.md) - Detailed roadmap
 - [API.md](API.md) - Complete function reference
-- [PERFORMANCE.md](PERFORMANCE.md) - Optimization guide
-- [REALTIME.md](REALTIME.md) - Real-time programming
 - [reference/diagrams/](diagrams/) - All PlantUML source files
 
 ---

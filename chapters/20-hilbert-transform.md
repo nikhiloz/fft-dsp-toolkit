@@ -87,6 +87,6 @@ make chapters
 
 ## Cross-References
 
-- [Chapter 10: FIR Filters](10-fir-filter-design.md) — Type III FIR structure
-- [Chapter 08: FFT](08-fft.md) — FFT-based analytic signal
+- [Chapter 10: Digital Filters](10-digital-filters.md) — Type III FIR structure
+- [Chapter 08: FFT Fundamentals](08-fft-fundamentals.md) — FFT-based analytic signal
 - [Chapter 03: Complex Numbers](03-complex-numbers.md) — complex magnitude and phase

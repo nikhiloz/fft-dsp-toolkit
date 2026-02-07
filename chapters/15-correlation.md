@@ -180,9 +180,9 @@ The PSD is the DFT of the autocorrelation function.  This means:
 
 ## What's Next?
 
-- [Ch 16 — Overlap-Add/Save](16-overlap-save.md) — streaming convolution
+- [Ch 16 — Overlap-Add/Save](16-overlap-add-save.md) — streaming convolution
   using the same FFT primitives.
-- [Ch 17 — Multirate DSP](17-multirate.md) — decimation and interpolation.
+- [Ch 17 — Multirate DSP](17-multirate-dsp.md) — decimation and interpolation.
 
 ---
 

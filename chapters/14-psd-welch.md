@@ -162,7 +162,7 @@ void psd_freq_axis(double *freq, int n_bins, double fs);
 
 - [Ch 15 — Correlation & Autocorrelation](15-correlation.md) — time-domain
   analysis of signal similarity, pitch estimation, and delay detection.
-- [Ch 16 — Overlap-Add/Save](16-overlap-save.md) — efficient convolution
+- [Ch 16 — Overlap-Add/Save](16-overlap-add-save.md) — efficient convolution
   for streaming data.
 
 ---

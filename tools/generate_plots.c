@@ -35,6 +35,11 @@
  *   Ch20  hilbert       : analytic signal envelope, instantaneous frequency
  *   Ch21  averaging     : coherent averaging SNR, EMA vs MA, median filter
  *   Ch22  advanced FIR  : Remez LP vs window, Remez bandpass
+ *   Ch23  adaptive      : LMS learning curve, LMS vs NLMS convergence
+ *   Ch24  linear pred   : AR spectrum (order 4/10/20), LPC round-trip
+ *   Ch25  param spectral: MUSIC super-resolution, Capon vs FFT
+ *   Ch26  cepstrum/MFCC : real cepstrum, liftering, Mel filterbank
+ *   Ch27  2D DSP        : Gaussian blur, Sobel edges
  *   Ch30  capstone      : full pipeline time + frequency domain
  */
 
@@ -59,6 +64,11 @@
 #include "hilbert.h"
 #include "averaging.h"
 #include "remez.h"
+#include "adaptive.h"
+#include "lpc.h"
+#include "spectral_est.h"
+#include "cepstrum.h"
+#include "dsp2d.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -1808,6 +1818,404 @@ static void plot_ch22(void)
 }
 
 /* ================================================================== */
+/*  Chapter 23: Adaptive Filters                                      */
+/* ================================================================== */
+
+static void plot_ch23(void)
+{
+    printf("  Ch23: adaptive filters ...\n");
+    gp_init("ch23");
+
+    /* LMS system identification — learning curve */
+    {
+        int N = 1000, L = 8;
+        double plant[8] = {0.1, -0.3, 0.5, -0.2, 0.4, -0.1, 0.3, -0.15};
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        double *d = (double *)malloc((size_t)N * sizeof(double));
+        double *y = (double *)malloc((size_t)N * sizeof(double));
+        double *e = (double *)malloc((size_t)N * sizeof(double));
+        double w[8];
+        gen_white_noise(x, N, 1.0, 42);
+        /* Generate desired = x filtered through plant */
+        for (int i = 0; i < N; i++) {
+            d[i] = 0;
+            for (int j = 0; j < L; j++)
+                if (i - j >= 0) d[i] += plant[j] * x[i - j];
+        }
+        lms_filter(x, d, N, L, 0.01, y, e, w);
+
+        /* Plot squared error (smoothed) */
+        double *e2 = (double *)malloc((size_t)N * sizeof(double));
+        for (int i = 0; i < N; i++) e2[i] = e[i] * e[i];
+        /* Moving average smoothing (window=20) */
+        double *e2s = (double *)calloc((size_t)N, sizeof(double));
+        int win = 20;
+        for (int i = 0; i < N; i++) {
+            int cnt = 0;
+            for (int j = i - win + 1; j <= i; j++)
+                if (j >= 0) { e2s[i] += e2[j]; cnt++; }
+            e2s[i] /= cnt;
+        }
+        gp_plot_1("ch23", "lms_learning",
+                  "LMS Learning Curve (System Identification)",
+                  "Iteration", "MSE (smoothed)", NULL, e2s, N, "lines");
+        free(x); free(d); free(y); free(e); free(e2); free(e2s);
+    }
+
+    /* LMS vs NLMS convergence comparison */
+    {
+        int N = 500, L = 4;
+        double plant[4] = {0.5, -0.3, 0.2, -0.1};
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        double *d = (double *)malloc((size_t)N * sizeof(double));
+        double *y_l = (double *)malloc((size_t)N * sizeof(double));
+        double *y_n = (double *)malloc((size_t)N * sizeof(double));
+        double *e_l = (double *)malloc((size_t)N * sizeof(double));
+        double *e_n = (double *)malloc((size_t)N * sizeof(double));
+        double w_l[4], w_n[4];
+        gen_white_noise(x, N, 1.0, 99);
+        for (int i = 0; i < N; i++) {
+            d[i] = 0;
+            for (int j = 0; j < L; j++)
+                if (i - j >= 0) d[i] += plant[j] * x[i - j];
+        }
+        lms_filter(x, d, N, L, 0.02, y_l, e_l, w_l);
+        nlms_filter(x, d, N, L, 0.5, 1e-8, y_n, e_n, w_n);
+
+        double *el2 = (double *)malloc((size_t)N * sizeof(double));
+        double *en2 = (double *)malloc((size_t)N * sizeof(double));
+        for (int i = 0; i < N; i++) {
+            el2[i] = e_l[i] * e_l[i];
+            en2[i] = e_n[i] * e_n[i];
+        }
+        GpSeries s[] = {
+            { "LMS",  NULL, el2, N, "lines" },
+            { "NLMS", NULL, en2, N, "lines" },
+        };
+        gp_plot_multi("ch23", "lms_vs_nlms",
+                      "LMS vs NLMS Convergence",
+                      "Iteration", "Squared Error", s, 2);
+        free(x); free(d); free(y_l); free(y_n);
+        free(e_l); free(e_n); free(el2); free(en2);
+    }
+}
+
+/* ================================================================== */
+/*  Chapter 24: Linear Prediction                                     */
+/* ================================================================== */
+
+static void plot_ch24(void)
+{
+    printf("  Ch24: linear prediction ...\n");
+    gp_init("ch24");
+
+    /* AR spectrum at different model orders */
+    {
+        int N = 512, nfft = 512;
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        /* Two-tone signal */
+        for (int i = 0; i < N; i++)
+            x[i] = sin(2.0 * M_PI * 0.1 * i) + 0.7 * sin(2.0 * M_PI * 0.3 * i);
+
+        int half = nfft / 2;
+        double *freq = (double *)malloc((size_t)half * sizeof(double));
+        for (int i = 0; i < half; i++)
+            freq[i] = (double)i / (double)nfft;
+
+        double *s4 = (double *)malloc((size_t)nfft * sizeof(double));
+        double *s10 = (double *)malloc((size_t)nfft * sizeof(double));
+        double *s20 = (double *)malloc((size_t)nfft * sizeof(double));
+        {
+            double a[4], E;
+            lpc_coefficients(x, N, 4, a, &E);
+            lpc_spectrum(a, 4, E, s4, nfft);
+        }
+        {
+            double a[10], E;
+            lpc_coefficients(x, N, 10, a, &E);
+            lpc_spectrum(a, 10, E, s10, nfft);
+        }
+        {
+            double a[20], E;
+            lpc_coefficients(x, N, 20, a, &E);
+            lpc_spectrum(a, 20, E, s20, nfft);
+        }
+        /* Convert to dB */
+        double *db4 = (double *)malloc((size_t)half * sizeof(double));
+        double *db10 = (double *)malloc((size_t)half * sizeof(double));
+        double *db20 = (double *)malloc((size_t)half * sizeof(double));
+        for (int i = 0; i < half; i++) {
+            db4[i]  = 10.0 * log10(s4[i] + 1e-30);
+            db10[i] = 10.0 * log10(s10[i] + 1e-30);
+            db20[i] = 10.0 * log10(s20[i] + 1e-30);
+        }
+        GpSeries s[] = {
+            { "Order 4",  freq, db4,  half, "lines" },
+            { "Order 10", freq, db10, half, "lines" },
+            { "Order 20", freq, db20, half, "lines" },
+        };
+        gp_plot_multi("ch24", "ar_spectrum",
+                      "AR Spectral Envelope (Two-Tone Signal)",
+                      "Normalised Frequency", "Power (dB)", s, 3);
+        free(x); free(freq); free(s4); free(s10); free(s20);
+        free(db4); free(db10); free(db20);
+    }
+
+    /* Levinson-Durbin: original vs reconstructed */
+    {
+        int N = 128, order = 10;
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        for (int i = 0; i < N; i++)
+            x[i] = sin(2.0 * M_PI * 0.15 * i) + 0.3 * cos(2.0 * M_PI * 0.35 * i);
+
+        double a[10], E;
+        lpc_coefficients(x, N, order, a, &E);
+
+        double *res = (double *)malloc((size_t)N * sizeof(double));
+        double *rec = (double *)malloc((size_t)N * sizeof(double));
+        lpc_residual(x, N, a, order, res);
+        lpc_synthesise(res, N, a, order, rec);
+
+        GpSeries s[] = {
+            { "Original",      NULL, x,   N, "lines" },
+            { "Reconstructed", NULL, rec, N, "lines" },
+        };
+        gp_plot_multi("ch24", "lpc_roundtrip",
+                      "LPC Analysis/Synthesis Round-Trip (order=10)",
+                      "Sample n", "x[n]", s, 2);
+        free(x); free(res); free(rec);
+    }
+}
+
+/* ================================================================== */
+/*  Chapter 25: Parametric Spectral Estimation                        */
+/* ================================================================== */
+
+static void plot_ch25(void)
+{
+    printf("  Ch25: parametric spectral ...\n");
+    gp_init("ch25");
+
+    /* MUSIC super-resolution */
+    {
+        double f1 = 0.12, f2 = 0.14;  /* close frequencies */
+        int N = 128;
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        unsigned int seed = 10;
+        for (int i = 0; i < N; i++)
+            x[i] = sin(2.0 * M_PI * f1 * i) + sin(2.0 * M_PI * f2 * i)
+                  + 0.1 * ((double)(seed = seed * 1103515245 + 12345) / 2147483648.0 - 0.5);
+
+        int nfft = 1024, half = nfft / 2;
+        double *spec = (double *)malloc((size_t)half * sizeof(double));
+        double *freq = (double *)malloc((size_t)half * sizeof(double));
+        music_spectrum(x, N, 20, 2, spec, nfft);
+        for (int i = 0; i < half; i++) {
+            freq[i] = (double)i / (double)nfft;
+            spec[i] = 10.0 * log10(spec[i] + 1e-30);
+        }
+        gp_plot_1("ch25", "music_spectrum",
+                  "MUSIC Pseudospectrum (f1=0.12, f2=0.14)",
+                  "Normalised Frequency", "MUSIC (dB)",
+                  freq, spec, half, "lines");
+        free(x); free(spec); free(freq);
+    }
+
+    /* Capon vs FFT */
+    {
+        double f1 = 0.15;
+        int N = 256;
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        unsigned int seed2 = 77;
+        for (int i = 0; i < N; i++)
+            x[i] = sin(2.0 * M_PI * f1 * i) + sin(2.0 * M_PI * 0.35 * i)
+                  + 0.1 * ((double)(seed2 = seed2 * 1103515245 + 12345) / 2147483648.0 - 0.5);
+
+        int nfft = 512, half = nfft / 2;
+        double *capon = (double *)malloc((size_t)half * sizeof(double));
+        double *freq = (double *)malloc((size_t)half * sizeof(double));
+        capon_spectrum(x, N, 16, capon, nfft);
+        for (int i = 0; i < half; i++) {
+            freq[i] = (double)i / (double)nfft;
+            capon[i] = 10.0 * log10(capon[i] + 1e-30);
+        }
+
+        /* Also compute FFT-based periodogram for comparison */
+        int nfft2 = 512;
+        Complex *X = (Complex *)calloc((size_t)nfft2, sizeof(Complex));
+        for (int i = 0; i < N && i < nfft2; i++) X[i].re = x[i];
+        fft(X, nfft2);
+        double *fft_db = (double *)malloc((size_t)half * sizeof(double));
+        for (int i = 0; i < half; i++)
+            fft_db[i] = 10.0 * log10(complex_mag(X[i]) * complex_mag(X[i]) / nfft2 + 1e-30);
+
+        GpSeries s[] = {
+            { "Capon (MVDR)", freq, capon,  half, "lines" },
+            { "FFT Periodogram", freq, fft_db, half, "lines" },
+        };
+        gp_plot_multi("ch25", "capon_vs_fft",
+                      "Capon vs FFT Spectrum",
+                      "Normalised Frequency", "Power (dB)", s, 2);
+        free(x); free(capon); free(freq); free(X); free(fft_db);
+    }
+}
+
+/* ================================================================== */
+/*  Chapter 26: Cepstrum & MFCC                                       */
+/* ================================================================== */
+
+static void plot_ch26(void)
+{
+    printf("  Ch26: cepstrum & MFCC ...\n");
+    gp_init("ch26");
+
+    /* Real cepstrum and liftered envelope */
+    {
+        int N = 512;
+        double *x = (double *)malloc((size_t)N * sizeof(double));
+        /* Simulate speech-like: periodic pulse + formant-like resonance */
+        for (int i = 0; i < N; i++) {
+            double pulse = (i % 50 == 0) ? 1.0 : 0.0;
+            x[i] = pulse;
+        }
+        /* Simple formant filter: IIR low-order */
+        for (int i = 1; i < N; i++)
+            x[i] += 0.9 * x[i - 1];
+
+        double *cep = (double *)malloc((size_t)N * sizeof(double));
+        cepstrum_real(x, N, cep, N);
+
+        gp_plot_1("ch26", "cepstrum_real",
+                  "Real Cepstrum (Pulse Train + Formant Filter)",
+                  "Quefrency (samples)", "Cepstral Value",
+                  NULL, cep, N / 2, "lines");  /* show first half */
+
+        /* Liftered envelope */
+        double *liftered = (double *)malloc((size_t)N * sizeof(double));
+        cepstrum_lifter(cep, N, 30, liftered);
+
+        GpSeries s[] = {
+            { "Full Cepstrum", NULL, cep,      N / 2, "lines" },
+            { "Liftered (L=30)", NULL, liftered, N / 2, "lines" },
+        };
+        gp_plot_multi("ch26", "cepstrum_lifter",
+                      "Cepstrum vs Liftered (Spectral Envelope)",
+                      "Quefrency (samples)", "Value", s, 2);
+
+        free(x); free(cep); free(liftered);
+    }
+
+    /* Mel filterbank shape */
+    {
+        double fs = 8000.0;
+        int n_filters = 26;
+        int nfft = 512, half = nfft / 2;
+        double *freq = (double *)malloc((size_t)half * sizeof(double));
+        for (int i = 0; i < half; i++)
+            freq[i] = (double)i * fs / (double)nfft;
+
+        FILE *gp = gp_open("ch26", "mel_filterbank", 800, 400);
+        if (gp) {
+            fprintf(gp, "set title 'Mel Filterbank (%d filters, fs=%.0f Hz)'\n",
+                    n_filters, fs);
+            fprintf(gp, "set xlabel 'Frequency (Hz)'\nset ylabel 'Weight'\n");
+            fprintf(gp, "set grid\n");
+
+            double mel_lo = hz_to_mel(0.0);
+            double mel_hi = hz_to_mel(fs / 2.0);
+            int n_pts = n_filters + 2;
+            fprintf(gp, "plot ");
+            for (int f = 0; f < n_filters; f++) {
+                double c_lo = mel_to_hz(mel_lo + (mel_hi - mel_lo) * f / (n_pts - 1));
+                double c_mid = mel_to_hz(mel_lo + (mel_hi - mel_lo) * (f + 1) / (n_pts - 1));
+                double c_hi = mel_to_hz(mel_lo + (mel_hi - mel_lo) * (f + 2) / (n_pts - 1));
+                if (f > 0) fprintf(gp, ", ");
+                fprintf(gp, "'-' with lines notitle");
+                (void)c_lo; (void)c_mid; (void)c_hi;
+            }
+            fprintf(gp, "\n");
+            /* Send each triangular filter as 3 points */
+            for (int f = 0; f < n_filters; f++) {
+                double c_lo = mel_to_hz(mel_lo + (mel_hi - mel_lo) * f / (n_pts - 1));
+                double c_mid = mel_to_hz(mel_lo + (mel_hi - mel_lo) * (f + 1) / (n_pts - 1));
+                double c_hi = mel_to_hz(mel_lo + (mel_hi - mel_lo) * (f + 2) / (n_pts - 1));
+                fprintf(gp, "%.2f 0\n%.2f 1\n%.2f 0\ne\n", c_lo, c_mid, c_hi);
+            }
+            gp_close(gp);
+        }
+        free(freq);
+    }
+}
+
+/* ================================================================== */
+/*  Chapter 27: 2-D DSP                                               */
+/* ================================================================== */
+
+static void plot_ch27(void)
+{
+    printf("  Ch27: 2D DSP ...\n");
+    gp_init("ch27");
+
+    /* 2D test image: gradient + circle */
+    int rows = 64, cols = 64;
+    double *img = (double *)calloc((size_t)(rows * cols), sizeof(double));
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++) {
+            double cx = c - 32.0, cy = r - 32.0;
+            double dist = sqrt(cx * cx + cy * cy);
+            img[r * cols + c] = (dist < 15.0) ? 1.0 : (double)c / cols;
+        }
+
+    /* Gaussian blur */
+    {
+        double kernel[25];
+        kernel_gaussian(kernel, 5, 1.5);
+        double *out = (double *)malloc((size_t)(rows * cols) * sizeof(double));
+        conv2d(img, rows, cols, kernel, 5, 5, out);
+
+        FILE *gp = gp_open("ch27", "gaussian_blur", 600, 500);
+        if (gp) {
+            fprintf(gp, "set title 'Gaussian Blur (5x5, σ=1.5)'\n");
+            fprintf(gp, "set pm3d map\nset palette grey\n");
+            fprintf(gp, "set xlabel 'Column'\nset ylabel 'Row'\n");
+            fprintf(gp, "splot '-' matrix with image\n");
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < cols; c++)
+                    fprintf(gp, "%.4f ", out[r * cols + c]);
+                fprintf(gp, "\n");
+            }
+            fprintf(gp, "e\ne\n");
+            gp_close(gp);
+        }
+        free(out);
+    }
+
+    /* Sobel edges */
+    {
+        double *mag = (double *)malloc((size_t)(rows * cols) * sizeof(double));
+        sobel_magnitude(img, rows, cols, mag);
+
+        FILE *gp = gp_open("ch27", "sobel_edges", 600, 500);
+        if (gp) {
+            fprintf(gp, "set title 'Sobel Edge Detection'\n");
+            fprintf(gp, "set pm3d map\nset palette grey\n");
+            fprintf(gp, "set xlabel 'Column'\nset ylabel 'Row'\n");
+            fprintf(gp, "splot '-' matrix with image\n");
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < cols; c++)
+                    fprintf(gp, "%.4f ", mag[r * cols + c]);
+                fprintf(gp, "\n");
+            }
+            fprintf(gp, "e\ne\n");
+            gp_close(gp);
+        }
+        free(mag);
+    }
+
+    free(img);
+}
+
+/* ================================================================== */
 /*  Main: generate all plots                                          */
 /* ================================================================== */
 
@@ -1839,6 +2247,11 @@ int main(void)
     plot_ch20();
     plot_ch21();
     plot_ch22();
+    plot_ch23();
+    plot_ch24();
+    plot_ch25();
+    plot_ch26();
+    plot_ch27();
     plot_ch30();
 
     printf("\n  Done! All plots saved to plots/\n");

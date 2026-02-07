@@ -148,10 +148,8 @@ All diagrams are embedded in the main project documentation:
 
 ## Related Files
 
-- [PROJECT_EXPANSION_PLAN.md](../PROJECT_EXPANSION_PLAN.md) - Development roadmap
 - [ARCHITECTURE.md](../ARCHITECTURE.md) - Detailed design document
 - [API.md](../API.md) - Function reference
-- [PERFORMANCE.md](../PERFORMANCE.md) - Benchmarks and optimization
 
 ---
 

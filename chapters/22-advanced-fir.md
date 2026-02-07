@@ -94,6 +94,6 @@ make chapters
 
 ## Cross-References
 
-- [Chapter 10: FIR Filters](10-fir-filter-design.md) — Window method comparison
+- [Chapter 10: Digital Filters](10-digital-filters.md) — Window method comparison
 - [Chapter 09: Window Functions](09-window-functions.md) — Window shapes
 - [Chapter 17: Multirate DSP](17-multirate-dsp.md) — Remez filters for anti-alias

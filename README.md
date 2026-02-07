@@ -60,18 +60,18 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 
 ### Part VI — Postgraduate
 
-| Ch | Topic | Status |
-|----|-------|--------|
-| 23 | Adaptive filters (LMS / RLS) | 🔜 |
-| 24 | Linear prediction & parametric modelling | 🔜 |
-| 25 | Parametric spectral estimation (MUSIC, ESPRIT) | 🔜 |
-| 26 | Cepstrum analysis & MFCCs | 🔜 |
+| Ch | Topic | Demo | Key Files |
+|----|-------|------|----------|
+| [23](chapters/23-adaptive-filters.md) | Adaptive filters (LMS / NLMS / RLS) | `ch23` | [`adaptive.h`](include/adaptive.h) |
+| [24](chapters/24-linear-prediction.md) | Linear prediction & AR modelling | `ch24` | [`lpc.h`](include/lpc.h) |
+| [25](chapters/25-parametric-spectral.md) | Parametric spectral estimation (MUSIC, Capon) | `ch25` | [`spectral_est.h`](include/spectral_est.h) |
+| [26](chapters/26-cepstrum-mfcc.md) | Cepstrum analysis & MFCCs | `ch26` | [`cepstrum.h`](include/cepstrum.h) |
 
 ### Part VII — Applied / Capstone
 
-| Ch | Topic | Demo | Status |
-|----|-------|------|--------|
-| 27 | 2D DSP & image processing | — | 🔜 |
+| Ch | Topic | Demo | Key Files |
+|----|-------|------|----------|
+| [27](chapters/27-2d-dsp.md) | 2-D DSP & image processing | `ch27` | [`dsp2d.h`](include/dsp2d.h) |
 | [28](chapters/28-real-time-streaming.md) | Real-time system design | — | 📋 design |
 | [29](chapters/29-optimisation.md) | SIMD & hardware optimisation | — | 📋 design |
 | [30](chapters/30-putting-it-together.md) | End-to-end capstone project | `ch30` | ✅ |
@@ -91,7 +91,7 @@ make release
 ./build/bin/ch08    # FFT fundamentals
 ./build/bin/ch18    # Fixed-point arithmetic
 
-# Run the test suite (61 tests across 6 suites)
+# Run the test suite (80 tests across 7 suites)
 make test
 
 # Run all chapter demos
@@ -129,7 +129,12 @@ dsp-tutorial-suite/
 │   ├── multirate.h       Decimation, interpolation, polyphase
 │   ├── hilbert.h         Hilbert transform, analytic signal
 │   ├── averaging.h       Coherent averaging, EMA, median filter
-│   └── remez.h           Parks-McClellan / IRLS equiripple FIR
+│   ├── remez.h           Parks-McClellan / IRLS equiripple FIR
+│   ├── adaptive.h        LMS, NLMS, RLS adaptive filters
+│   ├── lpc.h             Linear prediction, Levinson-Durbin
+│   ├── spectral_est.h    MUSIC, Capon parametric spectral est.
+│   ├── cepstrum.h        Cepstrum, Mel filterbank, MFCCs
+│   └── dsp2d.h           2-D convolution, FFT, image kernels
 ├── src/              ← Reusable library (builds to libdsp_core.a)
 │   ├── fft.c             Cooley-Tukey Radix-2 DIT
 │   ├── filter.c          Direct convolution + sinc design
@@ -146,7 +151,12 @@ dsp-tutorial-suite/
 │   ├── multirate.c       Multirate processing & polyphase
 │   ├── hilbert.c         Hilbert FIR design, envelope, inst freq
 │   ├── averaging.c       Coherent avg, EMA, MA, median filter
-│   └── remez.c           IRLS-based equiripple FIR design
+│   ├── remez.c           IRLS-based equiripple FIR design
+│   ├── adaptive.c        LMS/NLMS/RLS implementations
+│   ├── lpc.c             Levinson-Durbin, AR spectrum
+│   ├── spectral_est.c    Jacobi eigendecomp, MUSIC, Capon
+│   ├── cepstrum.c        Cepstrum, Mel scale, MFCC pipeline
+│   └── dsp2d.c           2-D conv, FFT, Sobel, Gaussian
 ├── tests/            ← Unit tests (zero-dependency framework)
 │   ├── test_framework.h  Lightweight test macros
 │   ├── test_fft.c        6 FFT tests
@@ -154,7 +164,8 @@ dsp-tutorial-suite/
 │   ├── test_iir.c        10 IIR filter tests
 │   ├── test_spectrum_corr.c  12 spectrum & correlation tests
 │   ├── test_phase4.c     12 fixed-point, Goertzel, streaming tests
-│   └── test_phase5.c     15 multirate, Hilbert, averaging, Remez tests
+│   ├── test_phase5.c     15 multirate, Hilbert, averaging, Remez tests
+│   └── test_phase6.c     19 adaptive, LPC, spectral est, cepstrum, 2D tests
 ├── chapters/         ← START HERE — progressive tutorial (30 chapters)
 │   ├── NN-topic.c        Demo code with ASCII art & rich comments
 │   └── NN-topic.md       Theory tutorial with equations & exercises
@@ -194,7 +205,7 @@ To regenerate PNGs after editing `.puml` files:
 java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 ```
 
-## Test Output (61 tests)
+## Test Output (80 tests)
 
 ```
 === Test Suite: FFT Functions ===
@@ -214,11 +225,14 @@ java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 
 === Test Suite: Phase 5: Multirate, Hilbert, Averaging, Remez ===
   Total: 15, Passed: 15, Failed: 0 (100%)
+
+=== Test Suite: Phase 6: Adaptive, LPC, Spectral Est, Cepstrum, 2D DSP ===
+  Results: 19/19 passed             (100%)
 ```
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT
 
 ## References
 

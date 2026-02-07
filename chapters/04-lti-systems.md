@@ -173,7 +173,7 @@ fine (e.g., zero-phase filtering).
 | Efficiency | Needs more taps | Fewer coefficients for same spec |
 
 This chapter implements everything as FIR (direct convolution). IIR design
-and difference equations come in [Ch 11: IIR Filter Design](11-iir-design.md).
+and difference equations come in [Ch 11: IIR Filter Design](11-iir-filter-design.md).
 
 ---
 

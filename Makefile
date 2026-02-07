@@ -14,10 +14,10 @@ LIB_DIR := $(BUILD_DIR)/lib
 OBJ_DIR := $(BUILD_DIR)/obj
 
 # Source files
-SOURCES := src/fft.c src/filter.c src/dsp_utils.c src/signal_gen.c src/convolution.c src/iir.c src/gnuplot.c src/spectrum.c src/correlation.c src/fixed_point.c src/advanced_fft.c src/streaming.c src/multirate.c src/hilbert.c src/averaging.c src/remez.c
+SOURCES := src/fft.c src/filter.c src/dsp_utils.c src/signal_gen.c src/convolution.c src/iir.c src/gnuplot.c src/spectrum.c src/correlation.c src/fixed_point.c src/advanced_fft.c src/streaming.c src/multirate.c src/hilbert.c src/averaging.c src/remez.c src/adaptive.c src/lpc.c src/spectral_est.c src/cepstrum.c src/dsp2d.c
 OBJECTS := $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
-TESTS := tests/test_fft.c tests/test_filter.c tests/test_iir.c tests/test_spectrum_corr.c tests/test_phase4.c tests/test_phase5.c
+TESTS := tests/test_fft.c tests/test_filter.c tests/test_iir.c tests/test_spectrum_corr.c tests/test_phase4.c tests/test_phase5.c tests/test_phase6.c
 
 # Chapter demos
 CHAPTER_DEMOS := chapters/01-signals-and-sequences.c \
@@ -42,6 +42,11 @@ CHAPTER_DEMOS := chapters/01-signals-and-sequences.c \
 	chapters/21-signal-averaging.c \
 	chapters/22-advanced-fir.c \
 	chapters/17-multirate-dsp.c \
+	chapters/23-adaptive-filters.c \
+	chapters/24-linear-prediction.c \
+	chapters/25-parametric-spectral.c \
+	chapters/26-cepstrum-mfcc.c \
+	chapters/27-2d-dsp.c \
 	chapters/30-putting-it-together.c
 
 # Targets
@@ -80,6 +85,11 @@ debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/ch21 \
 	$(BIN_DIR)/ch22 \
 	$(BIN_DIR)/ch17 \
+	$(BIN_DIR)/ch23 \
+	$(BIN_DIR)/ch24 \
+	$(BIN_DIR)/ch25 \
+	$(BIN_DIR)/ch26 \
+	$(BIN_DIR)/ch27 \
 	$(BIN_DIR)/ch30 \
 	$(BIN_DIR)/test_fft \
 	$(BIN_DIR)/test_filter \
@@ -87,6 +97,7 @@ debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/test_spectrum_corr \
 	$(BIN_DIR)/test_phase4 \
 	$(BIN_DIR)/test_phase5 \
+	$(BIN_DIR)/test_phase6 \
 	$(BIN_DIR)/generate_plots
 
 # Release build
@@ -113,6 +124,11 @@ release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/ch21 \
 	$(BIN_DIR)/ch22 \
 	$(BIN_DIR)/ch17 \
+	$(BIN_DIR)/ch23 \
+	$(BIN_DIR)/ch24 \
+	$(BIN_DIR)/ch25 \
+	$(BIN_DIR)/ch26 \
+	$(BIN_DIR)/ch27 \
 	$(BIN_DIR)/ch30 \
 	$(BIN_DIR)/test_fft \
 	$(BIN_DIR)/test_filter \
@@ -120,6 +136,7 @@ release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/test_spectrum_corr \
 	$(BIN_DIR)/test_phase4 \
 	$(BIN_DIR)/test_phase5 \
+	$(BIN_DIR)/test_phase6 \
 	$(BIN_DIR)/generate_plots
 
 # Static library
@@ -197,6 +214,21 @@ $(BIN_DIR)/ch21: chapters/21-signal-averaging.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/ch22: chapters/22-advanced-fir.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/ch23: chapters/23-adaptive-filters.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch24: chapters/24-linear-prediction.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch25: chapters/25-parametric-spectral.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch26: chapters/26-cepstrum-mfcc.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch27: chapters/27-2d-dsp.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
 $(BIN_DIR)/ch30: chapters/30-putting-it-together.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
@@ -205,7 +237,7 @@ $(BIN_DIR)/generate_plots: tools/generate_plots.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
 # Build only chapter demos
-chapters: $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch06 $(BIN_DIR)/ch07 $(BIN_DIR)/ch08 $(BIN_DIR)/ch09 $(BIN_DIR)/ch10 $(BIN_DIR)/ch11 $(BIN_DIR)/ch12 $(BIN_DIR)/ch13 $(BIN_DIR)/ch14 $(BIN_DIR)/ch15 $(BIN_DIR)/ch16 $(BIN_DIR)/ch17 $(BIN_DIR)/ch18 $(BIN_DIR)/ch19 $(BIN_DIR)/ch20 $(BIN_DIR)/ch21 $(BIN_DIR)/ch22 $(BIN_DIR)/ch30
+chapters: $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch06 $(BIN_DIR)/ch07 $(BIN_DIR)/ch08 $(BIN_DIR)/ch09 $(BIN_DIR)/ch10 $(BIN_DIR)/ch11 $(BIN_DIR)/ch12 $(BIN_DIR)/ch13 $(BIN_DIR)/ch14 $(BIN_DIR)/ch15 $(BIN_DIR)/ch16 $(BIN_DIR)/ch17 $(BIN_DIR)/ch18 $(BIN_DIR)/ch19 $(BIN_DIR)/ch20 $(BIN_DIR)/ch21 $(BIN_DIR)/ch22 $(BIN_DIR)/ch23 $(BIN_DIR)/ch24 $(BIN_DIR)/ch25 $(BIN_DIR)/ch26 $(BIN_DIR)/ch27 $(BIN_DIR)/ch30
 
 # Tests
 $(BIN_DIR)/test_fft: tests/test_fft.c $(OBJECTS) | $(BIN_DIR)
@@ -226,8 +258,11 @@ $(BIN_DIR)/test_phase4: tests/test_phase4.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/test_phase5: tests/test_phase5.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/test_phase6: tests/test_phase6.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
+
 # Run tests
-test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter $(BIN_DIR)/test_iir $(BIN_DIR)/test_spectrum_corr $(BIN_DIR)/test_phase4 $(BIN_DIR)/test_phase5
+test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter $(BIN_DIR)/test_iir $(BIN_DIR)/test_spectrum_corr $(BIN_DIR)/test_phase4 $(BIN_DIR)/test_phase5 $(BIN_DIR)/test_phase6
 	@echo "=== Running FFT tests ==="
 	$(BIN_DIR)/test_fft
 	@echo "\n=== Running Filter tests ==="
@@ -240,6 +275,8 @@ test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter $(BIN_DIR)/test_iir $(BIN_DIR)/
 	$(BIN_DIR)/test_phase4
 	@echo "\n=== Running Phase 5 tests ==="
 	$(BIN_DIR)/test_phase5
+	@echo "\n=== Running Phase 6 tests ==="
+	$(BIN_DIR)/test_phase6
 
 # Run chapter demos
 run: chapters
@@ -285,6 +322,16 @@ run: chapters
 	$(BIN_DIR)/ch21
 	@echo "\n=== Ch22: Advanced FIR ==="
 	$(BIN_DIR)/ch22
+	@echo "\n=== Ch23: Adaptive Filters ==="
+	$(BIN_DIR)/ch23
+	@echo "\n=== Ch24: Linear Prediction ==="
+	$(BIN_DIR)/ch24
+	@echo "\n=== Ch25: Parametric Spectral ==="
+	$(BIN_DIR)/ch25
+	@echo "\n=== Ch26: Cepstrum & MFCC ==="
+	$(BIN_DIR)/ch26
+	@echo "\n=== Ch27: 2D DSP ==="
+	$(BIN_DIR)/ch27
 	@echo "\n=== Ch30: Putting It Together ==="
 	$(BIN_DIR)/ch30
 

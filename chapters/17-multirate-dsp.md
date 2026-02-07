@@ -97,6 +97,6 @@ make chapters
 
 ## Cross-References
 
-- [Chapter 10: FIR Filters](10-fir-filter-design.md) — anti-alias FIR design
+- [Chapter 10: Digital Filters](10-digital-filters.md) — anti-alias FIR design
 - [Chapter 22: Advanced FIR](22-advanced-fir.md) — Remez optimal filter for multirate
-- [Chapter 08: FFT](08-fft.md) — spectral analysis of decimated signals
+- [Chapter 08: FFT Fundamentals](08-fft-fundamentals.md) — spectral analysis of decimated signals

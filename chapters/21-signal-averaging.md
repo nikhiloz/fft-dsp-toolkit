@@ -93,6 +93,6 @@ make chapters
 
 ## Cross-References
 
-- [Chapter 10: FIR Filters](10-fir-filter-design.md) — moving average as FIR
+- [Chapter 10: Digital Filters](10-digital-filters.md) — moving average as FIR
 - [Chapter 11: IIR Filters](11-iir-filter-design.md) — EMA as first-order IIR
-- [Chapter 15: Correlation](15-correlation-xcorr.md) — SNR estimation
+- [Chapter 15: Correlation](15-correlation.md) — SNR estimation
