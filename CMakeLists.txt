@@ -42,12 +42,24 @@ set_target_properties(fft_dsp_static PROPERTIES
     OUTPUT_NAME fft_dsp
 )
 
-# Examples
-add_executable(fft_demo examples/fft_demo.c)
-target_link_libraries(fft_demo fft_dsp_static m)
+# Chapter demos
+add_executable(ch01 chapters/01-complex-numbers.c)
+target_link_libraries(ch01 fft_dsp_static m)
 
-add_executable(filter_demo examples/filter_demo.c)
-target_link_libraries(filter_demo fft_dsp_static m)
+add_executable(ch02 chapters/02-fft-fundamentals.c)
+target_link_libraries(ch02 fft_dsp_static m)
+
+add_executable(ch03 chapters/03-window-functions.c)
+target_link_libraries(ch03 fft_dsp_static m)
+
+add_executable(ch04 chapters/04-digital-filters.c)
+target_link_libraries(ch04 fft_dsp_static m)
+
+add_executable(ch05 chapters/05-spectral-analysis.c)
+target_link_libraries(ch05 fft_dsp_static m)
+
+add_executable(ch08 chapters/08-putting-it-together.c)
+target_link_libraries(ch08 fft_dsp_static m)
 
 # Unit Tests (minimal framework, no external dependencies)
 add_executable(test_fft tests/test_fft.c)
@@ -62,7 +74,7 @@ add_test(NAME filter_tests COMMAND test_filter)
 
 # Build output directories
 set_target_properties(
-    fft_demo filter_demo test_fft test_filter
+    ch01 ch02 ch03 ch04 ch05 ch08 test_fft test_filter
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
@@ -83,7 +95,7 @@ install(DIRECTORY include/ DESTINATION include)
 
 # Formatting target (clang-format)
 add_custom_target(format
-    COMMAND clang-format -i src/*.c include/*.h examples/*.c tests/test_*.c
+    COMMAND clang-format -i src/*.c include/*.h chapters/*.c tests/test_*.c
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 

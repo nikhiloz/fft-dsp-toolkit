@@ -17,8 +17,15 @@ OBJ_DIR := $(BUILD_DIR)/obj
 SOURCES := src/fft.c src/filter.c src/dsp_utils.c
 OBJECTS := $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
-EXAMPLES := examples/fft_demo.c examples/filter_demo.c
 TESTS := tests/test_fft.c tests/test_filter.c
+
+# Chapter demos
+CHAPTER_DEMOS := chapters/01-complex-numbers.c \
+	chapters/02-fft-fundamentals.c \
+	chapters/03-window-functions.c \
+	chapters/04-digital-filters.c \
+	chapters/05-spectral-analysis.c \
+	chapters/08-putting-it-together.c
 
 # Targets
 all: release
@@ -34,15 +41,23 @@ $(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
 # Debug build
 debug: CFLAGS_RELEASE = $(CFLAGS_DEBUG)
 debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
-	$(BIN_DIR)/fft_demo \
-	$(BIN_DIR)/filter_demo \
+	$(BIN_DIR)/ch01 \
+	$(BIN_DIR)/ch02 \
+	$(BIN_DIR)/ch03 \
+	$(BIN_DIR)/ch04 \
+	$(BIN_DIR)/ch05 \
+	$(BIN_DIR)/ch08 \
 	$(BIN_DIR)/test_fft \
 	$(BIN_DIR)/test_filter
 
 # Release build
 release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
-	$(BIN_DIR)/fft_demo \
-	$(BIN_DIR)/filter_demo \
+	$(BIN_DIR)/ch01 \
+	$(BIN_DIR)/ch02 \
+	$(BIN_DIR)/ch03 \
+	$(BIN_DIR)/ch04 \
+	$(BIN_DIR)/ch05 \
+	$(BIN_DIR)/ch08 \
 	$(BIN_DIR)/test_fft \
 	$(BIN_DIR)/test_filter
 
@@ -54,12 +69,27 @@ $(LIB_DIR)/libfft_dsp.a: $(OBJECTS)
 $(LIB_DIR)/libfft_dsp.so: $(OBJECTS)
 	$(CC) -shared -fPIC $(OBJECTS) $(LDFLAGS) -o $@
 
-# Examples
-$(BIN_DIR)/fft_demo: examples/fft_demo.c $(OBJECTS) | $(BIN_DIR)
+# Chapter demos
+$(BIN_DIR)/ch01: chapters/01-complex-numbers.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
-$(BIN_DIR)/filter_demo: examples/filter_demo.c $(OBJECTS) | $(BIN_DIR)
+$(BIN_DIR)/ch02: chapters/02-fft-fundamentals.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch03: chapters/03-window-functions.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch04: chapters/04-digital-filters.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch05: chapters/05-spectral-analysis.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch08: chapters/08-putting-it-together.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+# Build only chapter demos
+chapters: $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch08
 
 # Tests
 $(BIN_DIR)/test_fft: tests/test_fft.c $(OBJECTS) | $(BIN_DIR)
@@ -75,16 +105,24 @@ test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter
 	@echo "\n=== Running Filter tests ==="
 	$(BIN_DIR)/test_filter
 
-# Run examples
-run: $(BIN_DIR)/fft_demo $(BIN_DIR)/filter_demo
-	@echo "=== Running FFT demo ==="
-	$(BIN_DIR)/fft_demo
-	@echo "\n=== Running Filter demo ==="
-	$(BIN_DIR)/filter_demo
+# Run chapter demos
+run: chapters
+	@echo "=== Ch01: Complex Numbers ==="
+	$(BIN_DIR)/ch01
+	@echo "\n=== Ch02: FFT Fundamentals ==="
+	$(BIN_DIR)/ch02
+	@echo "\n=== Ch03: Window Functions ==="
+	$(BIN_DIR)/ch03
+	@echo "\n=== Ch04: Digital Filters ==="
+	$(BIN_DIR)/ch04
+	@echo "\n=== Ch05: Spectral Analysis ==="
+	$(BIN_DIR)/ch05
+	@echo "\n=== Ch08: Putting It Together ==="
+	$(BIN_DIR)/ch08
 
 # Code formatting
 format:
-	clang-format -i src/*.c include/*.h examples/*.c tests/test_*.c
+	clang-format -i src/*.c include/*.h chapters/*.c tests/test_*.c
 
 # Static analysis
 lint:
@@ -96,8 +134,8 @@ memcheck: debug
 	valgrind --leak-check=full --error-exitcode=1 $(BIN_DIR)/test_filter
 
 # Profiling (Linux only)
-profile: $(BIN_DIR)/fft_demo
-	perf record -g $(BIN_DIR)/fft_demo
+profile: $(BIN_DIR)/ch02
+	perf record -g $(BIN_DIR)/ch02
 	perf report
 
 # Clean
@@ -124,9 +162,10 @@ help:
 	@echo "  make release     - Build release version (default)"
 	@echo "  make debug       - Build debug version with symbols"
 	@echo "  make test        - Run unit tests"
-	@echo "  make run         - Run examples"
+	@echo "  make run         - Run all chapter demos"
+	@echo "  make chapters    - Build chapter demos only"
 	@echo "  make memcheck    - Run tests with valgrind"
-	@echo "  make profile     - Profile fft_demo with perf"
+	@echo "  make profile     - Profile ch02 (FFT) with perf"
 	@echo "  make format      - Format code with clang-format"
 	@echo "  make lint        - Static analysis with clang-tidy"
 	@echo "  make install     - Install headers & libraries to /usr/local"
@@ -134,4 +173,4 @@ help:
 	@echo "  make distclean   - Remove all generated files"
 	@echo "  make help        - Show this help message"
 
-.PHONY: all debug release test run memcheck profile format lint clean distclean install help
+.PHONY: all debug release test run chapters memcheck profile format lint clean distclean install help

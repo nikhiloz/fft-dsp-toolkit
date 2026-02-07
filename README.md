@@ -14,15 +14,15 @@ becomes code.
 
 | Chapter | Topic | Key Source Files |
 |---------|-------|-----------------|
-| [00 – Overview](tutorial/00-overview.md) | Project structure, build system, how to navigate | — |
-| [01 – Complex Numbers](tutorial/01-complex-numbers.md) | The building block of all frequency-domain work | [`dsp_utils.h`](include/dsp_utils.h), [`dsp_utils.c`](src/dsp_utils.c) |
-| [02 – FFT Fundamentals](tutorial/02-fft-fundamentals.md) | Cooley-Tukey Radix-2 DIT, butterfly operations | [`fft.h`](include/fft.h), [`fft.c`](src/fft.c) |
-| [03 – Window Functions](tutorial/03-window-functions.md) | Why windowing matters, Hann / Hamming / Blackman | [`dsp_utils.c`](src/dsp_utils.c) |
-| [04 – Digital Filters](tutorial/04-digital-filters.md) | FIR convolution, moving average, lowpass design | [`filter.h`](include/filter.h), [`filter.c`](src/filter.c) |
-| [05 – Spectral Analysis](tutorial/05-spectral-analysis.md) | Putting FFT + windows together to analyse signals | [`fft_demo.c`](examples/fft_demo.c) |
-| [06 – Real-Time Streaming](tutorial/06-real-time-streaming.md) | Overlap-add, ring buffers, latency budgets | *(planned)* |
-| [07 – Optimisation](tutorial/07-optimisation.md) | SIMD, cache layout, multithreading | *(planned)* |
-| [08 – Putting It Together](tutorial/08-putting-it-together.md) | End-to-end project walkthrough | [`fft_demo.c`](examples/fft_demo.c), [`filter_demo.c`](examples/filter_demo.c) |
+| [00 – Overview](chapters/00-overview.md) | Project structure, build system, how to navigate | — |
+| [01 – Complex Numbers](chapters/01-complex-numbers.md) | The building block of all frequency-domain work | [`dsp_utils.h`](include/dsp_utils.h), [`dsp_utils.c`](src/dsp_utils.c) |
+| [02 – FFT Fundamentals](chapters/02-fft-fundamentals.md) | Cooley-Tukey Radix-2 DIT, butterfly operations | [`fft.h`](include/fft.h), [`fft.c`](src/fft.c) |
+| [03 – Window Functions](chapters/03-window-functions.md) | Why windowing matters, Hann / Hamming / Blackman | [`dsp_utils.c`](src/dsp_utils.c) |
+| [04 – Digital Filters](chapters/04-digital-filters.md) | FIR convolution, moving average, lowpass design | [`filter.h`](include/filter.h), [`filter.c`](src/filter.c) |
+| [05 – Spectral Analysis](chapters/05-spectral-analysis.md) | Putting FFT + windows together to analyse signals | [`05-spectral-analysis.c`](chapters/05-spectral-analysis.c) |
+| [06 – Real-Time Streaming](chapters/06-real-time-streaming.md) | Overlap-add, ring buffers, latency budgets | *(planned)* |
+| [07 – Optimisation](chapters/07-optimisation.md) | SIMD, cache layout, multithreading | *(planned)* |
+| [08 – Putting It Together](chapters/08-putting-it-together.md) | End-to-end project walkthrough | [`08-putting-it-together.c`](chapters/08-putting-it-together.c) |
 
 ## Quick Start
 
@@ -61,15 +61,12 @@ fft-dsp-toolkit/
 │   ├── dsp_utils.c
 │   ├── fft.c             Cooley-Tukey Radix-2 DIT
 │   └── filter.c          Direct convolution + sinc design
-├── examples/         ← Runnable demos
-│   ├── fft_demo.c        Dual-tone spectrum analysis
-│   └── filter_demo.c     Lowpass noise reduction
 ├── tests/            ← Unit tests (zero-dependency framework)
 │   ├── test_framework.h
 │   ├── test_fft.c        6 FFT tests
 │   └── test_filter.c     6 FIR filter tests
-├── tutorial/         ← Progressive learning chapters (Markdown)
-├── docs/             ← Architecture, API reference, diagrams
+├── chapters/         ← START HERE — progressive tutorial
+├── reference/        ← Architecture, API reference, diagrams
 │   ├── ARCHITECTURE.md
 │   ├── API.md
 │   └── diagrams/     PlantUML sources + rendered PNGs
@@ -79,27 +76,27 @@ fft-dsp-toolkit/
 
 ## Diagrams
 
-All architecture diagrams live in [`docs/diagrams/`](docs/diagrams/). They are
+All architecture diagrams live in [`reference/diagrams/`](reference/diagrams/). They are
 rendered from PlantUML source as high-resolution PNGs. Click any link below to
 view the full-size image:
 
 | Diagram | Description |
 |---------|-------------|
-| [System Architecture](docs/diagrams/architecture.png) | Four-layer system design |
-| [Signal Flow](docs/diagrams/signal_flow.png) | Time → Frequency domain pipeline |
-| [Module Dependencies](docs/diagrams/modules.png) | Source file dependency graph |
-| [FFT Sequence](docs/diagrams/fft_sequence.png) | Runtime call sequence |
-| [Real-Time Architecture](docs/diagrams/realtime_architecture.png) | Streaming pipeline |
-| [Optimisation Roadmap](docs/diagrams/optimization_roadmap.png) | 5-stage speedup plan |
-| [API Reference](docs/diagrams/api_reference.png) | Public function map |
-| [Project Roadmap](docs/diagrams/roadmap.png) | 6-phase development plan |
-| [Benchmarks](docs/diagrams/benchmarks.png) | Latency comparison |
-| [Use Cases](docs/diagrams/use_cases.png) | Target applications |
+| [System Architecture](reference/diagrams/architecture.png) | Four-layer system design |
+| [Signal Flow](reference/diagrams/signal_flow.png) | Time → Frequency domain pipeline |
+| [Module Dependencies](reference/diagrams/modules.png) | Source file dependency graph |
+| [FFT Sequence](reference/diagrams/fft_sequence.png) | Runtime call sequence |
+| [Real-Time Architecture](reference/diagrams/realtime_architecture.png) | Streaming pipeline |
+| [Optimisation Roadmap](reference/diagrams/optimization_roadmap.png) | 5-stage speedup plan |
+| [API Reference](reference/diagrams/api_reference.png) | Public function map |
+| [Project Roadmap](reference/diagrams/roadmap.png) | 6-phase development plan |
+| [Benchmarks](reference/diagrams/benchmarks.png) | Latency comparison |
+| [Use Cases](reference/diagrams/use_cases.png) | Target applications |
 
 To regenerate PNGs after editing `.puml` files:
 
 ```bash
-java -jar ~/tools/plantuml.jar -tpng docs/diagrams/*.puml
+java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 ```
 
 ## Test Output

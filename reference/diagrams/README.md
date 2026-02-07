@@ -111,13 +111,13 @@ for f in *.puml; do plantuml "$f"; done
 ### Option 3: Docker (Cross-Platform)
 ```bash
 docker run --rm -v $(pwd):/workspace plantuml/plantuml \
-  docs/diagrams/*.puml -o /workspace/docs/diagrams
+  reference/diagrams/*.puml -o /workspace/docs/diagrams
 ```
 
 ## Directory Structure
 
 ```
-docs/diagrams/
+reference/diagrams/
 ├── *.puml          (PlantUML source files)
 ├── *.png           (Generated PNG images)
 └── README.md       (This file)
@@ -126,10 +126,10 @@ docs/diagrams/
 ## Usage in Documentation
 
 All diagrams are embedded in the main project documentation:
-- `docs/ARCHITECTURE.md` - System design and architecture
-- `docs/PERFORMANCE.md` - Optimization strategies and benchmarks
-- `docs/API.md` - Public API reference
-- `docs/REALTIME.md` - Real-time programming guide
+- `reference/ARCHITECTURE.md` - System design and architecture
+- `reference/PERFORMANCE.md` - Optimization strategies and benchmarks
+- `reference/API.md` - Public API reference
+- `reference/REALTIME.md` - Real-time programming guide
 
 ## Updating Diagrams
 

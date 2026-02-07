@@ -21,7 +21,7 @@ three constraints:
    delays
 3. **No data loss** — every sample must be processed
 
-> **📊 Real-Time Architecture** — [View full-size diagram →](../docs/diagrams/realtime_architecture.png)
+> **📊 Real-Time Architecture** — [View full-size diagram →](../reference/diagrams/realtime_architecture.png)
 
 ## 6.2 The Overlap-Add Method
 

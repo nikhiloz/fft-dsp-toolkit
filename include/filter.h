@@ -10,7 +10,7 @@
  * where h[] are the filter coefficients (the "impulse response")
  * and M is the filter order.
  *
- * See tutorial/04-digital-filters.md for theory, design, and examples.
+ * See chapters/04-digital-filters.md for theory, design, and examples.
  */
 
 #ifndef FILTER_H
@@ -50,7 +50,7 @@ void fir_moving_average(double *h, int taps);
  * @param cutoff  Normalized cutoff frequency (0.0 to 0.5, where 0.5 = Nyquist)
  *
  * Uses a Hamming window to control side-lobe levels.
- * See tutorial/04-digital-filters.md § "Windowed-Sinc Design".
+ * See chapters/04-digital-filters.md § "Windowed-Sinc Design".
  */
 void fir_lowpass(double *h, int taps, double cutoff);
 

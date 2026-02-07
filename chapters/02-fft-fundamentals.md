@@ -23,7 +23,7 @@ That's a **100× speedup**.
 Our implementation uses the **Radix-2 Decimation-In-Time (DIT)** variant,
 the most common form. It requires $N$ to be a power of 2.
 
-> **📊 FFT Processing Sequence** — [View full-size diagram →](../docs/diagrams/fft_sequence.png)
+> **📊 FFT Processing Sequence** — [View full-size diagram →](../reference/diagrams/fft_sequence.png)
 
 ### The Idea
 
@@ -197,7 +197,7 @@ The demo generates a signal with 440 Hz and 1000 Hz components, applies
 a Hann window, computes a 256-point FFT, and prints the magnitude
 spectrum. You should see peaks near those two frequencies.
 
-Trace the code in [`examples/fft_demo.c`](../examples/fft_demo.c) to see
+Trace the code in [`02-fft-fundamentals.c`](02-fft-fundamentals.c) to see
 each step.
 
 ## 2.7 Testing

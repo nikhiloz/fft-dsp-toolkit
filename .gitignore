@@ -19,8 +19,8 @@ Makefile.user
 # Generated Files - CAN REGENERATE
 ######################################
 # Generated PNG diagrams - TRACKED for GitHub documentation
-# (regenerate from .puml with: java -jar ~/tools/plantuml.jar -tpng docs/diagrams/*.puml)
-# docs/diagrams/*.png
+# (regenerate from .puml with: java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml)
+# reference/diagrams/*.png
 
 # Test/Coverage outputs
 coverage/
@@ -106,8 +106,8 @@ results/
 # Keep ALL .md files (version control)
 # Keep ALL .puml files (version control)
 # But ignore rendered HTML if using sphinx:
-docs/_build/
-docs/.doctrees/
+reference/_build/
+reference/.doctrees/
 
 ######################################
 # Customization

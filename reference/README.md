@@ -14,7 +14,7 @@ The FFT uses the Cooley-Tukey butterfly algorithm:
 > **📊 Signal Pipeline** — [View full-size diagram →](diagrams/signal_flow.png)
 
 ## Features
-- Clean repo structure (`src/`, `include/`, `examples/`, `tests/`, `docs/`)
+- Clean repo structure (`src/`, `include/`, `examples/`, `tests/`, `reference/`)
 - Starter FFT and FIR filter implementations in C
 - Unit tests for reproducibility
 - Notes and references from classic DSP textbooks (Haykin, Proakis, Oppenheim & Schafer)

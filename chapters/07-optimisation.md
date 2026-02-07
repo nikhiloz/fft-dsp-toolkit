@@ -10,7 +10,7 @@ the optimisation strategy for DSP code on modern CPUs.
 
 ## 7.1 The Five-Stage Approach
 
-> **📊 Optimisation Roadmap** — [View full-size diagram →](../docs/diagrams/optimization_roadmap.png)
+> **📊 Optimisation Roadmap** — [View full-size diagram →](../reference/diagrams/optimization_roadmap.png)
 
 | Stage | Technique | Expected Speedup |
 |-------|-----------|-----------------|
@@ -130,7 +130,7 @@ the benefit. Only parallelise when the data is large enough.
 
 ## 7.7 Benchmarking Targets
 
-> **📊 Performance Benchmarks** — [View full-size diagram →](../docs/diagrams/benchmarks.png)
+> **📊 Performance Benchmarks** — [View full-size diagram →](../reference/diagrams/benchmarks.png)
 
 | Implementation | 1024-pt Latency | Goal |
 |----------------|---------------:|------|

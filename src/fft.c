@@ -3,9 +3,9 @@
  * @brief Cooley-Tukey Radix-2 Decimation-In-Time FFT.
  *
  * TUTORIAL CROSS-REFERENCES:
- *   Theory & butterfly diagram  → tutorial/02-fft-fundamentals.md
- *   Complex multiplication used → tutorial/01-complex-numbers.md
- *   Spectral leakage & windows  → tutorial/03-window-functions.md
+ *   Theory & butterfly diagram  → chapters/02-fft-fundamentals.md
+ *   Complex multiplication used → chapters/01-complex-numbers.md
+ *   Spectral leakage & windows  → chapters/03-window-functions.md
  *
  * ALGORITHM OVERVIEW:
  *   1. Bit-reversal permutation  (reorder indices)
@@ -76,7 +76,7 @@ static void bit_reverse_permute(Complex *x, int n) {
  *  With N samples and log₂(N) stages, there are N/2 butterflies per
  *  stage → total N/2 · log₂(N) complex multiplications.
  *
- *  See tutorial/02-fft-fundamentals.md § "Butterfly Diagram" for
+ *  See chapters/02-fft-fundamentals.md § "Butterfly Diagram" for
  *  a visual walkthrough of an 8-point FFT.
  * ════════════════════════════════════════════════════════════════════ */
 

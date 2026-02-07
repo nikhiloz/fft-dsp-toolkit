@@ -3,7 +3,7 @@
  * @brief Core DSP utility functions — complex arithmetic, window functions, helpers.
  *
  * This is the foundational module. Every other module depends on it.
- * See tutorial/01-complex-numbers.md for theory and walkthrough.
+ * See chapters/01-complex-numbers.md for theory and walkthrough.
  */
 
 #ifndef DSP_UTILS_H
@@ -29,7 +29,7 @@ Complex complex_from_polar(double mag, double phase);
 
 /* ── Window functions ────────────────────────────────────────────── */
 /* Each returns w[i] for a window of length n.
- * See tutorial/03-window-functions.md for spectral leakage theory. */
+ * See chapters/03-window-functions.md for spectral leakage theory. */
 
 double hann_window(int n, int i);
 double hamming_window(int n, int i);

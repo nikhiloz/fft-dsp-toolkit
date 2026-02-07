@@ -2,7 +2,7 @@
 
 ## Project Vision
 
-> **📊 System Architecture** — [View full-size diagram →](docs/diagrams/architecture.png)
+> **📊 System Architecture** — [View full-size diagram →](reference/diagrams/architecture.png)
 
 Transform fft-dsp-toolkit into a production-grade, high-performance DSP library with:
 - Robust C core with advanced algorithms
@@ -71,7 +71,7 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 **Duration:** 2-3 hours
 **Goal:** Support modern streaming DSP applications
 
-![Real-Time Architecture](docs/diagrams/realtime_architecture.png)
+![Real-Time Architecture](reference/diagrams/realtime_architecture.png)
 
 ### Deliverables:
 - [ ] Ring buffer implementation (`ring_buffer.c/.h`)
@@ -93,9 +93,9 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 **Duration:** 3-4 hours
 **Goal:** Industry-grade performance
 
-![Optimization Roadmap](docs/diagrams/optimization_roadmap.png)
+![Optimization Roadmap](reference/diagrams/optimization_roadmap.png)
 
-> **📊 Performance Benchmarks** — [View full-size diagram →](docs/diagrams/benchmarks.png)
+> **📊 Performance Benchmarks** — [View full-size diagram →](reference/diagrams/benchmarks.png)
 
 ### Deliverables:
 - [ ] SIMD optimizations (SSE, AVX for x86; NEON for ARM)
@@ -142,7 +142,7 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 
 ## Technology Stack
 
-> **📊 Module Dependencies** — [View full-size diagram →](docs/diagrams/modules.png)
+> **📊 Module Dependencies** — [View full-size diagram →](reference/diagrams/modules.png)
 
 | Layer | Technology | Reason |
 |-------|-----------|--------|
@@ -169,7 +169,7 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 
 ## Timeline
 
-> **📊 Development Roadmap** — [View full-size diagram →](docs/diagrams/roadmap.png)
+> **📊 Development Roadmap** — [View full-size diagram →](reference/diagrams/roadmap.png)
 
 - **Week 1**: Phases 1-2 (infrastructure + core algorithms)
 - **Week 2**: Phase 3 (real-time streaming) + Phase 4 (optimization)
@@ -179,7 +179,7 @@ Solid foundation for downstream phases. Modern build system enables scalability.
 
 ## Open Questions / Decisions
 
-> **📊 Use Cases** — [View full-size diagram →](docs/diagrams/use_cases.png)
+> **📊 Use Cases** — [View full-size diagram →](reference/diagrams/use_cases.png)
 
 1. **Target Platforms**: x86-64, ARM (Raspberry Pi?), RISC-V?
 2. **Real-Time Priority**: Hard RT (PREEMPT_RT) or soft RT?

@@ -262,13 +262,13 @@ All operations support:
 - [API.md](API.md) - Complete function reference
 - [PERFORMANCE.md](PERFORMANCE.md) - Optimization guide
 - [REALTIME.md](REALTIME.md) - Real-time programming
-- [docs/diagrams/](diagrams/) - All PlantUML source files
+- [reference/diagrams/](diagrams/) - All PlantUML source files
 
 ---
 
-**Note**: All architectural diagrams are rendered as PNG from PlantUML sources in `docs/diagrams/`. 
+**Note**: All architectural diagrams are rendered as PNG from PlantUML sources in `reference/diagrams/`. 
 To regenerate PNGs after editing `.puml` files:
 
 ```bash
-java -jar ~/tools/plantuml.jar -tpng docs/diagrams/*.puml
+java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 ```

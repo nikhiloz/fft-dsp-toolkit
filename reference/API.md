@@ -17,7 +17,7 @@ They do not depend on each other.
 
 **Header:** [`include/dsp_utils.h`](../include/dsp_utils.h)
 | **Source:** [`src/dsp_utils.c`](../src/dsp_utils.c)
-| **Tutorial:** [Chapter 01](../tutorial/01-complex-numbers.md), [Chapter 03](../tutorial/03-window-functions.md)
+| **Tutorial:** [Chapter 01](../chapters/01-complex-numbers.md), [Chapter 03](../chapters/03-window-functions.md)
 
 ### Data Types
 
@@ -84,7 +84,7 @@ Root-mean-square: $\sqrt{\frac{1}{N}\sum x[i]^2}$.
 
 **Header:** [`include/fft.h`](../include/fft.h)
 | **Source:** [`src/fft.c`](../src/fft.c)
-| **Tutorial:** [Chapter 02](../tutorial/02-fft-fundamentals.md)
+| **Tutorial:** [Chapter 02](../chapters/02-fft-fundamentals.md)
 
 **Algorithm:** Cooley-Tukey Radix-2 Decimation-In-Time.
 **Complexity:** $O(N \log N)$.
@@ -140,7 +140,7 @@ Extracts phase angle from each complex bin: `phase[i] = atan2(im, re)`.
 
 **Header:** [`include/filter.h`](../include/filter.h)
 | **Source:** [`src/filter.c`](../src/filter.c)
-| **Tutorial:** [Chapter 04](../tutorial/04-digital-filters.md)
+| **Tutorial:** [Chapter 04](../chapters/04-digital-filters.md)
 
 **Method:** Direct-form FIR convolution.
 **Complexity:** $O(N \times M)$ where N = signal length, M = filter order.
@@ -238,5 +238,5 @@ target_link_libraries(my_app PRIVATE fft_dsp_toolkit)
 ## See Also
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — System design and module relationships
-- [tutorial/](../tutorial/00-overview.md) — Progressive learning chapters
+- [chapters/](../chapters/00-overview.md) — Progressive learning chapters
 - [diagrams/](diagrams/) — All PlantUML diagrams

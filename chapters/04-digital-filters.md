@@ -160,7 +160,7 @@ Rule of thumb: $M \approx 4 / (\text{transition width as fraction of } f_s)$.
 
 ## 4.6 The Filter Demo
 
-The demo in [`examples/filter_demo.c`](../examples/filter_demo.c) shows
+The demo in [`04-digital-filters.c`](04-digital-filters.c) shows
 a complete noise-reduction workflow:
 
 1. Generate a clean 200 Hz sine wave

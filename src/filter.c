@@ -3,8 +3,8 @@
  * @brief FIR digital filter implementation.
  *
  * TUTORIAL CROSS-REFERENCES:
- *   FIR theory & design     → tutorial/04-digital-filters.md
- *   Window for sinc design  → tutorial/03-window-functions.md
+ *   FIR theory & design     → chapters/04-digital-filters.md
+ *   Window for sinc design  → chapters/03-window-functions.md
  *
  * IMPLEMENTATION NOTES:
  *   The core FIR operation is a convolution (dot product of
@@ -36,7 +36,7 @@
  *  When (n - k) < 0, we assume x was zero before the signal started.
  *  This is called "zero-padding" or "causal assumption".
  *
- *  Tutorial: see tutorial/04-digital-filters.md § "Convolution"
+ *  Tutorial: see chapters/04-digital-filters.md § "Convolution"
  * ════════════════════════════════════════════════════════════════════ */
 
 void fir_filter(const double *in, double *out, int n,
@@ -64,7 +64,7 @@ void fir_filter(const double *in, double *out, int n,
  *  Frequency response: sinc-shaped with nulls at multiples of fs/N.
  *  Not great side-lobe performance, but trivial to understand.
  *
- *  Tutorial: see tutorial/04-digital-filters.md § "Moving Average"
+ *  Tutorial: see chapters/04-digital-filters.md § "Moving Average"
  * ════════════════════════════════════════════════════════════════════ */
 
 void fir_moving_average(double *h, int taps) {
@@ -88,7 +88,7 @@ void fir_moving_average(double *h, int taps) {
  *    2. Apply Hamming window
  *    3. Normalize so DC gain = 1.0
  *
- *  Tutorial: see tutorial/04-digital-filters.md § "Windowed-Sinc"
+ *  Tutorial: see chapters/04-digital-filters.md § "Windowed-Sinc"
  * ════════════════════════════════════════════════════════════════════ */
 
 void fir_lowpass(double *h, int taps, double cutoff) {

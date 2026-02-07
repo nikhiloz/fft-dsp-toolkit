@@ -107,7 +107,7 @@ void apply_window(double *signal, int n, window_fn w) {
 }
 ```
 
-Usage in the FFT demo ([`examples/fft_demo.c`](../examples/fft_demo.c)):
+Usage in the chapter demo ([`03-window-functions.c`](03-window-functions.c)):
 
 ```c
 /* Apply Hann window before FFT to reduce leakage */
@@ -139,7 +139,7 @@ make
 ./build/bin/fft_demo
 ```
 
-The demo uses `hann_window`. Try editing [`examples/fft_demo.c`](../examples/fft_demo.c)
+The demo uses `hann_window`. Try editing [`03-window-functions.c`](03-window-functions.c)
 to use `hamming_window` or `blackman_window` instead, rebuild, and
 compare the output. The peaks should change width.
 

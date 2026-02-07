@@ -45,17 +45,13 @@ fft-dsp-toolkit/
 │   ├── fft.c               Cooley-Tukey Radix-2 DIT (~185 lines)
 │   └── filter.c            FIR convolution + windowed-sinc design
 │
-├── examples/           ← Runnable demos to TRY each concept
-│   ├── fft_demo.c          Dual-tone spectrum analysis
-│   └── filter_demo.c       Lowpass noise reduction
-│
 ├── tests/              ← Verify correctness
 │   ├── test_framework.h    Zero-dependency test macros
 │   ├── test_fft.c          6 FFT tests
 │   └── test_filter.c       6 FIR filter tests
 │
-├── tutorial/           ← You are here
-├── docs/               ← Architecture docs + diagrams
+├── chapters/           ← YOU ARE HERE — start with 00-overview.md
+├── reference/          ← Architecture docs + diagrams
 │   ├── ARCHITECTURE.md
 │   ├── API.md
 │   └── diagrams/       PlantUML sources + PNG renders
@@ -86,7 +82,7 @@ make clean
 
 ## Architecture at a Glance
 
-> **📊 System Architecture** — [View full-size diagram →](../docs/diagrams/architecture.png)
+> **📊 System Architecture** — [View full-size diagram →](../reference/diagrams/architecture.png)
 
 The toolkit is organised in layers:
 
@@ -95,7 +91,7 @@ The toolkit is organised in layers:
 - **System Interface** — File I/O, future ALSA audio
 - **Platform Abstraction** — POSIX, math library
 
-> **📊 Module Dependencies** — [View full-size diagram →](../docs/diagrams/modules.png)
+> **📊 Module Dependencies** — [View full-size diagram →](../reference/diagrams/modules.png)
 
 Dependency rule: everything depends on `dsp_utils` (the `Complex` type lives
 there). `fft.c` and `filter.c` are independent of each other.

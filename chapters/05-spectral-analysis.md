@@ -13,7 +13,7 @@ scientific instruments.
 signal → window → FFT → magnitude → dB → display
 ```
 
-> **📊 Signal Processing Pipeline** — [View full-size diagram →](../docs/diagrams/signal_flow.png)
+> **📊 Signal Processing Pipeline** — [View full-size diagram →](../reference/diagrams/signal_flow.png)
 
 Each stage has a purpose:
 1. **Acquire** $N$ samples from the signal
@@ -25,7 +25,7 @@ Each stage has a purpose:
 
 ## 5.2 Walk-Through: The FFT Demo
 
-[`examples/fft_demo.c`](../examples/fft_demo.c) implements this full
+[`05-spectral-analysis.c`](05-spectral-analysis.c) implements this full
 pipeline. Let's trace each step.
 
 ### Signal Generation (lines 25–35)

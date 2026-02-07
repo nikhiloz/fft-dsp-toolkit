@@ -5,7 +5,7 @@
  * Provides forward and inverse FFT for complex and real-valued signals.
  * All sizes must be powers of 2.
  *
- * See tutorial/02-fft-fundamentals.md for the full theory walkthrough.
+ * See chapters/02-fft-fundamentals.md for the full theory walkthrough.
  */
 
 #ifndef FFT_H

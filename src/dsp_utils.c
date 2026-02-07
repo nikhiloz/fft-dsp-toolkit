@@ -3,8 +3,8 @@
  * @brief Core DSP utilities — complex math, windows, helpers.
  *
  * TUTORIAL CROSS-REFERENCES:
- *   Complex arithmetic  → tutorial/01-complex-numbers.md
- *   Window functions    → tutorial/03-window-functions.md
+ *   Complex arithmetic  → chapters/01-complex-numbers.md
+ *   Window functions    → chapters/03-window-functions.md
  */
 
 #define _GNU_SOURCE
@@ -17,7 +17,7 @@
 
 /* ════════════════════════════════════════════════════════════════════
  *  Complex arithmetic
- *  Tutorial ref: tutorial/01-complex-numbers.md § "C Implementation"
+ *  Tutorial ref: chapters/01-complex-numbers.md § "C Implementation"
  * ════════════════════════════════════════════════════════════════════ */
 
 Complex complex_add(Complex a, Complex b) {
@@ -56,7 +56,7 @@ Complex complex_from_polar(double mag, double phase) {
 
 /* ════════════════════════════════════════════════════════════════════
  *  Window functions
- *  Tutorial ref: tutorial/03-window-functions.md
+ *  Tutorial ref: chapters/03-window-functions.md
  *
  *  Why windows?  When we take an FFT of a finite chunk of signal,
  *  the abrupt edges cause "spectral leakage" — energy smears across

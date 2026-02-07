@@ -14,7 +14,7 @@ Spectral analysis (05).
 
 ### The Code
 
-Full source: [`examples/fft_demo.c`](../examples/fft_demo.c) (~89 lines).
+Full source: [`08-putting-it-together.c`](08-putting-it-together.c).
 
 ### Step-by-Step Trace
 
@@ -50,7 +50,7 @@ the desired low-frequency content.
 
 ### The Code
 
-Full source: [`examples/filter_demo.c`](../examples/filter_demo.c) (~98 lines).
+Full source: [`08-putting-it-together.c`](08-putting-it-together.c) (combines both demos).
 
 ### Step-by-Step Trace
 
@@ -79,7 +79,7 @@ make && ./build/bin/filter_demo
 
 ## 8.3 How the Modules Connect
 
-> **📊 Module Dependencies** — [View full-size diagram →](../docs/diagrams/modules.png)
+> **📊 Module Dependencies** — [View full-size diagram →](../reference/diagrams/modules.png)
 
 ```
          ┌──────────────┐
@@ -142,7 +142,7 @@ Each test:
 - SIMD kernels for x86 and ARM
 - Benchmark against FFTW
 
-> **📊 Development Roadmap** — [View full-size diagram →](../docs/diagrams/roadmap.png)
+> **📊 Development Roadmap** — [View full-size diagram →](../reference/diagrams/roadmap.png)
 
 ## 8.6 Final Exercises
 
