@@ -24,6 +24,7 @@ CHAPTER_DEMOS := chapters/01-signals-and-sequences.c \
 	chapters/02-sampling-and-aliasing.c \
 	chapters/04-lti-systems.c \
 	chapters/05-z-transform.c \
+	chapters/07-dft-theory.c \
 	chapters/01-complex-numbers.c \
 	chapters/02-fft-fundamentals.c \
 	chapters/03-window-functions.c \
@@ -49,6 +50,7 @@ debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/ch02s \
 	$(BIN_DIR)/ch04s \
 	$(BIN_DIR)/ch05s \
+	$(BIN_DIR)/ch07s \
 	$(BIN_DIR)/ch01 \
 	$(BIN_DIR)/ch02 \
 	$(BIN_DIR)/ch03 \
@@ -64,6 +66,7 @@ release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/ch02s \
 	$(BIN_DIR)/ch04s \
 	$(BIN_DIR)/ch05s \
+	$(BIN_DIR)/ch07s \
 	$(BIN_DIR)/ch01 \
 	$(BIN_DIR)/ch02 \
 	$(BIN_DIR)/ch03 \
@@ -94,6 +97,9 @@ $(BIN_DIR)/ch04s: chapters/04-lti-systems.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/ch05s: chapters/05-z-transform.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/ch07s: chapters/07-dft-theory.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
 $(BIN_DIR)/ch01: chapters/01-complex-numbers.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
@@ -113,7 +119,7 @@ $(BIN_DIR)/ch08: chapters/08-putting-it-together.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
 # Build only chapter demos
-chapters: $(BIN_DIR)/ch01s $(BIN_DIR)/ch02s $(BIN_DIR)/ch04s $(BIN_DIR)/ch05s $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch08
+chapters: $(BIN_DIR)/ch01s $(BIN_DIR)/ch02s $(BIN_DIR)/ch04s $(BIN_DIR)/ch05s $(BIN_DIR)/ch07s $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch08
 
 # Tests
 $(BIN_DIR)/test_fft: tests/test_fft.c $(OBJECTS) | $(BIN_DIR)
@@ -139,6 +145,8 @@ run: chapters
 	$(BIN_DIR)/ch04s
 	@echo "\n=== Ch05s: Z-Transform ==="
 	$(BIN_DIR)/ch05s
+	@echo "\n=== Ch07s: DFT Theory ==="
+	$(BIN_DIR)/ch07s
 	@echo "\n=== Ch01: Complex Numbers ==="
 	$(BIN_DIR)/ch01
 	@echo "\n=== Ch02: FFT Fundamentals ==="
