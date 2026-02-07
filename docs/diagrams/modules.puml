@@ -1,0 +1,78 @@
+@startuml Module Dependencies
+!theme plain
+title FFT-DSP Toolkit: Module Dependency Graph
+
+package "DSP_UTILS" {
+    [dsp_utils.h]
+    [dsp_utils.c]
+}
+
+package "WINDOW_FUNCTIONS" {
+    [window.h]
+    [window.c]
+}
+
+package "FFT_CORE" {
+    [fft.h]
+    [fft.c]
+}
+
+package "FILTERS" {
+    [filter.h]
+    [filter.c]
+}
+
+package "CONVOLUTION" {
+    [convolution.h]
+    [convolution.c]
+}
+
+package "SPECTRAL_ANALYSIS" {
+    [spectrum.h]
+    [spectrum.c]
+}
+
+package "REAL_TIME" {
+    [ring_buffer.h]
+    [ring_buffer.c]
+    [streaming.h]
+    [streaming.c]
+}
+
+package "SIGNAL_GENERATION" {
+    [signal_gen.h]
+    [signal_gen.c]
+}
+
+' Dependencies
+[FFT_CORE] --> [DSP_UTILS]
+[WINDOW_FUNCTIONS] --> [DSP_UTILS]
+[FILTERS] --> [DSP_UTILS]
+[CONVOLUTION] --> [FFT_CORE]
+[SPECTRAL_ANALYSIS] --> [FFT_CORE]
+[REAL_TIME] --> [RING_BUFFER]
+[REAL_TIME] --> [FFT_CORE]
+[REAL_TIME] --> [FILTERS]
+
+note right of [DSP_UTILS]
+  Core utilities & math
+  • Complex arithmetic
+  • Vector operations
+  • Memory helpers
+end note
+
+note right of [FFT_CORE]
+  Fast Fourier Transform
+  • Radix-2 & Radix-4
+  • In-place transform
+  • Real/Complex support
+end note
+
+note right of [REAL_TIME]
+  Real-time streaming
+  • Lock-free buffers
+  • Overlap-add/save
+  • Low latency
+end note
+
+@enduml

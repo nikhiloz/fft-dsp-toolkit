@@ -1,0 +1,78 @@
+@startuml FFT-DSP Toolkit Architecture
+!theme plain
+title FFT-DSP Toolkit: System Architecture
+
+package "Application Layer" {
+    [Audio Processing]
+    [Signal Analysis]
+    [Sensor Fusion]
+}
+
+package "FFT-DSP Core Library" {
+    package "Signal Processing" {
+        [FFT/IFFT]
+        [Filters]
+        [Windows]
+    }
+    
+    package "Analysis" {
+        [Spectral Analysis]
+        [Correlation]
+        [Statistics]
+    }
+    
+    package "Real-Time" {
+        [Ring Buffer]
+        [Overlap-Add]
+        [Streaming]
+    }
+    
+    package "Optimization" {
+        [SIMD Kernels]
+        [Multithreading]
+        [Memory Mgmt]
+    }
+}
+
+package "System Interface" {
+    [ALSA Audio]
+    [File I/O]
+    [Network]
+}
+
+package "Platform Abstraction" {
+    [POSIX API]
+    [Threading]
+    [Memory]
+}
+
+[Audio Processing] --> [FFT/IFFT]
+[Audio Processing] --> [Filters]
+[Signal Analysis] --> [Spectral Analysis]
+[Sensor Fusion] --> [Correlation]
+
+[FFT/IFFT] -.-> [SIMD Kernels]
+[Filters] -.-> [SIMD Kernels]
+
+[Ring Buffer] --> [FFT/IFFT]
+[Overlap-Add] --> [Filters]
+[Streaming] --> [Ring Buffer]
+
+[ALSA Audio] --> [Real-Time]
+[File I/O] --> [Signal Processing]
+
+[Windows] --> [FFT/IFFT]
+[Statistics] --> [Spectral Analysis]
+
+[SIMD Kernels] --> [Multithreading]
+[Multithreading] --> [Memory Mgmt]
+[Memory Mgmt] --> [POSIX API]
+
+note right of [FFT-DSP Core Library]
+  C99 Core
+  Zero Python deps
+  < 1ms FFT latency
+  Thread-safe
+end note
+
+@enduml

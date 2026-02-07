@@ -1,0 +1,38 @@
+@startuml DSP Signal Processing Pipeline
+!theme plain
+title FFT-DSP Toolkit: Signal Processing Data Flow
+
+start
+:Input Signal\n(RAW samples);
+:Apply Window\n(Hann/Hamming);
+:FFT Transform\n(frequency domain);
+:Spectral Analysis\n(magnitude/phase);
+:Optional Filtering\n(frequency or time);
+:IFFT Transform\n(time domain);
+:Post-processing\n(normalization);
+:Output Signal\n(processed);
+stop
+
+note right
+  All operations support:
+  - Streaming mode (overlap-add)
+  - Batch processing
+  - Multi-threaded SIMD
+  - Real-time guarantees
+end note
+
+partition "Time Domain" {
+  :Input Signal\n(RAW samples);
+  :Apply Window\n(Hann/Hamming);
+  :Optional Filtering\n(frequency or time);
+  :Post-processing\n(normalization);
+  :Output Signal\n(processed);
+}
+
+partition "Frequency Domain" {
+  :FFT Transform\n(frequency domain);
+  :Spectral Analysis\n(magnitude/phase);
+  :IFFT Transform\n(time domain);
+}
+
+@enduml

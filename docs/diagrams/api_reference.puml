@@ -1,0 +1,85 @@
+@startuml API Reference Structure
+!theme plain
+title FFT-DSP Toolkit: Public API Structure
+
+package "fft.h" {
+    [fft_init(N)]
+    [fft_transform(input, output, N)]
+    [ifft_transform(input, output, N)]
+    [fft_real(input, output, N)]
+    [fft_free()]
+}
+
+package "filter.h" {
+    [filter_init(coeffs, order)]
+    [fir_filter(input, output, N)]
+    [iir_filter(input, output, N)]
+    [filter_free()]
+}
+
+package "window.h" {
+    [window_hann(N)]
+    [window_hamming(N)]
+    [window_blackman(N)]
+    [window_kaiser(N, beta)]
+}
+
+package "spectrum.h" {
+    [spectrum_psd(input, N)]
+    [spectrum_welch(input, N, segments)]
+    [spectrum_peaks(magnitude, N)]
+    [spectrum_freqs(sample_rate, N)]
+}
+
+package "convolution.h" {
+    [convolve(x, h, N, M)]
+    [correlate_auto(x, N)]
+    [correlate_cross(x, y, N)]
+}
+
+package "ring_buffer.h" {
+    [rbuf_create(capacity)]
+    [rbuf_write(buf, data, N)]
+    [rbuf_read(buf, data, N)]
+    [rbuf_destroy(buf)]
+}
+
+package "signal_gen.h" {
+    [gen_sine(freq, duration, sr)]
+    [gen_chirp(f0, f1, duration, sr)]
+    [gen_noise_white(N)]
+    [gen_noise_pink(N)]
+}
+
+package "dsp_utils.h" {
+    [complex_add(a, b)]
+    [complex_mult(a, b)]
+    [magnitude(complex)]
+    [phase(complex)]
+}
+
+note right of [fft.h]
+  Core FFT operations
+  Radix-2 implementation
+  Real & complex support
+end note
+
+note right of [filter.h]
+  Time-domain filtering
+  FIR & IIR filters
+  Configurable order
+end note
+
+note right of [spectrum.h]
+  Frequency analysis
+  PSD estimation
+  Peak detection
+end note
+
+note right of [ring_buffer.h]
+  Circular FIFO buffers
+  Lock-free access
+  Real-time safe
+end note
+
+@enduml

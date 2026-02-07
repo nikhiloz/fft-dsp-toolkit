@@ -1,0 +1,78 @@
+@startuml Performance Optimization Strategy
+!theme plain
+title DSP Optimization: Multi-Stage Approach
+
+package "Baseline (C99)" {
+    [Scalar FFT]
+    [Naive Convolution]
+    [Basic Filtering]
+}
+
+package "Stage 1: Compiler" {
+    [O3 Optimization]
+    [LTO]
+    [PGO]
+}
+
+package "Stage 2: Algorithm" {
+    [FFT: Radix-2 → Radix-4]
+    [In-place Transform]
+    [Cache-aware Layout]
+}
+
+package "Stage 3: SIMD" {
+    [SSE4.2/AVX2 (x86)]
+    [NEON (ARM)]
+    [Auto-vectorization]
+}
+
+package "Stage 4: Multithreading" {
+    [OpenMP Parallelization]
+    [Cache Blocking]
+    [NUMA-aware]
+}
+
+package "Stage 5: Platform" {
+    [Real-time Kernel]
+    [CPU Affinity]
+    [Memory Pinning]
+}
+
+[Baseline (C99)] --> [Stage 1: Compiler]
+[Stage 1: Compiler] --> [Stage 2: Algorithm]
+[Stage 2: Algorithm] --> [Stage 3: SIMD]
+[Stage 3: SIMD] --> [Stage 4: Multithreading]
+[Stage 4: Multithreading] --> [Stage 5: Platform]
+
+note right of [Stage 1: Compiler]
+  1.5-2x speedup
+  Zero code changes
+end note
+
+note right of [Stage 2: Algorithm]
+  2-3x speedup
+  Cache efficiency
+end note
+
+note right of [Stage 3: SIMD]
+  4-8x speedup
+  Data parallelism
+end note
+
+note right of [Stage 4: Multithreading]
+  Nx speedup (N cores)
+  Task parallelism
+end note
+
+note right of [Stage 5: Platform]
+  Predictable latency
+  < 100µs jitter
+end note
+
+note bottom
+  Total potential: 16-128x improvement
+  Measured on Intel i7 + ARM Cortex-A72
+  Target: < 1ms for 1M-point FFT
+end note
+
+@enduml

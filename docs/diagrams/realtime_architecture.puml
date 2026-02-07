@@ -1,0 +1,61 @@
+@startuml Real-Time Streaming Architecture
+!theme plain
+title Real-Time DSP: Streaming Pipeline
+
+package "Audio Hardware" {
+    [Microphone]
+    [Speaker]
+}
+
+package "Ring Buffer Layer" {
+    [Input Buffer\n(FIFO)]
+    [Output Buffer\n(FIFO)]
+}
+
+package "Processing Thread" {
+    [Windowing]
+    [FFT/IFFT]
+    [Filtering]
+}
+
+package "Synchronization" {
+    [Lock-Free Queue]
+    [Condition Variable]
+}
+
+package "Real-Time Policy" {
+    [Priority Scheduling]
+    [Memory Lock]
+}
+
+[Microphone] --> [Input Buffer\n(FIFO)]: DMA
+[Input Buffer\n(FIFO)] --> [Windowing]: ready_signal
+[Windowing] --> [FFT/IFFT]
+[FFT/IFFT] --> [Filtering]
+[Filtering] --> [Output Buffer\n(FIFO)]
+[Output Buffer\n(FIFO)] --> [Speaker]: DMA
+
+[Lock-Free Queue] -.-> [Input Buffer\n(FIFO)]
+[Condition Variable] -.-> [Processing Thread]
+[Priority Scheduling] -.-> [Processing Thread]
+[Memory Lock] -.-> [Ring Buffer Layer]
+
+note right of [Ring Buffer Layer]
+  Circular buffers
+  Overlap-add: 50% new samples
+  Zero-copy transfers
+end note
+
+note right of [Processing Thread]
+  Fixed latency
+  1-2ms per frame
+  100% realtime
+end note
+
+note right of [Real-Time Policy]
+  PREEMPT_RT compatible
+  CPU affinity support
+  Jitter < 100µs
+end note
+
+@enduml

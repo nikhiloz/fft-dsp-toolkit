@@ -1,0 +1,40 @@
+@startuml FFT Processing Sequence
+!theme plain
+title FFT Processing: Call Sequence
+
+participant App as "Application"
+participant Buf as "Ring Buffer"
+participant FFT as "FFT Core"
+participant Win as "Window Func"
+participant SIMD as "SIMD Kernel"
+participant Out as "Output Buffer"
+
+App ->> Buf: read_samples(N)
+Buf -->> App: samples[]
+
+App ->> Win: apply_window(samples, N)
+Win ->> Win: hann_window(i)
+Win -->> App: windowed[]
+
+App ->> FFT: fft_transform(windowed)
+FFT ->> SIMD: fft_radix2(data, N)
+SIMD ->> SIMD: butterfly ops (AVX/NEON)
+SIMD -->> FFT: freq_domain[]
+FFT -->> App: magnitude, phase
+
+App ->> Out: write_results(magnitude)
+Out -->> App: ✓ Success
+
+note over FFT
+  Streaming mode uses overlap-add
+  N/2 new samples per frame
+  Latency: log(N) frames
+end note
+
+note over SIMD
+  Parallel processing
+  4-8x speedup vs scalar
+  Memory cache aware
+end note
+
+@enduml

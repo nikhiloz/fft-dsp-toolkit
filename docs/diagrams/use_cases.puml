@@ -1,0 +1,66 @@
+@startuml Use Cases
+!theme plain
+title FFT-DSP Toolkit: Primary Use Cases
+
+actor AudioEngineer as "Audio Engineer"
+actor EmbeddedDev as "Embedded Developer"
+actor Researcher as "DSP Researcher"
+actor RealTimeApp as "Real-Time App"
+
+usecase UC1 as "Audio Signal Analysis\n(spectrum, frequency content)"
+usecase UC2 as "Real-Time Audio Processing\n(effects, EQ, compression)"
+usecase UC3 as "Sensor Signal Fusion\n(accelerometer, gyro)"
+usecase UC4 as "Radar/Sonar Processing\n(frequency estimation, detection)"
+usecase UC5 as "Communication Modulation\n(OFDM, PSK, QAM)"
+usecase UC6 as "Biomedical Signal Analysis\n(ECG, EEG filtering)"
+usecase UC7 as "Music Information Retrieval\n(beat tracking, genre classification)"
+usecase UC8 as "Software Defined Radio\n(SDR, signal demodulation)"
+
+AudioEngineer --> UC1
+AudioEngineer --> UC2
+AudioEngineer --> UC7
+
+EmbeddedDev --> UC3
+EmbeddedDev --> UC4
+EmbeddedDev --> UC5
+
+Researcher --> UC1
+Researcher --> UC6
+Researcher --> UC8
+
+RealTimeApp --> UC2
+RealTimeApp --> UC4
+RealTimeApp --> UC5
+
+rectangle "FFT-DSP Toolkit" {
+    UC1
+    UC2
+    UC3
+    UC4
+    UC5
+    UC6
+    UC7
+    UC8
+}
+
+note right of UC1
+  Key: Low latency, 
+  high accuracy
+end note
+
+note right of UC2
+  Key: Sub-ms
+  latency guarantee
+end note
+
+note right of UC4
+  Key: Fast processing,
+  batch support
+end note
+
+note right of UC5
+  Key: Complex numbers,
+  high throughput
+end note
+
+@enduml

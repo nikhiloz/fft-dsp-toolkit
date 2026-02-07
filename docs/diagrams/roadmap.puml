@@ -1,0 +1,113 @@
+@startuml Project Roadmap
+!theme plain
+title FFT-DSP Toolkit: 6-Phase Development Roadmap
+
+card Phase1 [
+  **Phase 1: Build Infrastructure**
+  - CMake build system
+  - Makefile templates
+  - Test framework
+  - CI/CD pipelines
+  ----
+  Status: ✓ COMPLETE
+]
+
+card Phase2 [
+  **Phase 2: Core DSP**
+  - Window functions
+  - Convolution
+  - Spectral analysis
+  - Signal generation
+  ----
+  Status: In Progress
+  Duration: 2-3 hours
+]
+
+card Phase3 [
+  **Phase 3: Real-Time**
+  - Ring buffers
+  - Overlap-add/save
+  - ALSA integration
+  - Low-latency design
+  ----
+  Status: Planned
+  Duration: 2-3 hours
+]
+
+card Phase4 [
+  **Phase 4: Optimization**
+  - SIMD kernels
+  - Multithreading
+  - Memory management
+  - Benchmarking
+  ----
+  Status: Planned
+  Duration: 3-4 hours
+]
+
+card Phase5 [
+  **Phase 5: Documentation**
+  - API reference
+  - User guide
+  - Code examples
+  - Performance charts
+  ----
+  Status: Planned
+  Duration: 2-3 hours
+]
+
+card Phase6 [
+  **Phase 6: Advanced**
+  - GPU acceleration
+  - Adaptive algorithms
+  - Wavelets
+  - ML integration
+  ----
+  Status: Stretch Goals
+  Duration: 4+ hours
+]
+
+Phase1 --> Phase2
+Phase2 --> Phase3
+Phase3 --> Phase4
+Phase4 --> Phase5
+Phase5 --> Phase6
+
+note bottom of Phase1
+  Foundation locked
+  Ready for expansion
+end note
+
+note bottom of Phase2
+  Rich algorithm library
+  Core DSP capabilities
+end note
+
+note bottom of Phase3
+  Production-ready
+  Real-time applications
+end note
+
+note bottom of Phase4
+  Industry performance
+  < 1ms latency target
+end note
+
+note bottom of Phase5
+  Complete reference
+  Developer friendly
+end note
+
+note bottom of Phase6
+  Cutting-edge features
+  Research quality
+end note
+
+legend right
+  |= Completed |
+  |= In Progress |
+  |= Planned |
+  |= Stretch |
+end legend
+
+@enduml
