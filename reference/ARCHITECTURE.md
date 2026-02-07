@@ -105,6 +105,8 @@ All operations support:
 | **spectral_est** | MUSIC, Capon parametric spectral estimation | fft, dsp_utils |
 | **cepstrum** | Cepstrum, Mel filterbank, MFCC pipeline | fft, dsp_utils |
 | **dsp2d** | 2-D convolution, FFT, image kernels (Sobel, Gaussian) | fft, dsp_utils |
+| **realtime** | Ring buffer, frame processor, latency measurement | fft, dsp_utils |
+| **optimization** | Radix-4 FFT, twiddle tables, benchmarks, aligned alloc | fft, dsp_utils |
 
 ## FFT Processing Sequence
 
@@ -210,10 +212,10 @@ All operations support:
    - Ch26 Cepstrum Analysis & MFCCs
    - Ch27 2-D DSP & Image Processing
 
-7. **Phase 7: Systems & Capstone** (Planned)
-   - Ch28 Real-time system design
-   - Ch29 SIMD & hardware optimisation
-   - Ch30 Capstone project (✓ COMPLETE)
+7. **Phase 7: Systems & Capstone** ✓ COMPLETE
+   - Ch28 Real-time system design (ring buffer, frame processor, latency)
+   - Ch29 DSP optimisation (radix-4 FFT, twiddle tables, aligned memory)
+   - Ch30 Capstone project (expanded: 9 sections, 13 modules)
 
 ## Use Cases
 

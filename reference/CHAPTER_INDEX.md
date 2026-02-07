@@ -68,12 +68,9 @@ and test coverage.
 
 | Ch | Tutorial | Demo | Library | Plots | Tests |
 |----|----------|------|---------|-------|-------|
-| [30](../chapters/30-putting-it-together.md) | Capstone pipeline | [`ch30`](../chapters/30-putting-it-together.c) | All | [plots/ch30/](../plots/ch30/) (2 PNGs) | — |
-
-| Ch | Topic | Status |
-|----|-------|--------|
-| 28 | Real-time system design | Phase 7 |
-| 29 | SIMD & hardware optimisation | Phase 7 |
+| [28](../chapters/28-real-time-streaming.md) | Real-time streaming | [`ch28`](../chapters/28-real-time-streaming.c) | [`realtime.h`](../include/realtime.h) | [plots/ch28/](../plots/ch28/) (2 PNGs) | `test_phase7` (18) |
+| [29](../chapters/29-optimisation.md) | DSP optimisation | [`ch29`](../chapters/29-optimisation.c) | [`optimization.h`](../include/optimization.h) | [plots/ch29/](../plots/ch29/) (2 PNGs) | `test_phase7` (18) |
+| [30](../chapters/30-putting-it-together.md) | Capstone pipeline | [`ch30`](../chapters/30-putting-it-together.c) | All (13 modules) | [plots/ch30/](../plots/ch30/) (2 PNGs) | — |
 
 ---
 
@@ -85,7 +82,7 @@ and test coverage.
 | [API.md](API.md) | Complete public function reference |
 | [diagrams/](diagrams/) | 10 PlantUML system diagrams (architecture, signal flow, modules, etc.) |
 
-## Test Summary (80 tests)
+## Test Summary (98 tests)
 
 | Suite | File | Count |
 |-------|------|-------|
@@ -96,4 +93,5 @@ and test coverage.
 | Phase 4 | [`test_phase4.c`](../tests/test_phase4.c) | 12 |
 | Phase 5 | [`test_phase5.c`](../tests/test_phase5.c) | 15 |
 | Phase 6 | [`test_phase6.c`](../tests/test_phase6.c) | 19 |
-| **Total** | | **80** |
+| Phase 7 | [`test_phase7.c`](../tests/test_phase7.c) | 18 |
+| **Total** | | **98** |

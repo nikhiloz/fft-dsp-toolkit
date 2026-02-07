@@ -1,181 +1,146 @@
-# Chapter 6 — Real-Time Streaming
+# Chapter 28 — Real-Time Streaming DSP
 
-Real-time DSP processes audio or sensor data as it arrives, with strict
-latency constraints. This chapter covers the architecture and
-algorithms used to do continuous FFT analysis on a live stream.
+## Overview
 
-> **Status:** This chapter describes the design. The streaming
-> module (`ring_buffer.c`, `streaming.c`) is planned for Phase 3 of
-> the project.
+**Real-time DSP** processes data continuously with bounded latency
+— each block must be processed before the next arrives. This chapter
+builds the infrastructure for streaming pipelines: ring buffers for
+producer/consumer decoupling, overlap-add frame processors for
+spectral analysis, and microsecond-resolution latency measurement.
 
----
+## Key Concepts
 
-## 6.1 The Challenge
+### Real-Time Constraints
 
-Batch processing (load file → FFT → done) is simple. Real-time adds
-three constraints:
+A real-time system must satisfy a **deadline**: the processing time
+per block must be less than the block arrival interval.
 
-1. **Fixed latency** — processing must complete before the next frame
-   arrives
-2. **No allocation** — `malloc` during processing causes unpredictable
-   delays
-3. **No data loss** — every sample must be processed
+$$T_{process} < T_{block} = \frac{N_{hop}}{f_s}$$
 
-> **📊 Real-Time Architecture** — [View full-size diagram →](../reference/diagrams/realtime_architecture.png)
+For example, with $f_s = 8000$ Hz and $N_{hop} = 128$ samples:
 
-## 6.2 The Overlap-Add Method
+$$T_{block} = \frac{128}{8000} = 16\text{ ms}$$
 
-To do continuous FFT analysis, we process the signal in overlapping
-frames:
+Any processing exceeding 16 ms causes buffer overrun (data loss).
 
-```
-Frame 0:  [═══════════════]
-Frame 1:        [═══════════════]       ← 50% overlap
-Frame 2:              [═══════════════]
-```
+### Ring Buffer (Circular FIFO)
 
-Each frame:
-1. Copy $N$ samples from the input buffer (50% new, 50% from previous)
-2. Apply window function
-3. Compute FFT
-4. Extract features (magnitude, phase, etc.)
-5. For reconstruction: IFFT → overlap-add with previous frame
-
-### Why Overlap?
-
-Windowing attenuates the signal edges. With 50% overlap, every sample
-falls near the centre of at least one window, so no energy is lost.
-The Hann window with 50% overlap gives perfect reconstruction:
-
-$$\sum_{m} w[n - mH] = 1 \quad \text{(constant for all } n \text{)}$$
-
-where $H = N/2$ is the hop size.
-
-## 6.3 Ring Buffer Design
-
-A **ring buffer** (circular FIFO) is the standard data structure for
-real-time streaming:
+A **ring buffer** is the fundamental data structure for real-time audio:
 
 ```
-   write ──→  [5][6][7][_][_][_][1][2][3][4]  ←── read
+  write ──►  [5][6][7][_][_][_][1][2][3][4]  ◄── read
               ↑                               ↑
-              head                            tail
+             head                            tail
 ```
 
 Properties:
-- Fixed-size, pre-allocated memory
-- **Lock-free** for single-producer / single-consumer
-- O(1) read and write
-- Wraps around — no copying needed
-
-### Planned API
+- **O(1)** read/write (no shifting, just pointer increment)
+- **Power-of-2** capacity enables bitwise modulo: `index & mask`
+- **SPSC safe**: single-producer/single-consumer needs no locks
+- **Leave-one-empty**: distinguishes full from empty
 
 ```c
-typedef struct {
-    double *buffer;
-    int     capacity;    /* must be power of 2 */
-    int     head;        /* write position (atomic) */
-    int     tail;        /* read position (atomic) */
-} RingBuffer;
+available = (head - tail) & mask
+space     = capacity - 1 - available
+```
 
+### Overlap-Add Frame Processing
+
+Streaming spectral analysis uses overlapping frames:
+
+```
+  ┌─────────────────────────────────┐
+  │ Frame 0:  [=========]           │  frame_size = N
+  │ Frame 1:      [=========]       │  hop_size   = N/2  (50% overlap)
+  │ Frame 2:          [=========]   │
+  └─────────────────────────────────┘
+```
+
+Each frame is windowed (Hann), transformed via FFT, and analysed.
+The hop size determines the time resolution vs. computation trade-off.
+
+### Latency Measurement
+
+Use `clock_gettime(CLOCK_MONOTONIC)` for µs-resolution timing:
+
+```c
+double t0 = timer_usec();
+process_frame(fp, block, n);
+double t1 = timer_usec();
+latency_record(&stats, t1 - t0);
+```
+
+Track min/max/avg to detect worst-case jitter.
+
+## Library API
+
+### Ring Buffer
+
+```c
 RingBuffer *ring_buffer_create(int capacity);
-void        ring_buffer_destroy(RingBuffer *rb);
-int         ring_buffer_write(RingBuffer *rb, const double *data, int n);
-int         ring_buffer_read(RingBuffer *rb, double *data, int n);
-int         ring_buffer_available(const RingBuffer *rb);
+void ring_buffer_destroy(RingBuffer *rb);
+int  ring_buffer_write(RingBuffer *rb, const double *data, int n);
+int  ring_buffer_read(RingBuffer *rb, double *data, int n);
+int  ring_buffer_available(const RingBuffer *rb);
+int  ring_buffer_space(const RingBuffer *rb);
+int  ring_buffer_peek(const RingBuffer *rb, double *data, int n);
+int  ring_buffer_skip(RingBuffer *rb, int n);
+void ring_buffer_reset(RingBuffer *rb);
 ```
 
-The capacity must be a power of 2 so that modular indexing can use
-bitwise AND: `index & (capacity - 1)` instead of `index % capacity`.
-
-## 6.4 Latency Budget
-
-For audio at 48000 Hz with 1024-point FFT:
-
-| Stage | Time |
-|-------|------|
-| Fill buffer (1024 samples) | 21.3 ms |
-| Window + FFT | ~0.1 ms |
-| Feature extraction | ~0.01 ms |
-| **Total frame latency** | **~21.4 ms** |
-
-With 50% overlap (hop size 512):
-- New data arrives every $512/48000 = 10.7$ ms
-- Processing must complete in <10.7 ms to keep up
-
-For music applications, <20 ms total latency is acceptable. For live
-monitoring, <5 ms is better.
-
-## 6.5 Memory Pre-Allocation
-
-In real-time code, never call `malloc` in the processing loop:
+### Frame Processor
 
 ```c
-/* BAD — malloc can take microseconds to milliseconds */
-double *frame = malloc(N * sizeof(double));
-
-/* GOOD — allocate once at startup */
-typedef struct {
-    double     frame[1024];
-    Complex    spectrum[1024];
-    double     magnitudes[1024];
-    RingBuffer input_ring;
-} StreamContext;
-
-StreamContext *ctx = create_stream_context();  /* once at init */
+FrameProcessor *frame_processor_create(int frame_size, int hop_size);
+void frame_processor_destroy(FrameProcessor *fp);
+int  frame_processor_feed(FrameProcessor *fp, const double *samples, int n);
+int  frame_processor_peak_bin(const FrameProcessor *fp);
+double frame_processor_peak_freq(const FrameProcessor *fp, double fs);
 ```
 
-All temporary arrays should be part of a pre-allocated context struct.
+### Latency Timer
 
-## 6.6 Processing Thread Architecture
-
-```
-Audio Input Thread          Processing Thread
-────────────────            ─────────────────
-  ALSA/sensor read     →     ring_buffer_read
-                              apply_window
-                              fft
-                              fft_magnitude
-  ring_buffer_write    ←     (results available)
+```c
+double timer_usec(void);
+void latency_init(LatencyStats *ls);
+void latency_record(LatencyStats *ls, double us);
+double latency_avg(const LatencyStats *ls);
 ```
 
-The two threads communicate via the lock-free ring buffer. The
-processing thread:
-1. Waits until $N/2$ new samples appear in the ring
-2. Reads $N$ samples (50% overlap with previous frame)
-3. Processes the frame
-4. Writes results to an output ring buffer
-5. Repeats
+## Design Decisions
 
-## 6.7 Connection to Existing Code
+1. **Pre-allocation only** — no malloc during processing loop
+2. **Power-of-2 ring buffer** — bitwise AND instead of modulo
+3. **Hann window** — good spectral leakage suppression
+4. **POSIX timer** — portable across Linux/macOS, µs resolution
 
-The streaming module will use:
-- `apply_window()` from [`src/dsp_utils.c`](../src/dsp_utils.c) — Chapter 03
-- `fft()` from [`src/fft.c`](../src/fft.c) — Chapter 02
-- `fft_magnitude()` from [`src/fft.c`](../src/fft.c) — Chapter 02
-- `fir_filter()` from [`src/filter.c`](../src/filter.c) — Chapter 04
+## Demo
 
-Every function we've built so far is a building block for the real-time
-pipeline.
+Run the Chapter 28 demo:
+```bash
+make chapters && ./build/bin/ch28
+```
 
-## 6.8 Exercises
+The demo:
+1. Exercises the ring buffer API (write, read, peek, skip, wrap)
+2. Streams a chirp signal through the frame processor
+3. Displays an ASCII spectrogram showing frequency tracking
+4. Measures processing latency for various frame sizes
 
-1. **Code exercise:** Implement a basic `RingBuffer` using the API
-   above. Make sure `write` and `read` use `& (capacity - 1)` for
-   wrap-around.
+### Generated Plots
 
-2. **Thinking question:** Why must the ring buffer capacity be a power
-   of 2?
+![Ring Buffer Fill Level](../plots/ch28/ring_buffer_fill.png)
 
-3. **Design exercise:** Sketch the memory layout for a streaming FFT
-   that processes 1024-point frames with 50% overlap. How many samples
-   of history must be kept?
+![Streaming Spectrogram](../plots/ch28/streaming_spectrogram.png)
 
-4. **Advanced:** Implement a simple stdin-based streaming demo that
-   reads raw PCM samples from a pipe and prints the dominant frequency
-   every frame.
+![Streaming FFT Peak Frequency](../plots/ch28/streaming_fft_peak.png)
+
+## Further Reading
+
+- Smith, *The Scientist and Engineer's Guide to DSP*, Ch. 28-29
+- Lock-free ring buffers: Lamport, *Proving the Correctness of Multiprocess Programs*
+- JACK Audio: <https://jackaudio.org/> — real-time audio framework
 
 ---
 
-**Previous:** [Chapter 05 — Spectral Analysis](13-spectral-analysis.md)
-| **Next:** [Chapter 07 — Optimisation →](29-optimisation.md)
+| [← Ch 27: 2D DSP](27-2d-dsp.md) | [Index](../reference/CHAPTER_INDEX.md) | [Ch 29: Optimisation →](29-optimisation.md) |

@@ -69,6 +69,8 @@
 #include "spectral_est.h"
 #include "cepstrum.h"
 #include "dsp2d.h"
+#include "realtime.h"
+#include "optimization.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -2215,6 +2217,132 @@ static void plot_ch27(void)
     free(img);
 }
 
+/* ── Ch28: Real-Time Streaming ──────────────────────────────────── */
+
+static void plot_ch28(void)
+{
+    printf("  Ch28: Real-Time Streaming ...\n");
+    gp_init("ch28");
+
+    /* Ring buffer fill level over time */
+    {
+        RingBuffer *rb = ring_buffer_create(256);
+        int n_pts = 200;
+        double x[200], y[200];
+        unsigned int seed = 42;
+        for (int i = 0; i < n_pts; i++) {
+            /* Write 1-4 samples, read 1-3 */
+            seed = seed * 1103515245 + 12345;
+            int nw = 1 + (int)((seed >> 16) % 4);
+            double tmp[4] = {0};
+            ring_buffer_write(rb, tmp, nw);
+            seed = seed * 1103515245 + 12345;
+            int nr = 1 + (int)((seed >> 16) % 3);
+            if (nr > ring_buffer_available(rb)) nr = ring_buffer_available(rb);
+            double discard[4];
+            ring_buffer_read(rb, discard, nr);
+            x[i] = (double)i;
+            y[i] = (double)ring_buffer_available(rb);
+        }
+        gp_plot_1("ch28", "ring_buffer_fill",
+                  "Ring Buffer Fill Level Over Time",
+                  "Iteration", "Samples in Buffer",
+                  x, y, n_pts, "lines");
+        ring_buffer_destroy(rb);
+    }
+
+    /* Streaming FFT: peak frequency per frame */
+    {
+        int sr = 8000, total = 4096;
+        double *sig = (double *)malloc((size_t)total * sizeof(double));
+        gen_chirp(sig, total, 1.0, 200.0, 2000.0, (double)sr);
+
+        int frame_sz = 256, hop = 128;
+        FrameProcessor *fp = frame_processor_create(frame_sz, hop);
+        int max_frames = (total - frame_sz) / hop + 1;
+        double *fx = (double *)malloc((size_t)max_frames * sizeof(double));
+        double *fy = (double *)malloc((size_t)max_frames * sizeof(double));
+        int fi = 0;
+        for (int i = 0; i < total; i++) {
+            if (frame_processor_feed(fp, &sig[i], 1)) {
+                fx[fi] = (double)fi;
+                fy[fi] = frame_processor_peak_freq(fp, (double)sr);
+                fi++;
+            }
+        }
+        gp_plot_1("ch28", "streaming_fft_peak",
+                  "Streaming FFT: Peak Frequency per Frame",
+                  "Frame", "Frequency (Hz)",
+                  fx, fy, fi, "linespoints");
+        frame_processor_destroy(fp);
+        free(sig); free(fx); free(fy);
+    }
+}
+
+/* ── Ch29: Optimisation ─────────────────────────────────────────── */
+
+static void plot_ch29(void)
+{
+    printf("  Ch29: Optimisation ...\n");
+    gp_init("ch29");
+
+    /* Benchmark: radix-2 vs radix-4 throughput across sizes */
+    {
+        int sizes[] = { 64, 256, 1024, 4096 };
+        int nsizes = 4, runs = 50;
+        double xs[4], y_r2[4], y_r4[4];
+        for (int i = 0; i < nsizes; i++) {
+            BenchResult r2 = bench_fft_radix2(sizes[i], runs);
+            BenchResult r4 = bench_fft_radix4(sizes[i], runs);
+            xs[i]   = log2((double)sizes[i]);
+            y_r2[i] = r2.mflops;
+            y_r4[i] = r4.mflops;
+        }
+        FILE *gp = gp_open("ch29", "radix_comparison", 640, 480);
+        if (gp) {
+            fprintf(gp, "set title 'FFT Throughput: Radix-2 vs Radix-4'\n");
+            fprintf(gp, "set xlabel 'log2(N)'\nset ylabel 'MFLOP/s'\n");
+            fprintf(gp, "set grid\nset key top left\n");
+            fprintf(gp, "plot '-' with linespoints title 'Radix-2', "
+                        "'-' with linespoints title 'Radix-4'\n");
+            for (int i = 0; i < nsizes; i++)
+                fprintf(gp, "%.1f %.2f\n", xs[i], y_r2[i]);
+            fprintf(gp, "e\n");
+            for (int i = 0; i < nsizes; i++)
+                fprintf(gp, "%.1f %.2f\n", xs[i], y_r4[i]);
+            fprintf(gp, "e\n");
+            gp_close(gp);
+        }
+    }
+
+    /* Twiddle vs direct: timing ratio */
+    {
+        int n = 1024, runs = 100;
+        BenchResult direct = bench_fft_radix2(n, runs);
+        double x_vals[2] = { 0.0, 1.0 };
+        double y_vals[2] = { direct.avg_us, 0.0 };
+
+        TwiddleTable *tt = twiddle_create(n);
+        Complex *buf = (Complex *)malloc((size_t)n * sizeof(Complex));
+        double sum_us = 0.0;
+        for (int r = 0; r < runs; r++) {
+            for (int i = 0; i < n; i++) { buf[i].re = 0.0; buf[i].im = 0.0; }
+            double t0 = timer_usec();
+            fft_with_twiddles(buf, n, tt);
+            double t1 = timer_usec();
+            sum_us += t1 - t0;
+        }
+        y_vals[1] = sum_us / runs;
+        twiddle_destroy(tt);
+        free(buf);
+
+        gp_plot_1("ch29", "twiddle_speedup",
+                  "FFT Timing: Direct sin/cos vs Twiddle Table (N=1024)",
+                  "Method (0=Direct, 1=Twiddle)", "Average Time (us)",
+                  x_vals, y_vals, 2, "boxes");
+    }
+}
+
 /* ================================================================== */
 /*  Main: generate all plots                                          */
 /* ================================================================== */
@@ -2252,6 +2380,8 @@ int main(void)
     plot_ch25();
     plot_ch26();
     plot_ch27();
+    plot_ch28();
+    plot_ch29();
     plot_ch30();
 
     printf("\n  Done! All plots saved to plots/\n");

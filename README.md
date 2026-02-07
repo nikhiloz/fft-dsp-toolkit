@@ -72,9 +72,9 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 | Ch | Topic | Demo | Key Files |
 |----|-------|------|----------|
 | [27](chapters/27-2d-dsp.md) | 2-D DSP & image processing | `ch27` | [`dsp2d.h`](include/dsp2d.h) |
-| [28](chapters/28-real-time-streaming.md) | Real-time system design | — | 📋 design |
-| [29](chapters/29-optimisation.md) | SIMD & hardware optimisation | — | 📋 design |
-| [30](chapters/30-putting-it-together.md) | End-to-end capstone project | `ch30` | ✅ |
+| [28](chapters/28-real-time-streaming.md) | Real-time system design | `ch28` | [`realtime.h`](include/realtime.h) |
+| [29](chapters/29-optimisation.md) | DSP optimisation (radix-4, twiddles, aligned mem) | `ch29` | [`optimization.h`](include/optimization.h) |
+| [30](chapters/30-putting-it-together.md) | End-to-end capstone project | `ch30` | ✅ (13 modules) |
 
 ## Quick Start
 
@@ -91,7 +91,7 @@ make release
 ./build/bin/ch08    # FFT fundamentals
 ./build/bin/ch18    # Fixed-point arithmetic
 
-# Run the test suite (80 tests across 7 suites)
+# Run the test suite (98 tests across 8 suites)
 make test
 
 # Run all chapter demos
@@ -134,7 +134,9 @@ dsp-tutorial-suite/
 │   ├── lpc.h             Linear prediction, Levinson-Durbin
 │   ├── spectral_est.h    MUSIC, Capon parametric spectral est.
 │   ├── cepstrum.h        Cepstrum, Mel filterbank, MFCCs
-│   └── dsp2d.h           2-D convolution, FFT, image kernels
+│   ├── dsp2d.h           2-D convolution, FFT, image kernels
+│   ├── realtime.h        Ring buffer, frame processor, latency
+│   └── optimization.h    Radix-4 FFT, twiddle tables, benchmarks
 ├── src/              ← Reusable library (builds to libdsp_core.a)
 │   ├── fft.c             Cooley-Tukey Radix-2 DIT
 │   ├── filter.c          Direct convolution + sinc design
@@ -156,7 +158,9 @@ dsp-tutorial-suite/
 │   ├── lpc.c             Levinson-Durbin, AR spectrum
 │   ├── spectral_est.c    Jacobi eigendecomp, MUSIC, Capon
 │   ├── cepstrum.c        Cepstrum, Mel scale, MFCC pipeline
-│   └── dsp2d.c           2-D conv, FFT, Sobel, Gaussian
+│   ├── dsp2d.c           2-D conv, FFT, Sobel, Gaussian
+│   ├── realtime.c        Ring buffer, frame processor, latency timer
+│   └── optimization.c    Radix-4 FFT, twiddle table, benchmarks, aligned alloc
 ├── tests/            ← Unit tests (zero-dependency framework)
 │   ├── test_framework.h  Lightweight test macros
 │   ├── test_fft.c        6 FFT tests
@@ -165,7 +169,8 @@ dsp-tutorial-suite/
 │   ├── test_spectrum_corr.c  12 spectrum & correlation tests
 │   ├── test_phase4.c     12 fixed-point, Goertzel, streaming tests
 │   ├── test_phase5.c     15 multirate, Hilbert, averaging, Remez tests
-│   └── test_phase6.c     19 adaptive, LPC, spectral est, cepstrum, 2D tests
+│   ├── test_phase6.c     19 adaptive, LPC, spectral est, cepstrum, 2D tests
+│   └── test_phase7.c     18 real-time, radix-4, twiddle, aligned memory tests
 ├── chapters/         ← START HERE — progressive tutorial (30 chapters)
 │   ├── NN-topic.c        Demo code with ASCII art & rich comments
 │   └── NN-topic.md       Theory tutorial with equations & exercises
@@ -205,7 +210,7 @@ To regenerate PNGs after editing `.puml` files:
 java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 ```
 
-## Test Output (80 tests)
+## Test Output (98 tests)
 
 ```
 === Test Suite: FFT Functions ===
@@ -228,6 +233,9 @@ java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 
 === Test Suite: Phase 6: Adaptive, LPC, Spectral Est, Cepstrum, 2D DSP ===
   Results: 19/19 passed             (100%)
+
+=== Test Suite: Phase 7: Real-Time & Optimisation ===
+  Results: 18/18 passed             (100%)
 ```
 
 ## License

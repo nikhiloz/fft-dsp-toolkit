@@ -1,163 +1,146 @@
-# Chapter 7 — Optimisation
+# Chapter 29 — DSP Optimisation
 
-Once the algorithms are correct, we make them fast. This chapter covers
-the optimisation strategy for DSP code on modern CPUs.
+## Overview
 
-> **Status:** This chapter describes the planned approach. The SIMD
-> kernels and multithreading are planned for Phase 4 of the project.
+Once algorithms are correct, we make them fast. This chapter covers
+optimisation techniques ranging from algorithmic improvements (radix-4
+FFT) to data-level tricks (pre-computed twiddle tables, aligned memory).
+We benchmark each technique and measure actual speedups.
 
----
+## Key Concepts
 
-## 7.1 The Five-Stage Approach
+### The Optimisation Ladder
 
-> **📊 Optimisation Roadmap** — [View full-size diagram →](../reference/diagrams/optimization_roadmap.png)
-
-| Stage | Technique | Expected Speedup |
-|-------|-----------|-----------------|
-| 1. Baseline | Pure C99 scalar code | 1× |
-| 2. Compiler | `-O3`, LTO, PGO | 1.5–2× |
-| 3. Algorithm | Radix-4, cache-friendly layout | 2–3× |
-| 4. SIMD | AVX2 (x86), NEON (ARM) | 4–8× |
-| 5. Multithreading | OpenMP parallel stages | N× (N cores) |
-
-**Rule:** Always optimise in this order. Algorithmic improvements
-compound with SIMD, and SIMD compounds with threading.
-
-## 7.2 Stage 1: The Baseline
-
-Our current `fft()` in [`src/fft.c`](../src/fft.c) is stage 1:
-correct, readable C99 with no tricks. This is the foundation that
-all optimisations build upon.
-
-Key hotspot: the butterfly inner loop (lines 101–115).
-A 1024-point FFT runs this loop $512 \times 10 = 5120$ times,
-each iteration doing one `complex_mul` (4 multiplies, 2 adds).
-
-## 7.3 Stage 2: Compiler Optimisations
-
-Already in our Makefile:
-
-```makefile
-RELEASE_FLAGS = -O3 -DNDEBUG
+```
+  Stage 1  Baseline C99          ──  1×  (our current radix-2 FFT)
+  Stage 2  Compiler -O3 -flto    ── ~2×  (already enabled in Makefile)
+  Stage 3  Algorithm (radix-4)   ── ~1.3×
+  Stage 4  Pre-computed twiddles ── ~1.2×
+  Stage 5  SIMD (AVX2/NEON)      ── ~4×  (platform-specific, discussed)
+  Stage 6  Multithreading        ── ~Nx  (discussed, not implemented)
 ```
 
-Additional flags to explore:
-- **`-march=native`** — Use all CPU instructions available
-- **`-ffast-math`** — Allow FP reordering (breaks strict IEEE 754)
-- **`-flto`** — Link-Time Optimisation (inline across .c files)
-- **`-fprofile-generate` / `-fprofile-use`** — Profile-Guided Optimisation
-
-## 7.4 Stage 3: Algorithmic Improvements
+Rule: **always optimise in this order**. Algorithmic improvements
+compound with hardware-level speedups.
 
 ### Radix-4 FFT
 
-Instead of 2-element butterflies, use 4-element butterflies.
-Reduces the number of complex multiplies by 25%:
+The standard Cooley-Tukey FFT uses radix-2 butterflies:
 
-- Radix-2: $\frac{N}{2} \log_2 N$ multiplies
-- Radix-4: $\frac{3N}{8} \log_2 N$ multiplies
+$$X[k] = E[k] + W_N^k \cdot O[k]$$
 
-### Split-Radix
+A **radix-4** butterfly processes 4 elements at once:
 
-Combines radix-2 for odd stages and radix-4 for even stages.
-Achieves the lowest known multiply count for power-of-2 FFTs.
+$$X[k]       = a + b + c + d$$
+$$X[k+N/4]   = a - jb - c + jd$$
+$$X[k+N/2]   = a - b + c - d$$
+$$X[k+3N/4]  = a + jb - c - jd$$
 
-### Cache-Friendly Memory Layout
+where $W_N^{N/4} = -j$ and $W_N^{N/2} = -1$ are "free" twiddle factors.
 
-Modern CPUs have L1 caches of 32–64 KB. A 1024-point complex array
-is $1024 \times 16 = 16$ KB — fits in L1. But for larger FFTs:
+**Advantage**: 25% fewer complex multiplications than radix-2.
+$\frac{3}{8} N \log_4 N$ vs $\frac{1}{2} N \log_2 N$.
 
-- Process data in blocks that fit in L1
-- Use **stride-1 access patterns** (butterfly partners should be
-  adjacent in memory)
-- Consider **out-of-order** (Stockham) FFT for better locality
+**Constraint**: N must be a power of 4 (4, 16, 64, 256, 1024, ...).
 
-## 7.5 Stage 4: SIMD Vectorisation
+### Pre-computed Twiddle Tables
 
-SIMD (Single Instruction, Multiple Data) processes 4–8 values
-simultaneously.
+The inner FFT loop computes $W_N^k = e^{-j2\pi k/N}$, requiring
+`sin()` and `cos()` — each taking ~100 CPU cycles on x86.
 
-### Complex Multiply in AVX2
-
-Standard complex multiply: 4 multiplies + 2 adds per element.
-With AVX2, we process 4 complex numbers at once:
+Pre-computing a lookup table eliminates this cost:
 
 ```c
-/* Pseudocode — AVX2 intrinsics */
-__m256d ar = _mm256_load_pd(/* 4 real parts of a */);
-__m256d ai = _mm256_load_pd(/* 4 imag parts of a */);
-__m256d br = _mm256_load_pd(/* 4 real parts of b */);
-__m256d bi = _mm256_load_pd(/* 4 imag parts of b */);
-
-/* (a.re * b.re - a.im * b.im) */
-__m256d cr = _mm256_sub_pd(_mm256_mul_pd(ar, br),
-                           _mm256_mul_pd(ai, bi));
-/* (a.re * b.im + a.im * b.re) */
-__m256d ci = _mm256_add_pd(_mm256_mul_pd(ar, bi),
-                           _mm256_mul_pd(ai, br));
+TwiddleTable *tt = twiddle_create(N);
+fft_with_twiddles(x, N, tt);   // table lookup instead of sin/cos
+twiddle_destroy(tt);
 ```
 
-**Key requirement:** Data must be aligned to 32-byte boundaries.
-Use `aligned_alloc(32, size)` instead of `malloc`.
+Memory cost: $N/2$ complex values ($8N$ bytes for double precision).
 
-### ARM NEON
+### Aligned Memory
 
-For Raspberry Pi and embedded targets:
+SIMD instructions require specific memory alignment:
+
+| Instruction Set | Required Alignment |
+|----------------|--------------------|
+| SSE (128-bit)  | 16 bytes           |
+| AVX (256-bit)  | 32 bytes           |
+| AVX-512        | 64 bytes           |
+| NEON (ARM)     | 16 bytes           |
+
+Standard `malloc()` only guarantees 8 or 16-byte alignment.
+Our `aligned_alloc_dsp()` provides portable aligned allocation
+in pure C99 by over-allocating and adjusting the pointer.
+
+### Micro-Benchmarking
+
+Reliable benchmarks require:
+1. **Many iterations** (≥50) to amortise cache and branch predictor warm-up
+2. **Identical input** for each run (use deterministic PRNG)
+3. **Monotonic clock** for timing (`CLOCK_MONOTONIC`)
+4. **Report min/avg/max** to capture variance
+
+## Library API
+
+### Benchmarking
 
 ```c
-float32x4_t ar = vld1q_f32(/* 4 real parts */);
-/* Similar pattern with vmulq_f32, vsubq_f32, vaddq_f32 */
+BenchResult bench_fft_radix2(int n, int runs);
+BenchResult bench_fft_radix4(int n, int runs);
+void bench_print(const char *label, const BenchResult *r);
 ```
 
-NEON works on 4 floats (128-bit) vs AVX2's 4 doubles (256-bit).
-
-## 7.6 Stage 5: Multithreading
-
-For very large FFTs or batch processing:
+### Radix-4 FFT
 
 ```c
-#pragma omp parallel for
-for (int group = 0; group < n; group += stage_size) {
-    /* each group is independent — perfect for parallelism */
-}
+void fft_radix4(Complex *x, int n);    // N must be power of 4
+void ifft_radix4(Complex *x, int n);
 ```
 
-The outer two loops of `fft()` have independent groups within each
-stage, so they parallelise cleanly.
+### Twiddle Table
 
-**Caution:** For small FFTs (<4096 points), threading overhead exceeds
-the benefit. Only parallelise when the data is large enough.
+```c
+TwiddleTable *twiddle_create(int n);
+void twiddle_destroy(TwiddleTable *tt);
+void fft_with_twiddles(Complex *x, int n, const TwiddleTable *tt);
+```
 
-## 7.7 Benchmarking Targets
+### Aligned Memory
 
-> **📊 Performance Benchmarks** — [View full-size diagram →](../reference/diagrams/benchmarks.png)
+```c
+void *aligned_alloc_dsp(int alignment, int size);
+void  aligned_free_dsp(void *ptr);
+```
 
-| Implementation | 1024-pt Latency | Goal |
-|----------------|---------------:|------|
-| Baseline C99 | ~12 ms | Stage 1 (current) |
-| + Compiler opts | ~6 ms | Stage 2 |
-| + Radix-4 | ~3 ms | Stage 3 |
-| + AVX2 SIMD | ~0.8 ms | Stage 4 |
-| + OpenMP (4 cores) | ~0.3 ms | Stage 5 |
-| FFTW3 (reference) | ~3.5 ms | Comparison |
+## Demo
 
-## 7.8 Exercises
+Run the Chapter 29 demo:
+```bash
+make chapters && ./build/bin/ch29
+```
 
-1. **Benchmark:** Time our current `fft()` for N=256, 1024, 4096,
-   16384. Plot N vs. time. Does it follow $O(N \log N)$?
+The demo:
+1. Benchmarks radix-2 vs radix-4 FFT at various sizes
+2. Verifies radix-4 correctness against radix-2
+3. Measures twiddle table speedup
+4. Demonstrates aligned memory allocation
+5. Generates comparison plots
 
-2. **Compiler test:** Build with `-O0`, `-O2`, `-O3`,
-   `-O3 -march=native -ffast-math`. Compare FFT timing for each.
+### Generated Plots
 
-3. **Code exercise:** Implement the Radix-4 butterfly. The key
-   equation uses $W^0, W^{N/4}, W^{N/2}, W^{3N/4}$ — note that
-   $W^{N/2} = -1$ and $W^{N/4} = -i$, so two of the four multiplies
-   are free.
+![Radix-2 vs Radix-4](../plots/ch29/radix_comparison.png)
 
-4. **Thinking question:** Why does `-ffast-math` help FFT performance?
-   What precision do we sacrifice?
+![Throughput Comparison](../plots/ch29/throughput.png)
+
+![Twiddle Table Speedup](../plots/ch29/twiddle_speedup.png)
+
+## Further Reading
+
+- Johnson & Frigo, *Implementing FFTs in Practice* (FFTW paper)
+- Intel, *Intrinsics Guide*: <https://software.intel.com/sites/landingpage/IntrinsicsGuide/>
+- Agner Fog, *Optimizing software in C++*: <https://www.agner.org/optimize/>
 
 ---
 
-**Previous:** [Chapter 06 — Real-Time Streaming](28-real-time-streaming.md)
-| **Next:** [Chapter 08 — Putting It Together →](30-putting-it-together.md)
+| [← Ch 28: Real-Time Streaming](28-real-time-streaming.md) | [Index](../reference/CHAPTER_INDEX.md) | [Ch 30: Capstone →](30-putting-it-together.md) |
