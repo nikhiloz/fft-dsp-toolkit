@@ -312,6 +312,32 @@ static void demo_plots(void)
                   "Time (s)", "Peak Frequency (Hz)",
                   time_arr, freq_arr, npts, "linespoints");
         printf("  [saved] plots/ch28/streaming_spectrogram.png\n");
+
+        /* Plot 3: Streaming FFT peak frequency tracking */
+        {
+            double peak_time[200], peak_freq[200];
+            int np = 0;
+
+            FrameProcessor *fp2 = frame_processor_create(FRAME_SIZE, HOP_SIZE);
+
+            /* Feed signal in real-time-sized chunks and track peak frequency */
+            for (int pos = 0; pos + CHUNK_SIZE <= total && np < 200; pos += CHUNK_SIZE) {
+                int frames = frame_processor_feed(fp2, sig + pos, CHUNK_SIZE);
+                if (frames > 0) {
+                    peak_time[np] = (double)pos / FS;
+                    peak_freq[np] = frame_processor_peak_freq(fp2, FS);
+                    np++;
+                }
+            }
+
+            gp_plot_1("ch28", "streaming_fft_peak",
+                      "Streaming FFT Peak Frequency Tracking",
+                      "Time (s)", "Peak Frequency (Hz)",
+                      peak_time, peak_freq, np, "lines");
+            printf("  [saved] plots/ch28/streaming_fft_peak.png\n");
+            frame_processor_destroy(fp2);
+        }
+
         free(sig);
         frame_processor_destroy(fp);
     }

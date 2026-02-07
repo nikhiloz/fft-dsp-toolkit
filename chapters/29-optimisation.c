@@ -305,6 +305,61 @@ static void demo_plots(void)
         printf("  [saved] plots/ch29/throughput.png\n");
     }
 
+    /* Plot 3: Twiddle table speedup vs FFT size */
+    {
+        int sizes[] = {64, 256, 1024, 4096};
+        int ns = 4;
+        double xv[4], yspeed[4];
+
+        for (int s = 0; s < ns; s++) {
+            int n = sizes[s];
+            TwiddleTable *tt = twiddle_create(n);
+
+            Complex *x1 = (Complex *)malloc((size_t)n * sizeof(Complex));
+            Complex *x2 = (Complex *)malloc((size_t)n * sizeof(Complex));
+
+            for (int i = 0; i < n; i++) {
+                x1[i].re = sin(2.0 * M_PI * 3.0 * i / n);
+                x1[i].im = 0.0;
+            }
+
+            /* Benchmark direct FFT */
+            double sum_direct = 0;
+            for (int r = 0; r < BENCH_RUNS; r++) {
+                memcpy(x2, x1, (size_t)n * sizeof(Complex));
+                double t0 = timer_usec();
+                fft(x2, n);
+                double t1 = timer_usec();
+                sum_direct += t1 - t0;
+            }
+            double avg_direct = sum_direct / BENCH_RUNS;
+
+            /* Benchmark twiddle-table FFT */
+            double sum_twiddle = 0;
+            for (int r = 0; r < BENCH_RUNS; r++) {
+                memcpy(x2, x1, (size_t)n * sizeof(Complex));
+                double t0 = timer_usec();
+                fft_with_twiddles(x2, n, tt);
+                double t1 = timer_usec();
+                sum_twiddle += t1 - t0;
+            }
+            double avg_twiddle = sum_twiddle / BENCH_RUNS;
+
+            xv[s] = (double)n;
+            yspeed[s] = avg_direct / avg_twiddle;
+
+            free(x1);
+            free(x2);
+            twiddle_destroy(tt);
+        }
+
+        gp_plot_1("ch29", "twiddle_speedup",
+                  "Twiddle Table Speedup vs Direct sin/cos",
+                  "N (FFT size)", "Speedup (x)",
+                  xv, yspeed, ns, "linespoints");
+        printf("  [saved] plots/ch29/twiddle_speedup.png\n");
+    }
+
     printf("\n");
 }
 
