@@ -96,6 +96,10 @@ All operations support:
 | **fixed_point** | Q15/Q31 fixed-point arithmetic, FIR | dsp_utils |
 | **advanced_fft** | Goertzel, DTMF detection, sliding DFT | fft, dsp_utils |
 | **streaming** | Overlap-Add/Save block convolution | fft, dsp_utils |
+| **multirate** | Decimation, interpolation, polyphase filters | filter, dsp_utils |
+| **hilbert** | Hilbert transform, analytic signal, envelope | fft, dsp_utils |
+| **averaging** | Coherent averaging, EMA, MA, median filter | dsp_utils |
+| **remez** | IRLS-based equiripple FIR design | dsp_utils |
 
 ## FFT Processing Sequence
 
@@ -188,9 +192,11 @@ All operations support:
    - Ch18 Fixed-point arithmetic (Q15/Q31, SQNR, FIR)
    - Ch19 Advanced FFT (Goertzel, DTMF detection, Sliding DFT)
 
-5. **Phase 5: Applications** (Planned)
-   - Adaptive filters, audio effects, modulation
-   - Real-time streaming pipeline
+5. **Phase 5: Advanced UG DSP** ✓ COMPLETE
+   - Ch17 Multirate DSP (decimation, interpolation, polyphase)
+   - Ch20 Hilbert Transform & Analytic Signal
+   - Ch21 Signal Averaging & Noise Reduction
+   - Ch22 Advanced FIR Design (Parks-McClellan / IRLS)
 
 6. **Phase 6: Optimisation & Capstone** (Planned)
    - SIMD kernels, multithreading, benchmarking

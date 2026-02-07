@@ -31,6 +31,10 @@
  *   Ch16  streaming     : OLA vs direct convolution
  *   Ch18  fixed-point   : Q15 SQNR, float vs Q15 FIR
  *   Ch19  advanced FFT  : Goertzel spectrum, sliding DFT
+ *   Ch17  multirate     : decimation, interpolation, polyphase comparison
+ *   Ch20  hilbert       : analytic signal envelope, instantaneous frequency
+ *   Ch21  averaging     : coherent averaging SNR, EMA vs MA, median filter
+ *   Ch22  advanced FIR  : Remez LP vs window, Remez bandpass
  *   Ch30  capstone      : full pipeline time + frequency domain
  */
 
@@ -51,6 +55,10 @@
 #include "fixed_point.h"
 #include "advanced_fft.h"
 #include "streaming.h"
+#include "multirate.h"
+#include "hilbert.h"
+#include "averaging.h"
+#include "remez.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -1502,6 +1510,304 @@ static void plot_ch19(void)
 }
 
 /* ================================================================== */
+/*  Chapter 17: Multirate DSP                                         */
+/* ================================================================== */
+
+static void plot_ch17(void)
+{
+    printf("  Ch17: multirate decimation / interpolation ...\n");
+
+    /* Original signal: 300 Hz sine at 8 kHz */
+    const int N = 256;
+    const double fs = 8000.0;
+    double *x   = (double *)malloc((size_t)N * sizeof(double));
+    double *idx = (double *)malloc((size_t)N * sizeof(double));
+    gen_sine(x, N, 1.0, 300.0, fs, 0.0);
+    for (int i = 0; i < N; i++) idx[i] = (double)i;
+
+    /* Decimate by 4 */
+    const int M = 4;
+    int out_len = N / M;
+    double *y_dec  = (double *)malloc((size_t)out_len * sizeof(double));
+    double *idx_dec = (double *)malloc((size_t)out_len * sizeof(double));
+    decimate(x, N, M, y_dec);
+    for (int i = 0; i < out_len; i++) idx_dec[i] = (double)(i * M);
+
+    gp_plot_multi("ch17", "decimation",
+              "Decimation by 4: 300 Hz @ 8 kHz",
+              "Sample", "Amplitude",
+              (GpSeries[]){
+                  {"Original",    idx,     x,     N,       "lines"},
+                  {"Decimated×4", idx_dec, y_dec, out_len, "points"}
+              }, 2);
+
+    /* Interpolate by 4 */
+    const int L = 4;
+    int int_len = N * L;
+    double *y_int  = (double *)malloc((size_t)int_len * sizeof(double));
+    double *idx_int = (double *)malloc((size_t)int_len * sizeof(double));
+    interpolate(x, N, L, y_int);
+    for (int i = 0; i < int_len; i++) idx_int[i] = (double)i / (double)L;
+
+    gp_plot_multi("ch17", "interpolation",
+              "Interpolation by 4: 300 Hz @ 8 kHz",
+              "Sample (original rate)", "Amplitude",
+              (GpSeries[]){
+                  {"Original",       idx,     x,     N,       "points"},
+                  {"Interpolated×4", idx_int, y_int, int_len, "lines"}
+              }, 2);
+
+    /* Polyphase vs direct decimation — magnitude spectrum comparison */
+    const int nfft = 512;
+    double h_aa[33];
+    fir_lowpass(h_aa, 33, 0.5 / M);
+
+    double *y_poly = (double *)malloc((size_t)out_len * sizeof(double));
+    polyphase_decimate(x, N, h_aa, 33, M, y_poly);
+
+    /* FFT of polyphase output */
+    Complex *H_poly = (Complex *)calloc((size_t)nfft, sizeof(Complex));
+    for (int i = 0; i < out_len && i < nfft; i++) {
+        H_poly[i].re = y_poly[i];
+        H_poly[i].im = 0.0;
+    }
+    fft(H_poly, nfft);
+
+    double *freq_ax = (double *)malloc((size_t)(nfft / 2) * sizeof(double));
+    double *mag_poly = (double *)malloc((size_t)(nfft / 2) * sizeof(double));
+    for (int i = 0; i < nfft / 2; i++) {
+        freq_ax[i] = (double)i / (double)nfft;
+        mag_poly[i] = 10.0 * log10(complex_mag(H_poly[i]) *
+                                     complex_mag(H_poly[i]) + 1e-30);
+    }
+
+    gp_plot_1("ch17", "polyphase_spectrum",
+              "Polyphase Decimated Spectrum",
+              "Normalised Frequency", "Magnitude (dB)",
+              freq_ax, mag_poly, nfft / 2, "lines");
+
+    free(x); free(idx); free(y_dec); free(idx_dec);
+    free(y_int); free(idx_int); free(y_poly);
+    free(H_poly); free(freq_ax); free(mag_poly);
+}
+
+/* ================================================================== */
+/*  Chapter 20: Hilbert Transform & Analytic Signal                   */
+/* ================================================================== */
+
+static void plot_ch20(void)
+{
+    printf("  Ch20: Hilbert analytic signal ...\n");
+
+    /* AM-modulated signal: envelope = 1 + 0.5*cos(2π·5·t) */
+    const int N = 512;
+    const double fs = 1000.0;
+    double *x   = (double *)malloc((size_t)N * sizeof(double));
+    double *env_true  = (double *)malloc((size_t)N * sizeof(double));
+    double *env_hilb  = (double *)malloc((size_t)N * sizeof(double));
+    double *idx = (double *)malloc((size_t)N * sizeof(double));
+
+    for (int i = 0; i < N; i++) {
+        double t = (double)i / fs;
+        double env_val = 1.0 + 0.5 * cos(2.0 * M_PI * 5.0 * t);
+        x[i] = env_val * cos(2.0 * M_PI * 100.0 * t);
+        env_true[i] = env_val;
+        idx[i] = t * 1000.0;  /* ms */
+    }
+
+    envelope(x, N, env_hilb, 65);
+
+    gp_plot_multi("ch20", "am_envelope",
+              "Hilbert Envelope Detection — AM Signal (fc=100, fm=5 Hz)",
+              "Time (ms)", "Amplitude",
+              (GpSeries[]){
+                  {"AM Signal",       idx, x,        N, "lines"},
+                  {"True Envelope",   idx, env_true, N, "lines"},
+                  {"Hilbert Envelope", idx, env_hilb, N, "lines"}
+              }, 3);
+
+    /* Instantaneous frequency of a chirp */
+    double *chirp  = (double *)malloc((size_t)N * sizeof(double));
+    double *ifreq  = (double *)malloc((size_t)N * sizeof(double));
+    gen_chirp(chirp, N, 1.0, 50.0, 200.0, fs);
+    inst_frequency(chirp, N, ifreq, 65);
+
+    /* Scale to Hz */
+    for (int i = 0; i < N; i++) {
+        ifreq[i] *= fs;
+        idx[i] = (double)i / fs * 1000.0;
+    }
+
+    gp_plot_multi("ch20", "inst_frequency",
+              "Instantaneous Frequency — Linear Chirp (50→200 Hz)",
+              "Time (ms)", "Frequency / Amplitude",
+              (GpSeries[]){
+                  {"Chirp Signal", idx, chirp, N, "lines"},
+                  {"Inst. Freq (Hz)", idx, ifreq, N, "lines"}
+              }, 2);
+
+    free(x); free(env_true); free(env_hilb); free(idx);
+    free(chirp); free(ifreq);
+}
+
+/* ================================================================== */
+/*  Chapter 21: Signal Averaging & Noise Reduction                    */
+/* ================================================================== */
+
+static void plot_ch21(void)
+{
+    printf("  Ch21: signal averaging ...\n");
+
+    const int N = 256;
+    const int K = 32;
+
+    /* Generate K noisy trials of a square pulse */
+    double *clean = (double *)calloc((size_t)N, sizeof(double));
+    for (int i = N / 4; i < 3 * N / 4; i++) clean[i] = 1.0;
+
+    double **trials = (double **)malloc((size_t)K * sizeof(double *));
+    for (int k = 0; k < K; k++) {
+        trials[k] = (double *)malloc((size_t)N * sizeof(double));
+        gen_white_noise(trials[k], N, 0.5, (unsigned)(42 + k));
+        signal_add(trials[k], clean, N);
+    }
+
+    /* Coherent average */
+    double *avg = (double *)malloc((size_t)N * sizeof(double));
+    coherent_average((const double **)trials, K, N, avg);
+
+    double *idx = (double *)malloc((size_t)N * sizeof(double));
+    for (int i = 0; i < N; i++) idx[i] = (double)i;
+
+    gp_plot_multi("ch21", "coherent_averaging",
+              "Coherent Averaging (32 trials, σ_noise=0.5)",
+              "Sample", "Amplitude",
+              (GpSeries[]){
+                  {"Noisy (trial 1)", idx, trials[0], N, "lines"},
+                  {"Clean Signal",    idx, clean,      N, "lines"},
+                  {"32-trial Average", idx, avg,       N, "lines"}
+              }, 3);
+
+    /* EMA vs MA on noisy signal */
+    double *noisy = (double *)malloc((size_t)N * sizeof(double));
+    gen_white_noise(noisy, N, 0.3, 99);
+    signal_add(noisy, clean, N);
+
+    double *y_ema = (double *)malloc((size_t)N * sizeof(double));
+    double *y_ma  = (double *)malloc((size_t)N * sizeof(double));
+    ema_filter(noisy, N, 0.1, y_ema);
+    moving_average(noisy, N, 15, y_ma);
+
+    gp_plot_multi("ch21", "ema_vs_ma",
+              "EMA (α=0.1) vs Moving Average (M=15)",
+              "Sample", "Amplitude",
+              (GpSeries[]){
+                  {"Noisy Input", idx, noisy, N, "lines"},
+                  {"EMA α=0.1",   idx, y_ema, N, "lines"},
+                  {"MA M=15",     idx, y_ma,  N, "lines"}
+              }, 3);
+
+    /* Median filter on impulse-corrupted signal */
+    double *corrupted = (double *)malloc((size_t)N * sizeof(double));
+    for (int i = 0; i < N; i++) corrupted[i] = clean[i];
+    /* Add salt-and-pepper impulse noise */
+    for (int i = 0; i < N; i += 7 + (i % 3))
+        corrupted[i] += (i % 2 == 0) ? 2.0 : -2.0;
+
+    double *y_med = (double *)malloc((size_t)N * sizeof(double));
+    median_filter(corrupted, N, 5, y_med);
+
+    gp_plot_multi("ch21", "median_filter",
+              "Median Filter (M=5) — Impulse Noise Removal",
+              "Sample", "Amplitude",
+              (GpSeries[]){
+                  {"Corrupted",      idx, corrupted, N, "lines"},
+                  {"Median Filtered", idx, y_med,    N, "lines"},
+                  {"Clean",          idx, clean,     N, "lines"}
+              }, 3);
+
+    for (int k = 0; k < K; k++) free(trials[k]);
+    free(trials); free(clean); free(avg); free(idx);
+    free(noisy); free(y_ema); free(y_ma);
+    free(corrupted); free(y_med);
+}
+
+/* ================================================================== */
+/*  Chapter 22: Advanced FIR Design (Remez / IRLS)                    */
+/* ================================================================== */
+
+static void plot_ch22(void)
+{
+    printf("  Ch22: Remez FIR design ...\n");
+
+    const int taps = 51;
+    const int nfft = 1024;
+
+    /* Remez lowpass: passband 0–0.2, stopband 0.3–0.5 */
+    double h_remez[51];
+    remez_lowpass(h_remez, taps, 0.2, 0.3, 1.0, 1.0);
+
+    /* Window-method lowpass for comparison */
+    double h_win[51];
+    fir_lowpass(h_win, taps, 0.25);
+
+    /* Frequency responses */
+    Complex *H_r = (Complex *)calloc((size_t)nfft, sizeof(Complex));
+    Complex *H_w = (Complex *)calloc((size_t)nfft, sizeof(Complex));
+    for (int i = 0; i < taps; i++) {
+        H_r[i].re = h_remez[i]; H_r[i].im = 0.0;
+        H_w[i].re = h_win[i];   H_w[i].im = 0.0;
+    }
+    fft(H_r, nfft);
+    fft(H_w, nfft);
+
+    int half = nfft / 2;
+    double *freq  = (double *)malloc((size_t)half * sizeof(double));
+    double *mag_r = (double *)malloc((size_t)half * sizeof(double));
+    double *mag_w = (double *)malloc((size_t)half * sizeof(double));
+
+    for (int i = 0; i < half; i++) {
+        freq[i] = (double)i / (double)nfft;
+        double mr = complex_mag(H_r[i]);
+        double mw = complex_mag(H_w[i]);
+        mag_r[i] = 20.0 * log10(mr + 1e-30);
+        mag_w[i] = 20.0 * log10(mw + 1e-30);
+    }
+
+    gp_plot_multi("ch22", "remez_vs_window",
+              "Remez vs Window-Method Lowpass (51 taps, fc≈0.25)",
+              "Normalised Frequency (0–0.5)", "Magnitude (dB)",
+              (GpSeries[]){
+                  {"Remez (pb=0.2, sb=0.3)", freq, mag_r, half, "lines"},
+                  {"Window (Hann, fc=0.25)",  freq, mag_w, half, "lines"}
+              }, 2);
+
+    /* Remez bandpass filter */
+    double h_bp[51];
+    remez_bandpass(h_bp, taps, 0.1, 0.2, 0.35, 0.45);
+
+    Complex *H_bp = (Complex *)calloc((size_t)nfft, sizeof(Complex));
+    for (int i = 0; i < taps; i++) {
+        H_bp[i].re = h_bp[i]; H_bp[i].im = 0.0;
+    }
+    fft(H_bp, nfft);
+
+    double *mag_bp = (double *)malloc((size_t)half * sizeof(double));
+    for (int i = 0; i < half; i++) {
+        double m = complex_mag(H_bp[i]);
+        mag_bp[i] = 20.0 * log10(m + 1e-30);
+    }
+
+    gp_plot_1("ch22", "remez_bandpass",
+              "Remez Bandpass FIR (51 taps, pass=0.2–0.35)",
+              "Normalised Frequency (0–0.5)", "Magnitude (dB)",
+              freq, mag_bp, half, "lines");
+
+    free(H_r); free(H_w); free(H_bp);
+    free(freq); free(mag_r); free(mag_w); free(mag_bp);
+}
+
+/* ================================================================== */
 /*  Main: generate all plots                                          */
 /* ================================================================== */
 
@@ -1529,6 +1835,10 @@ int main(void)
     plot_ch16();
     plot_ch18();
     plot_ch19();
+    plot_ch17();
+    plot_ch20();
+    plot_ch21();
+    plot_ch22();
     plot_ch30();
 
     printf("\n  Done! All plots saved to plots/\n");

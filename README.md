@@ -51,12 +51,12 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 | Ch | Topic | Demo | Key Files |
 |----|-------|------|-----------|
 | [16](chapters/16-overlap-add-save.md) | Overlap-Add/Save streaming convolution | `ch16` | [`streaming.h`](include/streaming.h) |
-| 17 | Multirate DSP (decimation, interpolation) | — | 🔜 |
+| [17](chapters/17-multirate-dsp.md) | Multirate DSP (decimation, interpolation, polyphase) | `ch17` | [`multirate.h`](include/multirate.h) |
 | [18](chapters/18-fixed-point.md) | Fixed-point arithmetic (Q15/Q31, SQNR) | `ch18` | [`fixed_point.h`](include/fixed_point.h) |
 | [19](chapters/19-advanced-fft.md) | Advanced FFT (Goertzel, DTMF, Sliding DFT) | `ch19` | [`advanced_fft.h`](include/advanced_fft.h) |
-| 20 | Quadrature signals & Hilbert transform | — | 🔜 |
-| 21 | Signal averaging & noise reduction | — | 🔜 |
-| 22 | Advanced FIR (Parks-McClellan / Remez) | — | 🔜 |
+| [20](chapters/20-hilbert-transform.md) | Quadrature signals & Hilbert transform | `ch20` | [`hilbert.h`](include/hilbert.h) |
+| [21](chapters/21-signal-averaging.md) | Signal averaging & noise reduction | `ch21` | [`averaging.h`](include/averaging.h) |
+| [22](chapters/22-advanced-fir.md) | Advanced FIR design (Parks-McClellan / IRLS) | `ch22` | [`remez.h`](include/remez.h) |
 
 ### Part VI — Postgraduate
 
@@ -91,7 +91,7 @@ make release
 ./build/bin/ch08    # FFT fundamentals
 ./build/bin/ch18    # Fixed-point arithmetic
 
-# Run the test suite (46 tests across 5 suites)
+# Run the test suite (61 tests across 6 suites)
 make test
 
 # Run all chapter demos
@@ -125,7 +125,11 @@ dsp-tutorial-suite/
 │   ├── gnuplot.h         Pipe-based gnuplot plotting helpers
 │   ├── fixed_point.h     Q15/Q31 fixed-point arithmetic
 │   ├── advanced_fft.h    Goertzel, DTMF detection, sliding DFT
-│   └── streaming.h       Overlap-Add/Save block convolution
+│   ├── streaming.h       Overlap-Add/Save block convolution
+│   ├── multirate.h       Decimation, interpolation, polyphase
+│   ├── hilbert.h         Hilbert transform, analytic signal
+│   ├── averaging.h       Coherent averaging, EMA, median filter
+│   └── remez.h           Parks-McClellan / IRLS equiripple FIR
 ├── src/              ← Reusable library (builds to libdsp_core.a)
 │   ├── fft.c             Cooley-Tukey Radix-2 DIT
 │   ├── filter.c          Direct convolution + sinc design
@@ -138,25 +142,30 @@ dsp-tutorial-suite/
 │   ├── gnuplot.c         Gnuplot pipe helpers (pngcairo)
 │   ├── fixed_point.c     Q15/Q31 conversion, saturating ops, FIR
 │   ├── advanced_fft.c    Goertzel, DTMF, sliding DFT
-│   └── streaming.c       OLA/OLS block FFT convolution
+│   ├── streaming.c       OLA/OLS block FFT convolution
+│   ├── multirate.c       Multirate processing & polyphase
+│   ├── hilbert.c         Hilbert FIR design, envelope, inst freq
+│   ├── averaging.c       Coherent avg, EMA, MA, median filter
+│   └── remez.c           IRLS-based equiripple FIR design
 ├── tests/            ← Unit tests (zero-dependency framework)
 │   ├── test_framework.h  Lightweight test macros
 │   ├── test_fft.c        6 FFT tests
 │   ├── test_filter.c     6 FIR filter tests
 │   ├── test_iir.c        10 IIR filter tests
 │   ├── test_spectrum_corr.c  12 spectrum & correlation tests
-│   └── test_phase4.c     12 fixed-point, Goertzel, streaming tests
+│   ├── test_phase4.c     12 fixed-point, Goertzel, streaming tests
+│   └── test_phase5.c     15 multirate, Hilbert, averaging, Remez tests
 ├── chapters/         ← START HERE — progressive tutorial (30 chapters)
 │   ├── NN-topic.c        Demo code with ASCII art & rich comments
 │   └── NN-topic.md       Theory tutorial with equations & exercises
 ├── tools/            ← Utilities
-│   └── generate_plots.c  Generates 50+ gnuplot PNGs for all chapters
+│   └── generate_plots.c  Generates 60+ gnuplot PNGs for all chapters
 ├── plots/            ← Generated visualisations (by chapter)
 ├── reference/        ← Architecture, API reference, diagrams
 │   ├── ARCHITECTURE.md
 │   ├── API.md
 │   └── diagrams/     PlantUML sources + rendered PNGs
-├── Makefile          ← Primary build (25+ targets)
+├── Makefile          ← Primary build (30+ targets)
 └── CMakeLists.txt    ← Cross-platform alternative
 ```
 
@@ -185,7 +194,7 @@ To regenerate PNGs after editing `.puml` files:
 java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 ```
 
-## Test Output (46 tests)
+## Test Output (61 tests)
 
 ```
 === Test Suite: FFT Functions ===
@@ -202,6 +211,9 @@ java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 
 === Test Suite: Phase 4: Fixed-Point, Advanced FFT, Streaming ===
   Total: 12, Passed: 12, Failed: 0 (100%)
+
+=== Test Suite: Phase 5: Multirate, Hilbert, Averaging, Remez ===
+  Total: 15, Passed: 15, Failed: 0 (100%)
 ```
 
 ## License
