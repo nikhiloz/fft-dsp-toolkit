@@ -26,6 +26,7 @@ set(DSP_SOURCES
     src/fft.c
     src/filter.c
     src/dsp_utils.c
+    src/signal_gen.c
 )
 
 # Create shared library
@@ -43,6 +44,9 @@ set_target_properties(fft_dsp_static PROPERTIES
 )
 
 # Chapter demos
+add_executable(ch01s chapters/01-signals-and-sequences.c)
+target_link_libraries(ch01s fft_dsp_static m)
+
 add_executable(ch01 chapters/01-complex-numbers.c)
 target_link_libraries(ch01 fft_dsp_static m)
 
@@ -74,7 +78,7 @@ add_test(NAME filter_tests COMMAND test_filter)
 
 # Build output directories
 set_target_properties(
-    ch01 ch02 ch03 ch04 ch05 ch08 test_fft test_filter
+    ch01s ch01 ch02 ch03 ch04 ch05 ch08 test_fft test_filter
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )

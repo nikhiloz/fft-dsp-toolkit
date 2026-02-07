@@ -14,13 +14,14 @@ LIB_DIR := $(BUILD_DIR)/lib
 OBJ_DIR := $(BUILD_DIR)/obj
 
 # Source files
-SOURCES := src/fft.c src/filter.c src/dsp_utils.c
+SOURCES := src/fft.c src/filter.c src/dsp_utils.c src/signal_gen.c
 OBJECTS := $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
 TESTS := tests/test_fft.c tests/test_filter.c
 
 # Chapter demos
-CHAPTER_DEMOS := chapters/01-complex-numbers.c \
+CHAPTER_DEMOS := chapters/01-signals-and-sequences.c \
+	chapters/01-complex-numbers.c \
 	chapters/02-fft-fundamentals.c \
 	chapters/03-window-functions.c \
 	chapters/04-digital-filters.c \
@@ -41,6 +42,7 @@ $(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
 # Debug build
 debug: CFLAGS_RELEASE = $(CFLAGS_DEBUG)
 debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
+	$(BIN_DIR)/ch01s \
 	$(BIN_DIR)/ch01 \
 	$(BIN_DIR)/ch02 \
 	$(BIN_DIR)/ch03 \
@@ -52,6 +54,7 @@ debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 
 # Release build
 release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
+	$(BIN_DIR)/ch01s \
 	$(BIN_DIR)/ch01 \
 	$(BIN_DIR)/ch02 \
 	$(BIN_DIR)/ch03 \
@@ -70,6 +73,9 @@ $(LIB_DIR)/libfft_dsp.so: $(OBJECTS)
 	$(CC) -shared -fPIC $(OBJECTS) $(LDFLAGS) -o $@
 
 # Chapter demos
+$(BIN_DIR)/ch01s: chapters/01-signals-and-sequences.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
 $(BIN_DIR)/ch01: chapters/01-complex-numbers.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
@@ -89,7 +95,7 @@ $(BIN_DIR)/ch08: chapters/08-putting-it-together.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
 # Build only chapter demos
-chapters: $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch08
+chapters: $(BIN_DIR)/ch01s $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch08
 
 # Tests
 $(BIN_DIR)/test_fft: tests/test_fft.c $(OBJECTS) | $(BIN_DIR)
@@ -107,7 +113,9 @@ test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter
 
 # Run chapter demos
 run: chapters
-	@echo "=== Ch01: Complex Numbers ==="
+	@echo "=== Ch01s: Signals & Sequences ==="
+	$(BIN_DIR)/ch01s
+	@echo "\n=== Ch01: Complex Numbers ==="
 	$(BIN_DIR)/ch01
 	@echo "\n=== Ch02: FFT Fundamentals ==="
 	$(BIN_DIR)/ch02
