@@ -14,10 +14,10 @@ LIB_DIR := $(BUILD_DIR)/lib
 OBJ_DIR := $(BUILD_DIR)/obj
 
 # Source files
-SOURCES := src/fft.c src/filter.c src/dsp_utils.c src/signal_gen.c src/convolution.c
+SOURCES := src/fft.c src/filter.c src/dsp_utils.c src/signal_gen.c src/convolution.c src/iir.c
 OBJECTS := $(patsubst src/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
-TESTS := tests/test_fft.c tests/test_filter.c
+TESTS := tests/test_fft.c tests/test_filter.c tests/test_iir.c
 
 # Chapter demos
 CHAPTER_DEMOS := chapters/01-signals-and-sequences.c \
@@ -25,10 +25,13 @@ CHAPTER_DEMOS := chapters/01-signals-and-sequences.c \
 	chapters/03-complex-numbers.c \
 	chapters/04-lti-systems.c \
 	chapters/05-z-transform.c \
+	chapters/06-frequency-response.c \
 	chapters/07-dft-theory.c \
 	chapters/08-fft-fundamentals.c \
 	chapters/09-window-functions.c \
 	chapters/10-digital-filters.c \
+	chapters/11-iir-filter-design.c \
+	chapters/12-filter-structures.c \
 	chapters/13-spectral-analysis.c \
 	chapters/30-putting-it-together.c
 
@@ -51,14 +54,18 @@ debug: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/ch03 \
 	$(BIN_DIR)/ch04 \
 	$(BIN_DIR)/ch05 \
+	$(BIN_DIR)/ch06 \
 	$(BIN_DIR)/ch07 \
 	$(BIN_DIR)/ch08 \
 	$(BIN_DIR)/ch09 \
 	$(BIN_DIR)/ch10 \
+	$(BIN_DIR)/ch11 \
+	$(BIN_DIR)/ch12 \
 	$(BIN_DIR)/ch13 \
 	$(BIN_DIR)/ch30 \
 	$(BIN_DIR)/test_fft \
-	$(BIN_DIR)/test_filter
+	$(BIN_DIR)/test_filter \
+	$(BIN_DIR)/test_iir
 
 # Release build
 release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
@@ -67,14 +74,18 @@ release: $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) \
 	$(BIN_DIR)/ch03 \
 	$(BIN_DIR)/ch04 \
 	$(BIN_DIR)/ch05 \
+	$(BIN_DIR)/ch06 \
 	$(BIN_DIR)/ch07 \
 	$(BIN_DIR)/ch08 \
 	$(BIN_DIR)/ch09 \
 	$(BIN_DIR)/ch10 \
+	$(BIN_DIR)/ch11 \
+	$(BIN_DIR)/ch12 \
 	$(BIN_DIR)/ch13 \
 	$(BIN_DIR)/ch30 \
 	$(BIN_DIR)/test_fft \
-	$(BIN_DIR)/test_filter
+	$(BIN_DIR)/test_filter \
+	$(BIN_DIR)/test_iir
 
 # Static library
 $(LIB_DIR)/libdsp_core.a: $(OBJECTS)
@@ -100,6 +111,9 @@ $(BIN_DIR)/ch04: chapters/04-lti-systems.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/ch05: chapters/05-z-transform.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/ch06: chapters/06-frequency-response.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
 $(BIN_DIR)/ch07: chapters/07-dft-theory.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
@@ -112,6 +126,12 @@ $(BIN_DIR)/ch09: chapters/09-window-functions.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/ch10: chapters/10-digital-filters.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/ch11: chapters/11-iir-filter-design.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BIN_DIR)/ch12: chapters/12-filter-structures.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
+
 $(BIN_DIR)/ch13: chapters/13-spectral-analysis.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
@@ -119,7 +139,7 @@ $(BIN_DIR)/ch30: chapters/30-putting-it-together.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) $< $(OBJECTS) $(LDFLAGS) -o $@
 
 # Build only chapter demos
-chapters: $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch07 $(BIN_DIR)/ch08 $(BIN_DIR)/ch09 $(BIN_DIR)/ch10 $(BIN_DIR)/ch13 $(BIN_DIR)/ch30
+chapters: $(BIN_DIR)/ch01 $(BIN_DIR)/ch02 $(BIN_DIR)/ch03 $(BIN_DIR)/ch04 $(BIN_DIR)/ch05 $(BIN_DIR)/ch06 $(BIN_DIR)/ch07 $(BIN_DIR)/ch08 $(BIN_DIR)/ch09 $(BIN_DIR)/ch10 $(BIN_DIR)/ch11 $(BIN_DIR)/ch12 $(BIN_DIR)/ch13 $(BIN_DIR)/ch30
 
 # Tests
 $(BIN_DIR)/test_fft: tests/test_fft.c $(OBJECTS) | $(BIN_DIR)
@@ -128,12 +148,17 @@ $(BIN_DIR)/test_fft: tests/test_fft.c $(OBJECTS) | $(BIN_DIR)
 $(BIN_DIR)/test_filter: tests/test_filter.c $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
 
+$(BIN_DIR)/test_iir: tests/test_iir.c $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS_RELEASE) -Itests $< $(OBJECTS) $(LDFLAGS) -o $@
+
 # Run tests
-test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter
+test: $(BIN_DIR)/test_fft $(BIN_DIR)/test_filter $(BIN_DIR)/test_iir
 	@echo "=== Running FFT tests ==="
 	$(BIN_DIR)/test_fft
 	@echo "\n=== Running Filter tests ==="
 	$(BIN_DIR)/test_filter
+	@echo "\n=== Running IIR tests ==="
+	$(BIN_DIR)/test_iir
 
 # Run chapter demos
 run: chapters
@@ -155,6 +180,10 @@ run: chapters
 	$(BIN_DIR)/ch09
 	@echo "\n=== Ch10: Digital Filters ==="
 	$(BIN_DIR)/ch10
+	@echo "\n=== Ch11: IIR Filter Design ==="
+	$(BIN_DIR)/ch11
+	@echo "\n=== Ch12: Filter Structures ==="
+	$(BIN_DIR)/ch12
 	@echo "\n=== Ch13: Spectral Analysis ==="
 	$(BIN_DIR)/ch13
 	@echo "\n=== Ch30: Putting It Together ==="

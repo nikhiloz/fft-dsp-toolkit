@@ -25,6 +25,7 @@ include_directories(include)
 set(DSP_SOURCES
     src/fft.c
     src/filter.c
+    src/iir.c
     src/dsp_utils.c
     src/signal_gen.c
     src/convolution.c
@@ -60,6 +61,9 @@ target_link_libraries(ch04 dsp_core_static m)
 add_executable(ch05 chapters/05-z-transform.c)
 target_link_libraries(ch05 dsp_core_static m)
 
+add_executable(ch06 chapters/06-frequency-response.c)
+target_link_libraries(ch06 dsp_core_static m)
+
 add_executable(ch07 chapters/07-dft-theory.c)
 target_link_libraries(ch07 dsp_core_static m)
 
@@ -71,6 +75,12 @@ target_link_libraries(ch09 dsp_core_static m)
 
 add_executable(ch10 chapters/10-digital-filters.c)
 target_link_libraries(ch10 dsp_core_static m)
+
+add_executable(ch11 chapters/11-iir-filter-design.c)
+target_link_libraries(ch11 dsp_core_static m)
+
+add_executable(ch12 chapters/12-filter-structures.c)
+target_link_libraries(ch12 dsp_core_static m)
 
 add_executable(ch13 chapters/13-spectral-analysis.c)
 target_link_libraries(ch13 dsp_core_static m)
@@ -89,9 +99,14 @@ target_include_directories(test_filter PRIVATE tests)
 target_link_libraries(test_filter dsp_core_static m)
 add_test(NAME filter_tests COMMAND test_filter)
 
+add_executable(test_iir tests/test_iir.c)
+target_include_directories(test_iir PRIVATE tests)
+target_link_libraries(test_iir dsp_core_static m)
+add_test(NAME iir_tests COMMAND test_iir)
+
 # Build output directories
 set_target_properties(
-    ch01 ch02 ch03 ch04 ch05 ch07 ch08 ch09 ch10 ch13 ch30 test_fft test_filter
+    ch01 ch02 ch03 ch04 ch05 ch06 ch07 ch08 ch09 ch10 ch11 ch12 ch13 ch30 test_fft test_filter test_iir
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
