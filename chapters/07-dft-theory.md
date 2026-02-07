@@ -2,7 +2,7 @@
 
 > **Prerequisites:** [Ch 03 — Complex Numbers](03-complex-numbers.md), [Ch 05 — Z-Transform](05-z-transform.md)
 > **Library module:** [`fft.h`](../include/fft.h) (DFT via FFT algorithm), [`dsp_utils.h`](../include/dsp_utils.h)
-> **Runnable demo:** [`07-dft-theory.c`](07-dft-theory.c) — `make chapters && ./build/bin/ch07s`
+> **Runnable demo:** [`07-dft-theory.c`](07-dft-theory.c) — `make chapters && ./build/bin/ch07`
 
 ---
 

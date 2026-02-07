@@ -1,6 +1,34 @@
 /**
  * @file 03-complex-numbers.c
- * @brief Chapter 1 demo — Complex number arithmetic in action.
+ * @brief Chapter 3 demo — Complex number arithmetic in action.
+ *
+ * ── Complex Plane (Argand Diagram) ──────────────────────────
+ *
+ *         Im
+ *          ▲
+ *          │     ● z = a + bi
+ *          │    /|
+ *          │ r/ │ b  (imaginary part)
+ *          │/  θ│
+ *   ───────┼────┼──────► Re
+ *          │  a    (real part)
+ *          │
+ *
+ *   Magnitude: |z| = r = √(a² + b²)
+ *   Phase:     θ = atan2(b, a)
+ *   Euler:     z = r · e^{jθ} = r(cosθ + j·sinθ)
+ *
+ * ── Twiddle Factor on Unit Circle ───────────────────────────
+ *
+ *       W_N^k = e^{-j·2πk/N}     (N=8 shown)
+ *
+ *              W₀ (1,0)
+ *           W₇  ·  · W₁
+ *          ·    |    ·
+ *     W₆ ·─────┼─────· W₂
+ *          ·    |    ·
+ *           W₅  ·  · W₃
+ *              W₄
  *
  * Demonstrates:
  *   - Creating complex numbers (rectangular & polar)
@@ -9,7 +37,7 @@
  *   - The twiddle factor W_N used in the FFT
  *
  * Build & run:
- *   make chapters && ./build/bin/ch01
+ *   make chapters && ./build/bin/ch03
  *
  * Read alongside: chapters/03-complex-numbers.md
  */
@@ -27,7 +55,7 @@ static void print_complex(const char *label, Complex z) {
 }
 
 int main(void) {
-    printf("=== Chapter 1: Complex Numbers ===\n\n");
+    printf("=== Chapter 3: Complex Numbers ===\n\n");
 
     /* ── Basic arithmetic ────────────────────────────────────────── */
     Complex a = { 3.0, 4.0 };   /* 3 + 4i */

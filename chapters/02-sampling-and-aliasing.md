@@ -2,7 +2,7 @@
 
 > **Prerequisites:** [Ch 01 — Signals & Sequences](01-signals-and-sequences.md)
 > **Library module:** [`signal_gen.h`](../include/signal_gen.h) (signal generators used for demos)
-> **Runnable demo:** [`02-sampling-and-aliasing.c`](02-sampling-and-aliasing.c) — `make chapters && ./build/bin/ch02s`
+> **Runnable demo:** [`02-sampling-and-aliasing.c`](02-sampling-and-aliasing.c) — `make chapters && ./build/bin/ch02`
 
 ---
 

@@ -1,6 +1,37 @@
 /**
  * @file spectrum.c
  * @brief Power spectral density estimation — periodogram & Welch's method.
+ *
+ * ── Welch's Method Pipeline ─────────────────────────────────────
+ *
+ *   Input x[N]
+ *     │
+ *     ▼
+ *   ┌─────────────────────────────────────────────┐
+ *   │  Segment into overlapping blocks             │
+ *   │                                              │
+ *   │  seg[0]: x[0 .. L-1]                        │
+ *   │  seg[1]: x[D .. D+L-1]     D = L - overlap  │
+ *   │  seg[2]: x[2D .. 2D+L-1]                    │
+ *   │  ...                                         │
+ *   └─────────────────────────────────────────────┘
+ *     │
+ *     ▼  (for each segment)
+ *   ┌───────────┐   ┌───────────┐   ┌───────────┐
+ *   │  Window   │──►│    FFT    │──►│  |X[k]|²  │
+ *   │  (Hann)   │   │  (NFFT)   │   │  / (N·U)  │
+ *   └───────────┘   └───────────┘   └───────────┘
+ *     │
+ *     ▼
+ *   Average all segment periodograms → PSD estimate
+ *
+ *   U = (1/L) Σ w[n]²   (window power normalisation)
+ *
+ * ── Periodogram (single segment, no averaging) ─────────────────
+ *
+ *   x[N] ──► window ──► FFT ──► |X[k]|² / N  =  PSD
+ *
+ *   Simple but high variance (no averaging).
  */
 #define _POSIX_C_SOURCE 200809L
 #include "spectrum.h"

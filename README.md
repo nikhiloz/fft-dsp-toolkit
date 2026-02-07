@@ -15,7 +15,6 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 
 | Ch | Topic | Demo | Key Files |
 |----|-------|------|-----------|
-| [00](chapters/00-overview.md) | Project overview & build system | — | — |
 | [01](chapters/01-signals-and-sequences.md) | Discrete-time signals & sequences | `ch01` | [`signal_gen.h`](include/signal_gen.h) |
 | [02](chapters/02-sampling-and-aliasing.md) | Sampling, aliasing & Nyquist theorem | `ch02` | — |
 | [03](chapters/03-complex-numbers.md) | Complex numbers & Euler's formula | `ch03` | [`dsp_utils.h`](include/dsp_utils.h) |
@@ -26,7 +25,7 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 | Ch | Topic | Demo | Key Files |
 |----|-------|------|-----------|
 | [05](chapters/05-z-transform.md) | The Z-Transform | `ch05` | — |
-| 06 | Frequency response, poles & zeros | — | *planned* |
+| [06](chapters/06-frequency-response.md) | Frequency response, poles & zeros | `ch06` | [`iir.h`](include/iir.h) |
 | [07](chapters/07-dft-theory.md) | The DFT — theory & properties | `ch07` | — |
 | [08](chapters/08-fft-fundamentals.md) | FFT algorithms (Cooley-Tukey Radix-2) | `ch08` | [`fft.h`](include/fft.h), [`fft.c`](src/fft.c) |
 | [09](chapters/09-window-functions.md) | Window functions & spectral leakage | `ch09` | [`dsp_utils.c`](src/dsp_utils.c) |
@@ -36,28 +35,28 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 | Ch | Topic | Demo | Key Files |
 |----|-------|------|-----------|
 | [10](chapters/10-digital-filters.md) | FIR filter design | `ch10` | [`filter.h`](include/filter.h), [`filter.c`](src/filter.c) |
-| 11 | IIR filter design | — | *planned* |
-| 12 | Filter structures (biquads, SOS) | — | *planned* |
+| [11](chapters/11-iir-filter-design.md) | IIR filter design (Butterworth, Chebyshev) | `ch11` | [`iir.h`](include/iir.h), [`iir.c`](src/iir.c) |
+| [12](chapters/12-filter-structures.md) | Filter structures (biquads, SOS cascades) | `ch12` | — |
 
 ### Part IV — Analysis
 
 | Ch | Topic | Demo | Key Files |
 |----|-------|------|-----------|
-| [13](chapters/13-spectral-analysis.md) | Spectral analysis | `ch13` | — |
-| 14 | Power spectral density (Welch) | — | *planned* |
-| 15 | Correlation & autocorrelation | — | *planned* |
+| [13](chapters/13-spectral-analysis.md) | Spectral analysis | `ch13` | [`spectrum.h`](include/spectrum.h) |
+| [14](chapters/14-psd-welch.md) | Power spectral density (Welch's method) | `ch14` | [`spectrum.c`](src/spectrum.c) |
+| [15](chapters/15-correlation.md) | Correlation & autocorrelation | `ch15` | [`correlation.h`](include/correlation.h) |
 
-### Part V — Advanced (UG Final Year)
+### Part V — C-Specific & Advanced UG
 
-| Ch | Topic | Status |
-|----|-------|--------|
-| 16 | Overlap-add/save & streaming | 🔜 |
-| 17 | Multirate DSP | 🔜 |
-| 18 | Fixed-point arithmetic & quantization | 🔜 |
-| 19 | Advanced FFT (Goertzel, Radix-4) | 🔜 |
-| 20 | Quadrature signals & Hilbert transform | 🔜 |
-| 21 | Signal averaging & noise reduction | 🔜 |
-| 22 | Advanced FIR (Parks-McClellan) | 🔜 |
+| Ch | Topic | Demo | Key Files |
+|----|-------|------|-----------|
+| [16](chapters/16-overlap-add-save.md) | Overlap-Add/Save streaming convolution | `ch16` | [`streaming.h`](include/streaming.h) |
+| 17 | Multirate DSP (decimation, interpolation) | — | 🔜 |
+| [18](chapters/18-fixed-point.md) | Fixed-point arithmetic (Q15/Q31, SQNR) | `ch18` | [`fixed_point.h`](include/fixed_point.h) |
+| [19](chapters/19-advanced-fft.md) | Advanced FFT (Goertzel, DTMF, Sliding DFT) | `ch19` | [`advanced_fft.h`](include/advanced_fft.h) |
+| 20 | Quadrature signals & Hilbert transform | — | 🔜 |
+| 21 | Signal averaging & noise reduction | — | 🔜 |
+| 22 | Advanced FIR (Parks-McClellan / Remez) | — | 🔜 |
 
 ### Part VI — Postgraduate
 
@@ -75,7 +74,7 @@ sections, and diagrams. Zero external dependencies — just C99 and `math.h`.
 | 27 | 2D DSP & image processing | — | 🔜 |
 | [28](chapters/28-real-time-streaming.md) | Real-time system design | — | 📋 design |
 | [29](chapters/29-optimisation.md) | SIMD & hardware optimisation | — | 📋 design |
-| [30](chapters/30-putting-it-together.md) | End-to-end projects | `ch30` | ✅ |
+| [30](chapters/30-putting-it-together.md) | End-to-end capstone project | `ch30` | ✅ |
 
 ## Quick Start
 
@@ -89,14 +88,17 @@ make release
 
 # Run a specific chapter demo
 ./build/bin/ch01    # Signals & sequences
-./build/bin/ch07    # DFT theory
 ./build/bin/ch08    # FFT fundamentals
+./build/bin/ch18    # Fixed-point arithmetic
 
-# Run the test suite (12 tests)
+# Run the test suite (46 tests across 5 suites)
 make test
 
 # Run all chapter demos
 make run
+
+# Generate all gnuplot visualisations
+make plots
 ```
 
 ### Requirements
@@ -104,6 +106,7 @@ make run
 - GCC or Clang with C99 support
 - GNU Make
 - Linux / macOS (POSIX)
+- *Optional*: gnuplot >= 5.0 for plot generation (`apt install gnuplot`)
 - *Optional*: Java 11+ and [PlantUML](https://plantuml.com) to regenerate diagrams
 
 ## Project Layout
@@ -114,24 +117,46 @@ dsp-tutorial-suite/
 │   ├── dsp_utils.h       Complex type, windows, helpers
 │   ├── fft.h             FFT / IFFT API
 │   ├── filter.h          FIR filter API
+│   ├── iir.h             IIR filter design (Butterworth, Chebyshev)
 │   ├── signal_gen.h      Signal generation (sine, noise, chirp)
-│   └── convolution.h     Convolution & correlation
-├── src/              ← Implementations (heavily commented)
-│   ├── dsp_utils.c       Complex arithmetic, 3 window functions
+│   ├── convolution.h     Convolution & correlation
+│   ├── spectrum.h        PSD, Welch's method, cross-PSD
+│   ├── correlation.h     Cross/auto-correlation (FFT-based)
+│   ├── gnuplot.h         Pipe-based gnuplot plotting helpers
+│   ├── fixed_point.h     Q15/Q31 fixed-point arithmetic
+│   ├── advanced_fft.h    Goertzel, DTMF detection, sliding DFT
+│   └── streaming.h       Overlap-Add/Save block convolution
+├── src/              ← Reusable library (builds to libdsp_core.a)
 │   ├── fft.c             Cooley-Tukey Radix-2 DIT
 │   ├── filter.c          Direct convolution + sinc design
+│   ├── dsp_utils.c       Complex arithmetic, 3 window functions
 │   ├── signal_gen.c      Signal generators (Box-Muller noise, chirp)
-│   └── convolution.c     Linear/causal conv, cross/auto-correlation
+│   ├── convolution.c     Linear/causal conv, cross/auto-correlation
+│   ├── iir.c             IIR design + SOS cascade processing
+│   ├── spectrum.c        Periodogram, Welch PSD, cross-PSD
+│   ├── correlation.c     FFT-based xcorr/autocorr
+│   ├── gnuplot.c         Gnuplot pipe helpers (pngcairo)
+│   ├── fixed_point.c     Q15/Q31 conversion, saturating ops, FIR
+│   ├── advanced_fft.c    Goertzel, DTMF, sliding DFT
+│   └── streaming.c       OLA/OLS block FFT convolution
 ├── tests/            ← Unit tests (zero-dependency framework)
-│   ├── test_framework.h
+│   ├── test_framework.h  Lightweight test macros
 │   ├── test_fft.c        6 FFT tests
-│   └── test_filter.c     6 FIR filter tests
+│   ├── test_filter.c     6 FIR filter tests
+│   ├── test_iir.c        10 IIR filter tests
+│   ├── test_spectrum_corr.c  12 spectrum & correlation tests
+│   └── test_phase4.c     12 fixed-point, Goertzel, streaming tests
 ├── chapters/         ← START HERE — progressive tutorial (30 chapters)
+│   ├── NN-topic.c        Demo code with ASCII art & rich comments
+│   └── NN-topic.md       Theory tutorial with equations & exercises
+├── tools/            ← Utilities
+│   └── generate_plots.c  Generates 50+ gnuplot PNGs for all chapters
+├── plots/            ← Generated visualisations (by chapter)
 ├── reference/        ← Architecture, API reference, diagrams
 │   ├── ARCHITECTURE.md
 │   ├── API.md
 │   └── diagrams/     PlantUML sources + rendered PNGs
-├── Makefile          ← Primary build (15+ targets)
+├── Makefile          ← Primary build (25+ targets)
 └── CMakeLists.txt    ← Cross-platform alternative
 ```
 
@@ -160,26 +185,23 @@ To regenerate PNGs after editing `.puml` files:
 java -jar ~/tools/plantuml.jar -tpng reference/diagrams/*.puml
 ```
 
-## Test Output
+## Test Output (46 tests)
 
 ```
 === Test Suite: FFT Functions ===
-  [TEST] DC component (constant signal) .............. PASS
-  [TEST] Impulse gives flat spectrum .................. PASS
-  [TEST] Alternating signal → Nyquist bin ............. PASS
-  [TEST] FFT then IFFT recovers original ............. PASS
-  [TEST] Pure sine wave: peaks at correct bin ......... PASS
-  [TEST] fft_real matches manual complex FFT .......... PASS
-Total: 6, Passed: 6, Failed: 0
+  Total: 6, Passed: 6, Failed: 0   (100%)
 
 === Test Suite: Filter Functions ===
-  [TEST] Identity filter (1-tap passthrough) .......... PASS
-  [TEST] Zero input gives zero output ................. PASS
-  [TEST] Impulse response matches coefficients ........ PASS
-  [TEST] Moving average smooths step input ............ PASS
-  [TEST] Lowpass filter coefficients sum to 1.0 ....... PASS
-  [TEST] Lowpass attenuates high frequency ............ PASS
-Total: 6, Passed: 6, Failed: 0
+  Total: 6, Passed: 6, Failed: 0   (100%)
+
+=== Test Suite: IIR Filter Functions ===
+  Total: 10, Passed: 10, Failed: 0 (100%)
+
+=== Test Suite: Spectrum & Correlation ===
+  Total: 12, Passed: 12, Failed: 0 (100%)
+
+=== Test Suite: Phase 4: Fixed-Point, Advanced FFT, Streaming ===
+  Total: 12, Passed: 12, Failed: 0 (100%)
 ```
 
 ## License

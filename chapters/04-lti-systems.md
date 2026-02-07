@@ -2,7 +2,7 @@
 
 > **Prerequisites:** [Ch 01 — Signals & Sequences](01-signals-and-sequences.md), [Ch 02 — Sampling & Aliasing](02-sampling-and-aliasing.md)
 > **Library module:** [`convolution.h`](../include/convolution.h) — convolution, correlation, energy/power
-> **Runnable demo:** [`04-lti-systems.c`](04-lti-systems.c) — `make chapters && ./build/bin/ch04s`
+> **Runnable demo:** [`04-lti-systems.c`](04-lti-systems.c) — `make chapters && ./build/bin/ch04`
 
 ---
 

@@ -1,6 +1,24 @@
 /**
  * @file 30-putting-it-together.c
- * @brief Chapter 8 demo — End-to-end pipeline combining FFT + filter.
+ * @brief Chapter 30 (Capstone) — End-to-end pipeline combining FFT + filter.
+ *
+ * ── Full DSP Pipeline ──────────────────────────────────────────
+ *
+ *   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+ *   │  Signal   │──►│ Spectrum  │──►│ Lowpass  │──►│ Spectrum  │
+ *   │Generator │   │ (Before) │   │  Filter  │   │ (After)  │
+ *   └──────────┘   └──────────┘   └──────────┘   └──────────┘
+ *        │                                             │
+ *        ▼                                             ▼
+ *   300+1200+noise                             300 Hz only
+ *   + white noise                              (noise removed)
+ *
+ *   Steps:
+ *     1. gen_sine(300 Hz) + gen_sine(1200 Hz) + gen_noise()
+ *     2. fft_real() → magnitude spectrum (before)
+ *     3. fir_lowpass(cutoff=0.15) → fir_filter()
+ *     4. fft_real() → magnitude spectrum (after)
+ *     5. Compare RMS and peak locations
  *
  * Demonstrates:
  *   - Generate a noisy multi-tone signal
@@ -10,7 +28,7 @@
  *   - Compare RMS and spectral content
  *
  * Build & run:
- *   make chapters && ./build/bin/ch08
+ *   make chapters && ./build/bin/ch30
  *
  * Read alongside: chapters/30-putting-it-together.md
  */

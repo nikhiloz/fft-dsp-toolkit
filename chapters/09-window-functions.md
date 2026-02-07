@@ -136,7 +136,7 @@ h[i] *= hamming_window(taps, i);
 
 ```bash
 make
-./build/bin/fft_demo
+./build/bin/ch09
 ```
 
 The demo uses `hann_window`. Try editing [`09-window-functions.c`](09-window-functions.c)
@@ -145,7 +145,7 @@ compare the output. The peaks should change width.
 
 ## 3.7 Exercises
 
-1. **Experiment:** Modify `fft_demo.c` to run the FFT *without* any
+1. **Experiment:** Modify `09-window-functions.c` to run the FFT *without* any
    window (comment out the `apply_window` line). How much does 440 Hz
    spread into adjacent bins?
 

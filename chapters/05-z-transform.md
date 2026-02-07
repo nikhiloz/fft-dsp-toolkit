@@ -2,7 +2,7 @@
 
 > **Prerequisites:** [Ch 01 — Signals & Sequences](01-signals-and-sequences.md), [Ch 03 — Complex Numbers](03-complex-numbers.md), [Ch 04 — LTI Systems](04-lti-systems.md)
 > **Library module:** [`dsp_utils.h`](../include/dsp_utils.h) (complex arithmetic for evaluation)
-> **Runnable demo:** [`05-z-transform.c`](05-z-transform.c) — `make chapters && ./build/bin/ch05s`
+> **Runnable demo:** [`05-z-transform.c`](05-z-transform.c) — `make chapters && ./build/bin/ch05`
 
 ---
 
